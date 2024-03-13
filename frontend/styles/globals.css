@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-dark font-body text-base text-light antialiased;
+  }
+}
+
+@layer utilities {
+  .gradient-border {
+    @apply absolute left-8 bottom-0 h-px w-[calc(100%-64px)] bg-radial opacity-60;
+  }
+  .btn-bg {
+    @apply absolute top-px left-px h-[calc(100%-2px)] w-[calc(100%-2px)]  transition-all;
+  }
+}
+
+.primary-btn {
+  @apply h-[45px] whitespace-nowrap rounded-full border border-solid  border-pythPurple bg-pythPurple px-8 font-mono text-xs uppercase;
+}
+
+.secondary-btn {
+  @apply h-[45px]  rounded-full bg-darkGray2  px-8  font-mono uppercase leading-none  transition-colors;
+}
+
+.action-btn {
+  @apply h-[45px] rounded-full bg-pythPurple  px-8 font-mono  font-semibold uppercase  leading-none transition-colors  hover:bg-mediumSlateBlue disabled:opacity-70 disabled:hover:bg-pythPurple;
+}
+
+.outlined-btn {
+  @apply rounded-full bg-darkGray2 px-6 py-1 transition-colors;
+}
+
+.nav-link {
+  @apply text-sm text-light hover:text-white;
+}
+
+.diaglogPanel {
+  @apply flex h-full min-h-[420px]  w-[calc(100%-64px)]  max-w-3xl transform items-center justify-center rounded-[40px]  bg-[rgba(49,47,71,0.85)] p-5 px-6 pt-20 pb-8 text-center  align-middle shadow-xl  transition-all md:mt-[92px] lg:p-10;
+}
+.diaglogClose {
+  @apply absolute right-10 top-8  flex items-center leading-none;
+}
+
+.diaglogTitle {
+  @apply mb-8 text-center font-body text-[32px] leading-[1.1] lg:mb-11 lg:text-[44px];
+}
+
+.input-no-spin::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0px;
+}
+
+.wallet-adapter-dropdown-list {
+  @apply gap-1 border border-darkGray3 bg-darkGray2 text-xs;
+}
+
+.wallet-adapter-modal-wrapper {
+  @apply max-w-[660px]  rounded-4xl bg-darkGray2;
+}
+
+.wallet-adapter-modal-title {
+  @apply max-w-[480px] font-body text-[32px] leading-[1.1] text-light md:text-[44px];
+}
+
+.wallet-adapter-modal-list {
+  @apply mx-auto max-w-[380px]  text-light;
+}
+
+.wallet-adapter-modal-list-more {
+  @apply mx-auto font-mono text-xs font-semibold uppercase;
+}
+.wallet-adapter-dropdown-list .wallet-adapter-dropdown-list-item:hover,
+.wallet-adapter-modal-list .wallet-adapter-button:hover {
+  background-color: #413e53;
+}
+
+.wallet-adapter-modal-button-close {
+  @apply bg-transparent;
+}
+
+.wallet-adapter-button.secondary-btn:hover {
+  @apply hover:bg-pythPurple;
+}
+
+.claim_li {
+  @apply mb-[1px] block cursor-pointer py-4 px-4 font-header text-base18 font-light transition-colors hover:bg-darkGray5 hover:text-light sm:px-6;
+}
+
+.claim_li span {
+  @apply mr-2.5 inline-block w-[18px] text-center;
+}
+
+.btn {
+  @apply relative h-[36px] px-4 font-body text-base transition-all sm:h-[44px] md:px-8;
+}
+
+.btn-square {
+  @apply before:btn-bg btn--dark relative flex h-[42px] w-[42px] items-center justify-center  transition-all before:bg-dark hover:text-dark hover:before:bg-light;
+}
+
+.btn--dark {
+  @apply bg-radial;
+}
+
+.btn--light {
+  @apply z-10 bg-radial2 text-dark;
+}
+
+.claim-ul li {
+  @apply mb-4 flex gap-2.5 before:h-5 before:w-5 before:flex-shrink-0 before:content-li;
+}
+
+.disabled td:first-of-type {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+html {
+  overflow-y: scroll;
+}
+html::-webkit-scrollbar {
+  width: 3px;
+}
+html::-webkit-scrollbar-track {
+  background-color: #110f23;
+}
+html::-webkit-scrollbar-thumb {
+  background-color: #e6dafe;
+  border-radius: 3px;
+}
+
+.scrollbar {
+  overflow-y: auto;
+}
+.scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: #e6dafe;
+  border-radius: 3px;
+}

@@ -1,0 +1,16 @@
+[features]
+seeds = false
+skip-lint = false
+[programs.localnet]
+token_dispenser = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "../frontend/integration/keys/funder_private_key.json"
+
+[scripts]
+test = "cargo test-bpf"
+export = "anchor build && ./scripts/export_idl.sh"
