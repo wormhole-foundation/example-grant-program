@@ -58,10 +58,10 @@ export const Layout = ({ children }: LayoutProps) => {
         </div>
       </header>
       <div className="relative px-4 pt-20 pb-32 sm:pt-28 lg:pt-40">
-        <div className="mx-auto max-w-[997px] justify-between gap-2.5 lg:flex">
+        <div className="mx-auto max-w-[997px] items-start justify-between gap-2.5 lg:flex">
           <ul
             className={classNames(
-              'mb-2.5 lg:mb-0 lg:max-w-[292px]',
+              'mb-2.5 divide-y divide-light  divide-opacity-25 border border-light border-opacity-25 lg:mb-0 lg:max-w-[292px]',
               disableSideNav ? 'pointer-events-none' : ''
             )}
           >
@@ -74,8 +74,8 @@ export const Layout = ({ children }: LayoutProps) => {
                   key={url}
                   className={`claim_li ${
                     isActive
-                      ? 'bg-darkGray5 text-light'
-                      : 'bg-dark text-light-50'
+                      ? ' bg-black bg-opacity-60'
+                      : ' bg-black   bg-opacity-30'
                   }`}
                   role="button"
                   onClick={() => router.push(url)}

@@ -3,19 +3,20 @@ import { SolanaWalletProvider } from '@components/wallets/Solana'
 import type { AppProps } from 'next/app'
 import { FC, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { WalletKitProvider as SuiWalletProvider } from '@mysten/wallet-kit'
-import { NextSeo } from 'next-seo'
+import { DefaultSeo } from 'next-seo'
+import SEO from '../next-seo.config'
 import { Toaster } from 'react-hot-toast'
 import { EVMWalletProvider } from '@components/wallets/EVM'
 import { CosmosWalletProvider } from '@components/wallets/Cosmos'
 import { SessionProvider } from 'next-auth/react'
 import { EcosystemProviders } from '@components/Ecosystem'
+import type { Metadata } from 'next'
 
 import '../styles/globals.css'
 import { SeiProvider } from '@components/wallets/Sei'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@components/Layout'
 import { Disclaimer } from '@components/modal/Disclaimer'
-import Script from 'next/script'
 
 import {
   DisclaimerCheckStore,
@@ -60,6 +61,17 @@ function useRedirect(isVersionChecked: boolean) {
   }, [params, pathname, isVersionChecked])
 }
 
+export const metadata: Metadata = {
+  title: 'Wormhole Airdrop',
+  description:
+    'Wormhole is the #1 ranked cross chain messaging platform that allows developers to build decentralized applications that span the entire blockchain ecosystem.',
+  openGraph: {
+    images: [
+      'https://airdrop.wormhole.com/branding/wormhole-airdrop-og-image.png',
+    ],
+  },
+}
+
 const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
   const [disclaimerWasRead, setDisclaimerWasRead] = useState(false)
@@ -84,19 +96,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
 
   return (
     <>
-      <Script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-C2TFD85LKJ"
-      />
-      <Script id="google-tag">
-        {`
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-C2TFD85LKJ');
-  `}
-      </Script>
       {isVersionChecked ? (
         <SessionProvider>
           <SolanaWalletProvider>
@@ -109,10 +108,7 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
                  They should be inside all those providers. */}
                       <EcosystemProviders>
                         <Layout>
-                          <NextSeo
-                            title="Pyth Network Retrospective Airdrop"
-                            description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
-                          />
+                          <DefaultSeo {...SEO} />
                           <Component {...pageProps} />
                         </Layout>
                         <Toaster

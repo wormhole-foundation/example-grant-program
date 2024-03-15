@@ -21,6 +21,7 @@ import { ClaimStatus } from './ClaimStatus'
 import { SignForEligibleWallets } from './SignForEligibleWallets'
 import { StepProps } from './common'
 import { PathnameStore } from 'utils/store'
+import { Title } from '@components/Title'
 
 // Following the convention,
 // If error is:
@@ -195,12 +196,12 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     <>
       {screen == 1 ? (
         <Box>
-          <div className="flex items-center justify-between border-b border-light-35  bg-[#242339] py-8 px-4 sm:px-10">
-            <h4 className="font-header text-[28px] font-light leading-[1.2]">
-              Sign Your Wallets and Claim
-            </h4>
-            <BackButton onBack={onBack} />
-          </div>
+          <Title>
+            <span className="flex items-center justify-between ">
+              <span>Sign Your Wallets and Claim</span>
+              <BackButton onBack={onBack} />
+            </span>
+          </Title>
           <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
             <p className="mb-6">
               {`Please sign your connected wallets. To sign, click the

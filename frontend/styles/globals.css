@@ -86,7 +86,7 @@
 }
 
 .claim_li {
-  @apply mb-[1px] block cursor-pointer py-4 px-4 font-header text-base18 font-light transition-colors hover:bg-darkGray5 hover:text-light sm:px-6;
+  @apply mb-[1px] block cursor-pointer py-4 px-4 font-header text-base18 font-light transition-colors hover:bg-opacity-60 sm:px-6;
 }
 
 .claim_li span {

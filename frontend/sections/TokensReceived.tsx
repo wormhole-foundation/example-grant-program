@@ -3,11 +3,11 @@ import Pyth from '@images/pyth.inline.svg'
 import { Box } from '@components/Box'
 import { Button } from '@components/buttons/Button'
 import Discord from '@images/discord.inline.svg'
-import Linkedin from '@images/linkedin.inline.svg'
 import Telegram from '@images/telegram.inline.svg'
 import Twitter from '@images/twitter.inline.svg'
 import Link from 'next/link'
 import { resetLocalState } from 'utils/store'
+import { Title } from '@components/Title'
 
 export type TokensReceivedProps = {
   totalCoinsClaimed: string | null
@@ -16,20 +16,20 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
   return (
     <>
       <Box>
-        <div className="flex items-center justify-between border-b border-light-35 bg-[#242339] py-8 px-4 sm:px-10">
-          <h4 className="font-header text-[24px] font-light leading-[1.2] sm:text-[28px] ">
-            🔮 Congratulations!
-          </h4>
-          <Button
-            onClick={() => {
-              resetLocalState()
-              location.replace('/')
-            }}
-            type={'secondary'}
-          >
-            Claim Again
-          </Button>
-        </div>
+        <Title>
+          <div className="flex items-center justify-between">
+            <h4 className="sm:text-[28px] ">🔮 Congratulations!</h4>
+            <Button
+              onClick={() => {
+                resetLocalState()
+                location.replace('/')
+              }}
+              type={'secondary'}
+            >
+              Claim Again
+            </Button>
+          </div>
+        </Title>
         <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
           <h3 className="mb-8 flex items-center gap-2 font-header text-[36px] font-light">
             You Received{' '}
@@ -60,7 +60,7 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
             <div className="flex gap-2">
               <Link
                 className="btn-square "
-                href={'https://x.com/PythNetwork'}
+                href={'https://twitter.com/wormholecrypto'}
                 target="_blank"
               >
                 <span className="relative inline-flex items-center whitespace-nowrap">
@@ -69,7 +69,7 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
               </Link>
               <Link
                 className="btn-square "
-                href={'https://t.me/Pyth_Network'}
+                href={'https://t.me/wormholecrypto'}
                 target="_blank"
               >
                 <span className="relative inline-flex items-center whitespace-nowrap">
@@ -78,20 +78,11 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
               </Link>
               <Link
                 className="btn-square "
-                href={'https://discord.gg/PythNetwork'}
+                href={'https://discord.gg/wormholecrypto'}
                 target="_blank"
               >
                 <span className="relative inline-flex items-center whitespace-nowrap">
                   <Discord />
-                </span>
-              </Link>
-              <Link
-                className="btn-square "
-                href={'https://www.linkedin.com/company/pyth-network'}
-                target="_blank"
-              >
-                <span className="relative inline-flex items-center whitespace-nowrap">
-                  <Linkedin />
                 </span>
               </Link>
             </div>
