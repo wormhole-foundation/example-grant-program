@@ -10,7 +10,7 @@ import keplr from '@images/keplr.svg'
 
 export const WALLET_NAME = 'keplr-extension'
 
-export type ChainName = 'osmosis' | 'neutron' | 'sei'
+export type ChainName = 'osmosis' | 'terra'
 
 type CosmosWalletProviderProps = {
   children: ReactNode

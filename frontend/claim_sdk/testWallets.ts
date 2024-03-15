@@ -90,9 +90,8 @@ export async function loadTestWallets(): Promise<
   result['sui'] = [TestSuiWallet.fromKeyfile(suiPrivateKeyPath)]
   result['aptos'] = [TestAptosWallet.fromKeyfile(aptosPrivateKeyPath)]
   result['cosmwasm'] = [
-    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'sei'),
     await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'osmo'),
-    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'neutron'),
+    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'terra'),
   ]
   result['injective'] = [TestEvmWallet.fromKeyfile(cosmosPrivateKeyPath, true)]
 

@@ -11,7 +11,6 @@ import { SessionProvider } from 'next-auth/react'
 import { EcosystemProviders } from '@components/Ecosystem'
 
 import '../styles/globals.css'
-import { SeiProvider } from '@components/wallets/Sei'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@components/Layout'
 import { Disclaimer } from '@components/modal/Disclaimer'
@@ -104,35 +103,33 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
               <SuiWalletProvider>
                 <EVMWalletProvider>
                   <CosmosWalletProvider>
-                    <SeiProvider>
-                      {/* WARN: EcosystemProviders might use wallet provider addresses and hence
-                 They should be inside all those providers. */}
-                      <EcosystemProviders>
-                        <Layout>
-                          <NextSeo
-                            title="Pyth Network Retrospective Airdrop"
-                            description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
-                          />
-                          <Component {...pageProps} />
-                        </Layout>
-                        <Toaster
-                          position="bottom-left"
-                          toastOptions={{
-                            style: {
-                              wordBreak: 'break-word',
-                            },
-                          }}
-                          reverseOrder={false}
+                    {/* WARN: EcosystemProviders might use wallet provider addresses and hence
+                They should be inside all those providers. */}
+                    <EcosystemProviders>
+                      <Layout>
+                        <NextSeo
+                          title="Pyth Network Retrospective Airdrop"
+                          description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
                         />
-                        <Disclaimer
-                          showModal={!disclaimerWasRead}
-                          onAgree={() => {
-                            DisclaimerCheckStore.set('true')
-                            setDisclaimerWasRead(true)
-                          }}
-                        />
-                      </EcosystemProviders>
-                    </SeiProvider>
+                        <Component {...pageProps} />
+                      </Layout>
+                      <Toaster
+                        position="bottom-left"
+                        toastOptions={{
+                          style: {
+                            wordBreak: 'break-word',
+                          },
+                        }}
+                        reverseOrder={false}
+                      />
+                      <Disclaimer
+                        showModal={!disclaimerWasRead}
+                        onAgree={() => {
+                          DisclaimerCheckStore.set('true')
+                          setDisclaimerWasRead(true)
+                        }}
+                      />
+                    </EcosystemProviders>
                   </CosmosWalletProvider>
                 </EVMWalletProvider>
               </SuiWalletProvider>
