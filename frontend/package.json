@@ -52,7 +52,7 @@
     "wagmi": "^1.4.7"
   },
   "devDependencies": {
-    "@coral-xyz/spl-token": "^0.27.0",
+    "@coral-xyz/spl-token": "^0.29.0",
     "@next/bundle-analyzer": "^14.0.1",
     "@tailwindcss/typography": "^0.5.2",
     "@types/bn.js": "^5.1.1",
