@@ -1,12 +1,12 @@
 import { Box } from '@components/Box'
-import { Title } from '@components/Title'
+import { BoxTitle } from '@components/BoxTitle'
 import { ProceedButton } from '@components/buttons'
 
 export const Welcome = ({ onProceed }: { onProceed: () => void }) => {
   return (
     <>
       <Box>
-        <Title> Welcome to the Pyth Airdrop</Title>
+        <BoxTitle> Welcome to the Pyth Airdrop</BoxTitle>
         <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
           <p className="mb-6">
             As part of the Pyth Network’s recent governance initiative, PYTH

@@ -22,6 +22,7 @@ module.exports = {
       lg: ['24px', '30px'],
       xl: ['59px', '1.1'],
     },
+
     colors: {
       pythPurple: '#7142CF',
       black: '#000',
@@ -31,6 +32,7 @@ module.exports = {
       light: '#fff',
       white: '#fff',
       'light-35': 'rgba(255, 255, 255, .35)',
+      'light-25': 'rgba(255, 255, 255, .25)',
       dark: '#000',
       'dark-300': 'rgba(0, 0, 0, .3)',
       'dark-25': 'rgba(0, 0, 0, 0.25)',

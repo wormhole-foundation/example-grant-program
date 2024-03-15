@@ -14,7 +14,7 @@ export function CoinCell({
   rowTooltipContent,
 }: CoinCellProps) {
   return (
-    <td className=" border-l border-light-35 bg-dark-25">
+    <td className=" border-l border-light-25 bg-dark-25">
       <Tooltip content={rowTooltipContent} placement={'right'}>
         <span
           className={classNames(

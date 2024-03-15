@@ -5,7 +5,7 @@ import { useActivity } from '@components/Ecosystem/ActivityProvider'
 import { BackButton, ProceedButton } from '@components/buttons'
 import { useCallback, useEffect, useState } from 'react'
 import { StepProps } from './common'
-import { Title } from '@components/Title'
+import { BoxTitle } from '@components/BoxTitle'
 
 export const PastActivity = ({ onBack, onProceed }: StepProps) => {
   const { activity, setActivity } = useActivity()
@@ -33,7 +33,7 @@ export const PastActivity = ({ onBack, onProceed }: StepProps) => {
   return (
     <>
       <Box>
-        <Title> {`Let's Review Your Activity`}</Title>
+        <BoxTitle> {`Let's Review Your Activity`}</BoxTitle>
         <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
           <p className="mb-6">
             Please check the following boxes below corresponding to your wallet
