@@ -9,6 +9,11 @@ use {
         ClaimInfo,
         ErrorCode,
         SolanaHasher,
+        pythnet_sdk_cpy::{
+            MerklePath,
+            MerkleRoot,
+            MerkleTree,
+        },
     },
     anchor_lang::{
         prelude::{
@@ -50,11 +55,6 @@ use {
             Token,
             TokenAccount,
         },
-    },
-    pythnet_sdk::accumulators::merkle::{
-        MerklePath,
-        MerkleRoot,
-        MerkleTree,
     },
     solana_program_test::{
         BanksClient,
@@ -296,6 +296,7 @@ impl DispenserSimulator {
             funder: self.genesis_keypair.pubkey(),
             max_transfer: max_transfer_override.unwrap_or(u64::MAX),
         };
+        println!("instruction_data: {:?}", instruction_data.data().len());
         let instruction =
             Instruction::new_with_bytes(crate::id(), &instruction_data.data(), accounts);
         self.process_ix(&[instruction], &vec![]).await

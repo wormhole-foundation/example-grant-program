@@ -3,12 +3,12 @@ use {
         ClaimInfo,
         Identity,
         SolanaHasher,
+        pythnet_sdk_cpy::{
+            Accumulator,
+            MerkleTree
+        },
     },
     anchor_lang::AnchorSerialize,
-    pythnet_sdk::accumulators::{
-        merkle::MerkleTree,
-        Accumulator,
-    },
     solana_sdk::pubkey,
 };
 

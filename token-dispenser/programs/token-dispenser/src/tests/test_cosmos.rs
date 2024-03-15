@@ -12,12 +12,12 @@ use {
         ErrorCode,
         Identity,
         IdentityCertificate,
+        pythnet_sdk_cpy::Hasher,
     },
     anchor_lang::{
         error,
         prelude::Pubkey,
     },
-    pythnet_sdk::hashers::Hasher,
     rand::seq::SliceRandom,
     solana_sdk::hash::hashv,
     std::marker::PhantomData,

@@ -131,18 +131,12 @@ impl Ed25519InstructionData {
 }
 
 impl AnchorDeserialize for Ed25519InstructionData {
-    fn deserialize(buf: &mut &[u8]) -> std::result::Result<Ed25519InstructionData, std::io::Error> {
-        let header = Ed25519InstructionHeader::deserialize(buf)?;
-        let pubkey = Ed25519Pubkey::deserialize(buf)?;
-        let signature = Ed25519Signature::deserialize(buf)?;
-
-        let mut message: Vec<u8> = vec![];
-        if buf.len() < header.message_data_size as usize {
-            return Err(std::io::Error::from(std::io::ErrorKind::UnexpectedEof));
-        }
-
-        message.extend_from_slice(&buf[..header.message_data_size as usize]);
-        *buf = &buf[header.message_data_size as usize..];
+    fn deserialize_reader<R: std::io::Read>(reader: &mut R) -> std::result::Result<Self, std::io::Error> {
+        let header = Ed25519InstructionHeader::deserialize_reader(reader)?;
+        let pubkey = Ed25519Pubkey::deserialize_reader(reader)?;
+        let signature = Ed25519Signature::deserialize_reader(reader)?;
+        let mut message: Vec<u8> = vec![0u8; header.message_data_size as usize];
+        reader.read_exact(&mut message)?;
         Ok(Ed25519InstructionData {
             header,
             pubkey,
@@ -305,7 +299,7 @@ pub fn test_signature_verification() {
             &0,
         )
         .unwrap_err(),
-        BorshIoError("unexpected end of file".to_string()).into()
+        BorshIoError("failed to fill whole buffer".to_string()).into()
     );
 }
 

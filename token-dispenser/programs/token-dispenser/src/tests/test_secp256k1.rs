@@ -13,15 +13,12 @@ use {
         },
         Identity,
         IdentityCertificate,
+        pythnet_sdk_cpy::{Hasher, HasherKeccak256},
     },
     anchor_lang::{
         prelude::Pubkey,
         solana_program::secp256k1_program::ID as SECP256K1_ID,
         AnchorSerialize,
-    },
-    pythnet_sdk::hashers::{
-        keccak256::Keccak256,
-        Hasher,
     },
     solana_program_test::tokio,
     solana_sdk::instruction::Instruction,
@@ -31,7 +28,7 @@ use {
 /// Creates an Ethereum address from a secp256k1 public key.
 pub fn construct_evm_pubkey(pubkey: &libsecp256k1::PublicKey) -> EvmPubkey {
     let mut addr = [0u8; EvmPubkey::LEN];
-    addr.copy_from_slice(&Keccak256::hashv(&[&pubkey.serialize()[1..]])[12..]);
+    addr.copy_from_slice(&HasherKeccak256::hashv(&[&pubkey.serialize()[1..]])[12..]);
     assert_eq!(addr.len(), EvmPubkey::LEN);
     addr.into()
 }
@@ -66,7 +63,7 @@ impl<T: Secp256k1TestMessage, U: Hasher> Secp256k1TestIdentityCertificate<T, U> 
     }
 }
 
-impl<T: Secp256k1TestMessage> Secp256k1TestIdentityCertificate<T, Keccak256> {
+impl<T: Secp256k1TestMessage> Secp256k1TestIdentityCertificate<T, HasherKeccak256> {
     pub fn as_instruction(&self, instruction_index: u8, valid_signature: bool) -> Instruction {
         let header = Secp256k1InstructionHeader::expected_header(
             self.message.get_message_length().try_into().unwrap(),
@@ -96,15 +93,15 @@ impl<T: Secp256k1TestMessage> Secp256k1TestIdentityCertificate<T, Keccak256> {
     }
 }
 
-impl From<Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256>> for Identity {
-    fn from(val: Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256>) -> Self {
+impl From<Secp256k1TestIdentityCertificate<EvmPrefixedMessage, HasherKeccak256>> for Identity {
+    fn from(val: Secp256k1TestIdentityCertificate<EvmPrefixedMessage, HasherKeccak256>) -> Self {
         Identity::Evm {
             pubkey: val.recover_as_evm_address(),
         }
     }
 }
 
-impl Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256> {
+impl Secp256k1TestIdentityCertificate<EvmPrefixedMessage, HasherKeccak256> {
     pub fn as_proof_of_identity(&self, verification_instruction_index: u8) -> IdentityCertificate {
         IdentityCertificate::Evm {
             pubkey: self.recover_as_evm_address(),
@@ -112,7 +109,7 @@ impl Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256> {
         }
     }
 }
-impl Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256> {
+impl Secp256k1TestIdentityCertificate<EvmPrefixedMessage, HasherKeccak256> {
     pub fn random(claimant: &Pubkey) -> Self {
         let message = EvmPrefixedMessage::from(get_expected_payload(claimant).as_str());
         let secret = libsecp256k1::SecretKey::random(&mut rand::thread_rng());
@@ -128,8 +125,8 @@ impl Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256> {
 
 #[tokio::test]
 pub async fn test_verify_signed_message_onchain() {
-    let signed_message: Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256> =
-        Secp256k1TestIdentityCertificate::<EvmPrefixedMessage, Keccak256>::random(
+    let signed_message: Secp256k1TestIdentityCertificate<EvmPrefixedMessage, HasherKeccak256> =
+        Secp256k1TestIdentityCertificate::<EvmPrefixedMessage, HasherKeccak256>::random(
             &Pubkey::new_unique(),
         );
 

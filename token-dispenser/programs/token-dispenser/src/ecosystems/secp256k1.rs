@@ -1,3 +1,5 @@
+//taken from pythnet sdk and adjusted for anchor 0.29
+// see https://github.com/pyth-network/pyth-crosschain/tree/main/pythnet/pythnet_sdk
 use {
     super::cosmos::UncompressedSecp256k1Pubkey,
     crate::ErrorCode,
@@ -127,22 +129,17 @@ impl Secp256k1InstructionData {
     }
 }
 impl AnchorDeserialize for Secp256k1InstructionData {
-    fn deserialize(
-        buf: &mut &[u8],
-    ) -> std::result::Result<Secp256k1InstructionData, std::io::Error> {
-        let header = Secp256k1InstructionHeader::deserialize(buf)?;
-        let eth_address = EvmPubkey::deserialize(buf)?;
-        let signature = Secp256k1Signature::deserialize(buf)?;
+    fn deserialize_reader<R: std::io::Read>(reader: &mut R) -> std::result::Result<Self, std::io::Error> {
+        let header = Secp256k1InstructionHeader::deserialize_reader(reader)?;
+        let eth_address = EvmPubkey::deserialize_reader(reader)?;
+        let signature = Secp256k1Signature::deserialize_reader(reader)?;
 
-        let recovery_id = u8::deserialize(buf)?;
-        let mut message: Vec<u8> = vec![];
-        if buf.len() < header.message_data_size as usize {
-            return Err(std::io::Error::from(std::io::ErrorKind::UnexpectedEof));
-        }
+        let mut recovery_id_buf = [0u8; 1];
+        reader.read_exact(&mut recovery_id_buf)?;
+        let recovery_id = recovery_id_buf[0];
 
-        message.extend_from_slice(&buf[..header.message_data_size as usize]);
-
-        *buf = &buf[header.message_data_size as usize..];
+        let mut message: Vec<u8> = vec![0u8; header.message_data_size as usize];
+        reader.read_exact(&mut message)?;
         Ok(Secp256k1InstructionData {
             header,
             eth_address,
@@ -152,7 +149,6 @@ impl AnchorDeserialize for Secp256k1InstructionData {
         })
     }
 }
-
 
 impl AnchorSerialize for Secp256k1InstructionData {
     fn serialize<W: std::io::Write>(
@@ -167,7 +163,6 @@ impl AnchorSerialize for Secp256k1InstructionData {
         Ok(())
     }
 }
-
 
 /** Cosmos uses a different signing algorith than Evm for signing
  * messages. Instead of using Keccak256, Cosmos uses SHA256. This prevents
@@ -330,7 +325,7 @@ pub fn test_signature_verification() {
             &0,
         )
         .unwrap_err(),
-        BorshIoError("unexpected end of file".to_string()).into()
+        BorshIoError("failed to fill whole buffer".to_string()).into()
     );
 }
 

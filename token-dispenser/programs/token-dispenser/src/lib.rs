@@ -57,13 +57,11 @@ use {
             SuiMessage,
         },
     },
-    pythnet_sdk::{
-        accumulators::merkle::{
-            MerklePath,
-            MerkleRoot,
-            MerkleTree,
-        },
-        hashers::Hasher,
+    pythnet_sdk_cpy::{
+        MerklePath,
+        MerkleRoot,
+        MerkleTree,
+        Hasher,
     },
 };
 
@@ -71,6 +69,8 @@ use {
 mod tests;
 
 mod ecosystems;
+
+mod pythnet_sdk_cpy;
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
@@ -93,7 +93,7 @@ pub mod token_dispenser {
     ) -> Result<()> {
         require_keys_neq!(dispenser_guard, Pubkey::default());
         let config: &mut Account<'_, Config> = &mut ctx.accounts.config;
-        config.bump = *ctx.bumps.get("config").unwrap();
+        config.bump = ctx.bumps.config; //.get("config").unwrap();
         config.merkle_root = merkle_root;
         config.dispenser_guard = dispenser_guard;
         config.mint = ctx.accounts.mint.key();
@@ -545,7 +545,6 @@ pub fn checked_create_claim_receipt<'info>(
     remaining_accounts: &[AccountInfo<'info>],
 ) -> Result<()> {
     let (receipt_pubkey, bump) = get_receipt_pda(leaf);
-
 
     // The claim receipt accounts should appear in remaining accounts in the same order as the claim certificates
     let claim_receipt_account = &remaining_accounts[index];
