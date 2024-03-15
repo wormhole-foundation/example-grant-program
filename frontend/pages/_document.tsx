@@ -7,11 +7,7 @@ class CustomDocument extends Document {
       <Html>
         <Head>
           <link
-            href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&family=Urbanist:wght@400;600;700&display=swap"
-            rel="stylesheet"
-          />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;600&family=Red+Hat+Mono&family=Red+Hat+Text&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300&family=IBM+Plex+Mono:wght@300;400;700&family=IBM+Plex+Sans:wght@300;400;700&display=swap"
             rel="stylesheet"
           />
           <link href="favicon.png" rel="icon" id="faviconTag" />

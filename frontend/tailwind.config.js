@@ -79,9 +79,9 @@ module.exports = {
       robotoMono: 'roboto-mono, monospace',
       inter: 'inter, sans-serif',
       poppins: 'poppins, sans-serif',
-      body: 'Urbanist, sans-serif',
+      body: 'IBM Plex Sans, sans-serif',
       mono: 'IBM Plex Mono, monospace',
-      header: ["'Red Hat Display'", 'sans-serif'],
+      header: ["'Chakra Petch'", 'sans-serif'],
       body: ["'Red Hat Text'", 'sans-serif'],
     },
 

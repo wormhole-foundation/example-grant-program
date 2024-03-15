@@ -142,3 +142,11 @@ html::-webkit-scrollbar-thumb {
   background-color: #e6dafe;
   border-radius: 3px;
 }
+
+body {
+  background-image: url('../images/bg.webp'), url('../images/bg-svg.svg');
+  background-position: center bottom, center bottom;
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, contain;
+  min-height: 100vh;
+}
