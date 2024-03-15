@@ -26,7 +26,7 @@ const Tooltip = ({
       hideOnClick={false}
       content={
         <div
-          className={`rounded border border-darkGray3 bg-darkGray p-3 text-xs leading-snug text-white shadow-md ${className}`}
+          className={` border border-white border-opacity-25 bg-black bg-opacity-80 p-3 text-xs leading-snug text-white shadow-md ${className}`}
         >
           {content}
         </div>
