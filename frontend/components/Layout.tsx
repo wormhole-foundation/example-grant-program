@@ -39,17 +39,16 @@ export const Layout = ({ children }: LayoutProps) => {
         <div className=" relative flex items-center justify-between  gap-2 px-4 py-3 lg:py-6 lg:px-10">
           <Link
             href="/"
-            className="border-white flex h-12 items-center justify-center border-opacity-60 outline-none sm:border sm:px-4 md:px-[29px]"
+            className="flex h-12 items-center justify-center border-light border-opacity-60 outline-none sm:border sm:px-4 md:px-[29px]"
           >
             <Image
               src="/wormhole-white.svg"
               alt="wormhole logo"
-              layout="intrinsic"
               width={130}
               height={24}
             />
           </Link>
-          <div className="border-white flex h-12 flex-1 items-center justify-end border-opacity-60 sm:border sm:px-4 md:px-[29px] ">
+          <div className="flex h-12 flex-1 items-center justify-end border-light border-opacity-60 sm:border sm:px-4 md:px-[29px] ">
             <span className="text-right">
               Please verify that the site URL is:{' '}
               <strong> https://airdrop.wormhole.com</strong>

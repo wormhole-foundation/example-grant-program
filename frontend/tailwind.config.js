@@ -22,26 +22,14 @@ module.exports = {
       lg: ['24px', '30px'],
       xl: ['59px', '1.1'],
     },
-    textColor: {
-      white: 'rgba(255,255,255,.87)',
-      pink: '#D7A5FF',
-      scampi: '#696890',
-      darkSlateBlue: '#42428E',
-      lavenderGray: '#BABAD2',
-
-      light: '#E6DAFE',
-      dark: '#110F23',
-      'light-50': 'rgba(230, 218, 254, .5)',
-    },
     colors: {
       pythPurple: '#7142CF',
       black: '#000',
       mediumSlateBlue: '#8246FA',
-      darkSlateBlue: '#42428E',
-   
       transparent: 'transparent',
       current: 'currentColor',
       light: '#fff',
+      white: '#fff',
       'light-35': 'rgba(255, 255, 255, .35)',
       dark: '#000',
       'dark-300': 'rgba(0, 0, 0, .3)',
@@ -54,10 +42,10 @@ module.exports = {
       darkGray5: '#44415E',
     },
     fontFamily: {
-      body: 'IBM Plex Sans, sans-serif',
-      mono: 'IBM Plex Mono, monospace',
+      body: ["'IBM Plex Sans'", 'sans-serif'],
+      mono: ["'IBM Plex Mono'", 'monospace'],
       header: ["'Chakra Petch'", 'sans-serif'],
-      body: ["'Red Hat Text'", 'sans-serif'],
+      body: ["'IBM Plex Sans'", 'sans-serif'],
     },
 
     extend: {
