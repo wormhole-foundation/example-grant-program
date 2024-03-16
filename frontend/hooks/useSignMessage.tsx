@@ -1,3 +1,4 @@
+import { useWallet as useAlgorandWallet } from '@components/Ecosystem/AlgorandProvider'
 import { useWallet as useAptosWallet } from '@aptos-labs/wallet-adapter-react'
 import { useChainWallet } from '@cosmos-kit/react-lite'
 import { useWalletKit } from '@mysten/wallet-kit'
@@ -16,8 +17,6 @@ import { Ecosystem } from '@components/Ecosystem'
 import { fetchDiscordSignedMessage } from 'utils/api'
 import { useTokenDispenserProvider } from './useTokenDispenserProvider'
 import { ChainName } from '@components/wallets/Cosmos'
-import { PeraWalletConnect } from '@perawallet/connect'
-import { PeraWalletArbitraryData } from '@perawallet/connect/dist/util/model/peraWalletModels'
 
 // SignMessageFn signs the message and returns it.
 // It will return undefined:
@@ -30,22 +29,22 @@ export type SignMessageFn = (
 ) => Promise<SignedMessage | undefined>
 
 // This hook returns a function to sign message for the Algorand wallet.
-export function useAlgorandSignMessage(): SignMessageFn {
-  // TODO: Replace with a provider
-  const peraWallet = new PeraWalletConnect()
-  const account = peraWallet.connector?.accounts[0];
+export function useAlgorandSignMessage(nonce = 'nonce'): SignMessageFn {
+  const { signMessage, connected, account } = useAlgorandWallet()
 
   const signMessageCb = useCallback(
     async (payload: string) => {
       try {
-        if (peraWallet.isConnected === false || !account) return
-        const signature = await peraWallet.signData([{ data: Buffer.from(payload, "utf-8"), message: payload }], account)
-        return algorandBuildSignedMessage(account, Buffer.from(signature[0]).toString("hex"), payload)
+        if (connected === false || !account) return
+
+        const signature = await signMessage(payload)
+
+        return algorandBuildSignedMessage(account, signature, payload)
       } catch (e) {
         console.error(e)
       }
     },
-    [peraWallet, account]
+    [connected, account, signMessage, nonce]
   )
   return signMessageCb
 }

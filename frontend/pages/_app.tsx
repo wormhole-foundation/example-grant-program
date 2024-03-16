@@ -1,4 +1,5 @@
 import { AptosWalletProvider } from '@components/wallets/Aptos'
+import { AlgorandWalletProvider } from '@components/Ecosystem/AlgorandProvider'
 import { SolanaWalletProvider } from '@components/wallets/Solana'
 import type { AppProps } from 'next/app'
 import { FC, useEffect, useLayoutEffect, useMemo, useState } from 'react'
@@ -98,41 +99,43 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
       {isVersionChecked ? (
         <SessionProvider>
           <SolanaWalletProvider>
-            <AptosWalletProvider>
-              <SuiWalletProvider>
-                <EVMWalletProvider>
-                  <CosmosWalletProvider>
-                      {/* WARN: EcosystemProviders might use wallet provider addresses and hence
-                 They should be inside all those providers. */}
-                      <EcosystemProviders>
-                        <Layout>
-                          <NextSeo
-                            title="Pyth Network Retrospective Airdrop"
-                            description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
+            <AlgorandWalletProvider>
+              <AptosWalletProvider>
+                <SuiWalletProvider>
+                  <EVMWalletProvider>
+                    <CosmosWalletProvider>
+                        {/* WARN: EcosystemProviders might use wallet provider addresses and hence
+                  They should be inside all those providers. */}
+                        <EcosystemProviders>
+                          <Layout>
+                            <NextSeo
+                              title="Pyth Network Retrospective Airdrop"
+                              description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
+                            />
+                            <Component {...pageProps} />
+                          </Layout>
+                          <Toaster
+                            position="bottom-left"
+                            toastOptions={{
+                              style: {
+                                wordBreak: 'break-word',
+                              },
+                            }}
+                            reverseOrder={false}
                           />
-                          <Component {...pageProps} />
-                        </Layout>
-                        <Toaster
-                          position="bottom-left"
-                          toastOptions={{
-                            style: {
-                              wordBreak: 'break-word',
-                            },
-                          }}
-                          reverseOrder={false}
-                        />
-                        <Disclaimer
-                          showModal={!disclaimerWasRead}
-                          onAgree={() => {
-                            DisclaimerCheckStore.set('true')
-                            setDisclaimerWasRead(true)
-                          }}
-                        />
-                      </EcosystemProviders>
-                  </CosmosWalletProvider>
-                </EVMWalletProvider>
-              </SuiWalletProvider>
-            </AptosWalletProvider>
+                          <Disclaimer
+                            showModal={!disclaimerWasRead}
+                            onAgree={() => {
+                              DisclaimerCheckStore.set('true')
+                              setDisclaimerWasRead(true)
+                            }}
+                          />
+                        </EcosystemProviders>
+                    </CosmosWalletProvider>
+                  </EVMWalletProvider>
+                </SuiWalletProvider>
+              </AptosWalletProvider>
+            </AlgorandWalletProvider>
           </SolanaWalletProvider>
         </SessionProvider>
       ) : (

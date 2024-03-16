@@ -77,7 +77,10 @@ impl AlgorandAddress {
 /* 
 
 If we need to know that an address came from a public key, Sha512/256 hashing is required. 
-If we only need to know that a public key comes from an address, we can omit hashing and just take the first 32 bytes of the address because an Algorand address is just a 32 byte ed25519 pubkey with a 4 byte checksum at the end. */
+If we only need to know that a public key comes from an address, we can omit hashing and just take the first 32 bytes of the address because an Algorand address is just a 32 byte ed25519 pubkey with a 4 byte checksum at the end.
+
+*/
+
 impl From<Ed25519Pubkey> for AlgorandAddress {
     fn from(val: Ed25519Pubkey) -> Self {
         let mut hasher = sha2::Sha512_256::new();

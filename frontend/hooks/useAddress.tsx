@@ -1,4 +1,4 @@
-import { PeraWalletConnect } from '@perawallet/connect'
+import { useWallet as useAlgorandWallet } from '@components/Ecosystem/AlgorandProvider'
 import { useWallet as useAptosWallet } from '@aptos-labs/wallet-adapter-react'
 import { ChainName } from '@components/wallets/Cosmos'
 import { useChainWallet } from '@cosmos-kit/react-lite'
@@ -7,10 +7,8 @@ import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react'
 import { useAccount } from 'wagmi'
 
 export function useAlgorandAddress(): string | undefined {
-  // TODO: Replace with a provider
-  let { connector } = new PeraWalletConnect();
-  return connector?.accounts[0];
-
+  const { account } = useAlgorandWallet()
+  return account || undefined
 }
 
 export function useAptosAddress(): string | undefined {
