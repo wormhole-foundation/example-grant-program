@@ -1,15 +1,12 @@
 use {
     crate::{
         ecosystems::{
-            aptos::AptosMessage,
-            discord::DiscordMessage,
-            ed25519::{
+            algorand::AlgorandMessage, aptos::AptosMessage, discord::DiscordMessage, ed25519::{
                 Ed25519InstructionData,
                 Ed25519InstructionHeader,
                 Ed25519Pubkey,
                 Ed25519TestMessage,
-            },
-            sui::SuiMessage,
+            }, sui::SuiMessage
         },
         tests::dispenser_simulator::DispenserSimulator,
         Identity,
@@ -85,6 +82,23 @@ impl<T: Ed25519TestMessage> Ed25519TestIdentityCertificate<T> {
             program_id: ED25519_ID,
             accounts:   vec![],
             data:       instruction_data.try_to_vec().unwrap(),
+        }
+    }
+}
+
+impl From<Ed25519TestIdentityCertificate<AlgorandMessage>> for Identity {
+    fn from(val: Ed25519TestIdentityCertificate<AlgorandMessage>) -> Self {
+        Identity::Aptos {
+            address: Ed25519Pubkey::from(val.public_key.to_bytes()).into(),
+        }
+    }
+}
+
+impl Ed25519TestIdentityCertificate<AlgorandMessage> {
+    pub fn as_proof_of_identity(&self, verification_instruction_index: u8) -> IdentityCertificate {
+        IdentityCertificate::Algorand {
+            pubkey: self.public_key.to_bytes().into(),
+            verification_instruction_index,
         }
     }
 }

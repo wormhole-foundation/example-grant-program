@@ -6,12 +6,12 @@ import { SignatureProvider } from './SignatureProvider'
 export enum Ecosystem {
   SOLANA = 'Solana',
   EVM = 'EVM',
+  ALGORAND = 'Algorand',
   APTOS = 'Aptos',
   SUI = 'Sui',
   INJECTIVE = 'Injective',
   OSMOSIS = 'Osmosis',
-  NEUTRON = 'Neutron',
-  SEI = 'Sei',
+  TERRA = 'Terra',
   DISCORD = 'Pyth Discord',
 }
 

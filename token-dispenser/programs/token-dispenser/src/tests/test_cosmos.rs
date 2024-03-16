@@ -92,11 +92,14 @@ pub fn test_authorized_cosmos_chain_ids() {
     let secret = libsecp256k1::SecretKey::random(&mut rand::thread_rng());
     let public_key = libsecp256k1::PublicKey::from_secret_key(&secret);
     assert!(UncompressedSecp256k1Pubkey::from(public_key.serialize())
-        .into_bech32("neutron")
+        .into_bech32("osmo")
+        .is_ok());
+    assert!(UncompressedSecp256k1Pubkey::from(public_key.serialize())
+        .into_bech32("terra")
         .is_ok());
     assert_eq!(
         UncompressedSecp256k1Pubkey::from(public_key.serialize())
-            .into_bech32("cosmos")
+            .into_bech32("sei")
             .unwrap_err(),
         error!(ErrorCode::UnauthorizedCosmosChainId)
     );

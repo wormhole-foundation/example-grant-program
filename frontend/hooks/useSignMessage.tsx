@@ -1,3 +1,4 @@
+import { useWallet as useAlgorandWallet } from '@components/Ecosystem/AlgorandProvider'
 import { useWallet as useAptosWallet } from '@aptos-labs/wallet-adapter-react'
 import { useChainWallet } from '@cosmos-kit/react-lite'
 import { useWalletKit } from '@mysten/wallet-kit'
@@ -10,12 +11,12 @@ import {
   cosmwasmBuildSignedMessage,
   aptosBuildSignedMessage,
   suiBuildSignedMessage,
+  algorandBuildSignedMessage,
 } from 'claim_sdk/ecosystems/signatures'
 import { Ecosystem } from '@components/Ecosystem'
 import { fetchDiscordSignedMessage } from 'utils/api'
 import { useTokenDispenserProvider } from './useTokenDispenserProvider'
 import { ChainName } from '@components/wallets/Cosmos'
-import { useSeiWalletContext } from '@components/wallets/Sei'
 
 // SignMessageFn signs the message and returns it.
 // It will return undefined:
@@ -26,6 +27,27 @@ import { useSeiWalletContext } from '@components/wallets/Sei'
 export type SignMessageFn = (
   payload: string
 ) => Promise<SignedMessage | undefined>
+
+// This hook returns a function to sign message for the Algorand wallet.
+export function useAlgorandSignMessage(nonce = 'nonce'): SignMessageFn {
+  const { signMessage, connected, account } = useAlgorandWallet()
+
+  const signMessageCb = useCallback(
+    async (payload: string) => {
+      try {
+        if (connected === false || !account) return
+
+        const signature = await signMessage(payload)
+
+        return algorandBuildSignedMessage(account, signature, payload)
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    [connected, account, signMessage, nonce]
+  )
+  return signMessageCb
+}
 
 // This hook returns a function to sign message for the Aptos wallet.
 export function useAptosSignMessage(nonce = 'nonce'): SignMessageFn {
@@ -185,32 +207,28 @@ export function useDiscordSignMessage(): SignMessageFn {
 
 // A wrapper around all the sign message hooks
 export function useSignMessage(ecosystem: Ecosystem): SignMessageFn {
+  const algorandSignMessageFn = useAlgorandSignMessage()
   const aptosSignMessageFn = useAptosSignMessage()
   const evmSignMessageFn = useEVMSignMessage()
   const osmosisSignMessageFn = useCosmosSignMessage('osmosis')
-  const neutronSignMessageFn = useCosmosSignMessage('neutron')
-  const { connectedSeiWallet } = useSeiWalletContext()
-  const seiSignMessageFn = useCosmosSignMessage(
-    'sei',
-    connectedSeiWallet ?? undefined
-  )
+  const terraSignMessageFn = useCosmosSignMessage('terra')
   const suiSignMessageFn = useSuiSignMessage()
   const solanaSignMessageFn = useSolanaSignMessage()
   const discordSignMessageFn = useDiscordSignMessage()
 
   switch (ecosystem) {
+    case Ecosystem.ALGORAND:
+      return algorandSignMessageFn
     case Ecosystem.APTOS:
       return aptosSignMessageFn
     case Ecosystem.EVM:
       return evmSignMessageFn
     case Ecosystem.INJECTIVE:
       return evmSignMessageFn
-    case Ecosystem.NEUTRON:
-      return neutronSignMessageFn
+    case Ecosystem.TERRA:
+      return terraSignMessageFn
     case Ecosystem.OSMOSIS:
       return osmosisSignMessageFn
-    case Ecosystem.SEI:
-      return seiSignMessageFn
     case Ecosystem.SOLANA:
       return solanaSignMessageFn
     case Ecosystem.SUI:

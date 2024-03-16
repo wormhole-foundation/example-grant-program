@@ -55,7 +55,7 @@ const DISCORD_DEV_CLAIMS = 'discord_dev.csv'
 
 const NFT_CLAIMS = 'nft.csv'
 
-const COSMWASM_CHAIN_LIST = ['neutron', 'osmosis', 'sei']
+const COSMWASM_CHAIN_LIST = ['terra', 'osmosis']
 
 function checkClaimsMatchEvmBreakdown(
   claimInfos: ClaimInfo[],

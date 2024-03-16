@@ -11,6 +11,7 @@ jq '(..|objects| select(.type? and .type.defined? and .type.defined == "Ed25519P
 jq '(..|objects| select(.type? and .type.defined? and .type.defined == "Ed25519Signature")).type |= {"array": ["u8", 64]}' |
 jq '(..|objects| select(.type? and .type.defined? and .type.defined == "SuiAddress")).type |= {"array": ["u8", 32]}' |
 jq '(..|objects| select(.type? and .type.defined? and .type.defined == "AptosAddress")).type |= {"array": ["u8", 32]}' |
+jq '(..|objects| select(.type? and .type.defined? and .type.defined == "AlgorandAddress")).type |= {"array": ["u8", 36]}' |
 # ADD EXTERNAL STRUCTS
 jq '(..|objects| select(.type? and .type.defined? and .type.defined == "MerklePath<SolanaHasher>")).type |= {"vec":{"array":["u8",20]}}' |
 jq '(..|objects| select(.type? and .type.defined? and .type.defined == "MerkleRoot<SolanaHasher>")).type |= {"array": ["u8", 20]}' |

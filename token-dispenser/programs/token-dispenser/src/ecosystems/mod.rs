@@ -6,6 +6,7 @@ use {
     },
 };
 
+pub mod algorand;
 pub mod aptos;
 pub mod cosmos;
 pub mod discord;
@@ -21,9 +22,9 @@ pub mod sui;
  * constant in the typescript sdk
  * */
 pub const AUTHORIZATION_PAYLOAD: [&str; 3] = [
-    "Pyth Grant PID:\n",
+    "W Airdrop PID:\n",
     "\nI authorize Solana wallet\n",
-    "\nto claim my token grant.\n",
+    "\nto claim my W tokens.\n",
 ];
 
 /**

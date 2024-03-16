@@ -8,6 +8,7 @@ use {
 };
 
 mod dispenser_simulator;
+mod test_algorand;
 mod test_aptos;
 mod test_claim;
 mod test_cosmos;

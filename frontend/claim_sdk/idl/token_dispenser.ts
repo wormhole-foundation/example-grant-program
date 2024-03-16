@@ -388,6 +388,20 @@ export type TokenDispenser =
             ]
           },
           {
+            "name": "Algorand",
+            "fields": [
+              {
+                "name": "address",
+                "type": {
+                  "array": [
+                    "u8",
+                    36
+                  ]
+                }
+              }
+            ]
+          },
+          {
             "name": "Solana",
             "fields": [
               {
@@ -477,7 +491,7 @@ export type TokenDispenser =
                 "type": "string"
               },
               {
-                "name": "verification_instruction_index",
+                "name": "verificationInstructionIndex",
                 "type": "u8"
               }
             ]
@@ -495,7 +509,7 @@ export type TokenDispenser =
                 }
               },
               {
-                "name": "verification_instruction_index",
+                "name": "verificationInstructionIndex",
                 "type": "u8"
               }
             ]
@@ -516,7 +530,25 @@ export type TokenDispenser =
                 }
               },
               {
-                "name": "verification_instruction_index",
+                "name": "verificationInstructionIndex",
+                "type": "u8"
+              }
+            ]
+          },
+          {
+            "name": "Algorand",
+            "fields": [
+              {
+                "name": "pubkey",
+                "type": {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                }
+              },
+              {
+                "name": "verificationInstructionIndex",
                 "type": "u8"
               }
             ]
@@ -534,7 +566,7 @@ export type TokenDispenser =
                 }
               },
               {
-                "name": "verification_instruction_index",
+                "name": "verificationInstructionIndex",
                 "type": "u8"
               }
             ]
@@ -543,7 +575,7 @@ export type TokenDispenser =
             "name": "Cosmwasm",
             "fields": [
               {
-                "name": "chain_id",
+                "name": "chainId",
                 "type": "string"
               },
               {
@@ -556,7 +588,7 @@ export type TokenDispenser =
                 }
               },
               {
-                "name": "recovery_id",
+                "name": "recoveryId",
                 "type": "u8"
               },
               {
@@ -587,7 +619,7 @@ export type TokenDispenser =
                 }
               },
               {
-                "name": "verification_instruction_index",
+                "name": "verificationInstructionIndex",
                 "type": "u8"
               }
             ]
@@ -1058,6 +1090,20 @@ export const IDL: TokenDispenser =
             ]
           },
           {
+            "name": "Algorand",
+            "fields": [
+              {
+                "name": "address",
+                "type": {
+                  "array": [
+                    "u8",
+                    36
+                  ]
+                }
+              }
+            ]
+          },
+          {
             "name": "Solana",
             "fields": [
               {
@@ -1147,7 +1193,7 @@ export const IDL: TokenDispenser =
                 "type": "string"
               },
               {
-                "name": "verification_instruction_index",
+                "name": "verificationInstructionIndex",
                 "type": "u8"
               }
             ]
@@ -1165,7 +1211,7 @@ export const IDL: TokenDispenser =
                 }
               },
               {
-                "name": "verification_instruction_index",
+                "name": "verificationInstructionIndex",
                 "type": "u8"
               }
             ]
@@ -1186,7 +1232,25 @@ export const IDL: TokenDispenser =
                 }
               },
               {
-                "name": "verification_instruction_index",
+                "name": "verificationInstructionIndex",
+                "type": "u8"
+              }
+            ]
+          },
+          {
+            "name": "Algorand",
+            "fields": [
+              {
+                "name": "pubkey",
+                "type": {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                }
+              },
+              {
+                "name": "verificationInstructionIndex",
                 "type": "u8"
               }
             ]
@@ -1204,7 +1268,7 @@ export const IDL: TokenDispenser =
                 }
               },
               {
-                "name": "verification_instruction_index",
+                "name": "verificationInstructionIndex",
                 "type": "u8"
               }
             ]
@@ -1213,7 +1277,7 @@ export const IDL: TokenDispenser =
             "name": "Cosmwasm",
             "fields": [
               {
-                "name": "chain_id",
+                "name": "chainId",
                 "type": "string"
               },
               {
@@ -1226,7 +1290,7 @@ export const IDL: TokenDispenser =
                 }
               },
               {
-                "name": "recovery_id",
+                "name": "recoveryId",
                 "type": "u8"
               },
               {
@@ -1257,7 +1321,7 @@ export const IDL: TokenDispenser =
                 }
               },
               {
-                "name": "verification_instruction_index",
+                "name": "verificationInstructionIndex",
                 "type": "u8"
               }
             ]

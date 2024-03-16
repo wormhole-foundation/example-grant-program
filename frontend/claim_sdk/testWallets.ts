@@ -20,6 +20,7 @@ import { aptosGetFullMessage } from './ecosystems/aptos'
 import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
 import { hashDiscordUserId } from '../utils/hashDiscord'
 import { getInjectiveAddress } from '../utils/getInjectiveAddress'
+import { algorandGetFullMessage } from './ecosystems/algorand'
 
 dotenv.config() // Load environment variables from .env file
 
@@ -64,6 +65,7 @@ export async function loadTestWallets(): Promise<
 > {
   const evmPrivateKeyPath = path.resolve(KEY_DIR, 'evm_private_key.json')
   const cosmosPrivateKeyPath = path.resolve(KEY_DIR, 'cosmos_private_key.json')
+  const algorandPrivateKeyPath = path.resolve(KEY_DIR, 'algorand_private_key.json')
   const aptosPrivateKeyPath = path.resolve(KEY_DIR, 'aptos_private_key.json')
   const suiPrivateKeyPath = path.resolve(KEY_DIR, 'sui_private_key.json')
 
@@ -76,6 +78,7 @@ export async function loadTestWallets(): Promise<
   const result: Record<Ecosystem, TestWallet[]> = {
     discord: [],
     solana: [],
+    algorand: [],
     evm: [],
     sui: [],
     aptos: [],
@@ -88,11 +91,11 @@ export async function loadTestWallets(): Promise<
   result['solana'] = [TestSolanaWallet.fromKeyfile(solanaPrivateKeyPath)]
   result['evm'] = [TestEvmWallet.fromKeyfile(evmPrivateKeyPath)]
   result['sui'] = [TestSuiWallet.fromKeyfile(suiPrivateKeyPath)]
+  result['algorand'] = [TestAlgorandWallet.fromKeyfile(algorandPrivateKeyPath)]
   result['aptos'] = [TestAptosWallet.fromKeyfile(aptosPrivateKeyPath)]
   result['cosmwasm'] = [
-    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'sei'),
+    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'terra'),
     await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'osmo'),
-    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'neutron'),
   ]
   result['injective'] = [TestEvmWallet.fromKeyfile(cosmosPrivateKeyPath, true)]
 
@@ -230,6 +233,24 @@ export class TestSolanaWallet implements TestWallet {
 
   async signMessage(payload: string): Promise<SignedMessage> {
     return hardDriveSignMessage(Buffer.from(payload, 'utf-8'), this.wallet)
+  }
+
+  public address(): string {
+    return this.wallet.publicKey.toBase58()
+  }
+}
+
+export class TestAlgorandWallet implements TestWallet {
+  constructor(readonly wallet: Keypair) {}
+  static fromKeyfile(keyFile: string): TestSolanaWallet {
+    const keypair = Keypair.fromSecretKey(
+      new Uint8Array(JSON.parse(fs.readFileSync(keyFile, 'utf-8')))
+    )
+    return new TestAlgorandWallet(keypair)
+  }
+
+  async signMessage(payload: string): Promise<SignedMessage> {
+    return hardDriveSignMessage(Buffer.from(algorandGetFullMessage(payload), 'utf-8'), this.wallet)
   }
 
   public address(): string {

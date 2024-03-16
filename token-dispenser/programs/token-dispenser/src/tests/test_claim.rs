@@ -207,7 +207,7 @@ pub async fn test_claim_fails_with_insufficient_funds() {
 
     simulator
         .verify_token_account_data(
-            simulator.pyth_treasury,
+            simulator.wormhole_treasury,
             total_claim_sum,
             COption::Some(get_config_pda().0),
             delegated_amount,
@@ -233,7 +233,7 @@ pub async fn test_claim_fails_with_insufficient_funds() {
 
     simulator
         .verify_token_account_data(
-            simulator.pyth_treasury,
+            simulator.wormhole_treasury,
             total_claim_sum - mock_offchain_certificates_and_claimants[0].2,
             COption::Some(get_config_pda().0),
             1,
@@ -270,7 +270,7 @@ pub async fn test_claim_fails_with_insufficient_funds() {
 
     simulator
         .verify_token_account_data(
-            simulator.pyth_treasury,
+            simulator.wormhole_treasury,
             mock_offchain_certificates_and_claimants[1].2,
             COption::Some(get_config_pda().0),
             delegated_amount,
@@ -293,7 +293,7 @@ pub async fn test_claim_fails_with_insufficient_funds() {
     }
 
     simulator
-        .verify_token_account_data(simulator.pyth_treasury, 0, COption::None, 0)
+        .verify_token_account_data(simulator.wormhole_treasury, 0, COption::None, 0)
         .await
         .unwrap();
 
@@ -336,7 +336,7 @@ pub async fn test_claim_fails_if_delegate_revoked() {
 
     simulator.revoke_treasury_delegate().await.unwrap();
     simulator
-        .verify_token_account_data(simulator.pyth_treasury, total_claim_sum, COption::None, 0)
+        .verify_token_account_data(simulator.wormhole_treasury, total_claim_sum, COption::None, 0)
         .await
         .unwrap();
 
@@ -372,7 +372,7 @@ pub async fn test_claim_fails_if_delegate_revoked() {
 
     simulator
         .verify_token_account_data(
-            simulator.pyth_treasury,
+            simulator.wormhole_treasury,
             total_claim_sum,
             COption::Some(get_config_pda().0),
             mock_offchain_certificates_and_claimants[0].2,
@@ -398,7 +398,7 @@ pub async fn test_claim_fails_if_delegate_revoked() {
 
     simulator
         .verify_token_account_data(
-            simulator.pyth_treasury,
+            simulator.wormhole_treasury,
             total_claim_sum - mock_offchain_certificates_and_claimants[0].2,
             COption::None,
             0,
