@@ -8,11 +8,7 @@ use {
     },
     crate::{
         ecosystems::{
-            aptos::AptosMessage,
-            cosmos::CosmosMessage,
-            discord::DiscordMessage,
-            evm::EvmPrefixedMessage,
-            sui::SuiMessage,
+            algorand::AlgorandMessage, aptos::AptosMessage, cosmos::CosmosMessage, discord::DiscordMessage, evm::EvmPrefixedMessage, sui::SuiMessage
         },
         get_config_pda,
         get_receipt_pda,
@@ -110,6 +106,15 @@ impl TestClaimCertificate {
         }
     }
 
+    pub fn random_algorand(claimant: &Pubkey) -> Self {
+        Self {
+            amount:                      Self::random_amount(),
+            off_chain_proof_of_identity: TestIdentityCertificate::Algorand(
+                Ed25519TestIdentityCertificate::<AlgorandMessage>::random(claimant),
+            ),
+        }
+    }
+    
     pub fn random_aptos(claimant: &Pubkey) -> Self {
         Self {
             amount:                      Self::random_amount(),
@@ -167,6 +172,7 @@ impl TestClaimCertificate {
             TestIdentityCertificate::Evm(evm) => Some(evm.as_instruction(index, true)),
             TestIdentityCertificate::Discord(discord) => Some(discord.as_instruction(index, true)),
             TestIdentityCertificate::Cosmos(_) => None,
+            TestIdentityCertificate::Algorand(algorand) => Some(algorand.as_instruction(index, true)),
             TestIdentityCertificate::Aptos(aptos) => Some(aptos.as_instruction(index, true)),
             TestIdentityCertificate::Sui(sui) => Some(sui.as_instruction(index, true)),
             TestIdentityCertificate::Solana(_) => None,
@@ -195,6 +201,7 @@ impl From<TestIdentityCertificate> for Identity {
             TestIdentityCertificate::Evm(evm) => evm.into(),
             TestIdentityCertificate::Cosmos(cosmos) => cosmos.into(),
             TestIdentityCertificate::Discord(discord) => discord.into(),
+            TestIdentityCertificate::Algorand(algorand) => algorand.into(),
             TestIdentityCertificate::Aptos(aptos) => aptos.into(),
             TestIdentityCertificate::Sui(sui) => sui.into(),
             TestIdentityCertificate::Solana(solana) => solana.into(),
@@ -209,6 +216,7 @@ impl TestIdentityCertificate {
             Self::Evm(evm) => evm.as_proof_of_identity(verification_instruction_index),
             Self::Cosmos(cosmos) => cosmos.clone().into(),
             Self::Discord(discord) => discord.as_proof_of_identity(verification_instruction_index),
+            Self::Algorand(algorand) => algorand.as_proof_of_identity(verification_instruction_index),
             Self::Aptos(aptos) => aptos.as_proof_of_identity(verification_instruction_index),
             Self::Sui(sui) => sui.as_proof_of_identity(verification_instruction_index),
             Self::Solana(solana) => solana.as_proof_of_identity(verification_instruction_index),
@@ -233,6 +241,7 @@ pub enum TestIdentityCertificate {
     Evm(Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256>),
     Discord(Ed25519TestIdentityCertificate<DiscordMessage>),
     Cosmos(Secp256k1TestIdentityCertificate<CosmosMessage, Sha256>),
+    Algorand(Ed25519TestIdentityCertificate<AlgorandMessage>),
     Aptos(Ed25519TestIdentityCertificate<AptosMessage>),
     Sui(Ed25519TestIdentityCertificate<SuiMessage>),
     Solana(SolanaTestIdentityCertificate),
@@ -258,7 +267,7 @@ pub async fn test_happy_path() {
     let (merkle_tree, merkle_items_serialized) = merkleize(merkle_items);
 
     let (config_pubkey, config_bump) = get_config_pda();
-    let treasury = simulator.pyth_treasury;
+    let treasury = simulator.wormhole_treasury;
 
     simulator
         .create_associated_token_account(

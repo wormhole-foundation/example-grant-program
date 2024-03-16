@@ -83,9 +83,9 @@ pub struct DispenserSimulator {
     pub genesis_keypair:     Keypair,
     recent_blockhash:        hash::Hash,
     pub mint_keypair:        Keypair,
-    /// also the owner/authority of `pyth_treasury`
-    pub pyth_mint_authority: Keypair,
-    pub pyth_treasury:       Pubkey,
+    /// also the owner/authority of `wormhole_treasury`
+    pub wormhole_mint_authority: Keypair,
+    pub wormhole_treasury:       Pubkey,
 }
 
 impl DispenserSimulator {
@@ -93,21 +93,21 @@ impl DispenserSimulator {
         let program_test = ProgramTest::new("token_dispenser", crate::id(), None);
         let (banks_client, genesis_keypair, recent_blockhash) = program_test.start().await;
         let mint_keypair = Keypair::new();
-        let pyth_mint_authority = Keypair::new();
-        let pyth_treasury = Keypair::new();
+        let wormhole_mint_authority = Keypair::new();
+        let wormhole_treasury = Keypair::new();
         let mut simulator = DispenserSimulator {
             banks_client,
             genesis_keypair,
             recent_blockhash,
             mint_keypair,
-            pyth_mint_authority,
-            pyth_treasury: pyth_treasury.pubkey(),
+            wormhole_mint_authority,
+            wormhole_treasury: wormhole_treasury.pubkey(),
         };
 
         simulator
             .create_mint(
                 &copy_keypair(&simulator.mint_keypair),
-                &simulator.pyth_mint_authority.pubkey(),
+                &simulator.wormhole_mint_authority.pubkey(),
                 6,
             )
             .await
@@ -116,8 +116,8 @@ impl DispenserSimulator {
         simulator
             .create_token_account(
                 simulator.mint_keypair.pubkey(),
-                &copy_keypair(&simulator.pyth_mint_authority),
-                &pyth_treasury,
+                &copy_keypair(&simulator.wormhole_mint_authority),
+                &wormhole_treasury,
             )
             .await
             .unwrap();
@@ -134,6 +134,7 @@ impl DispenserSimulator {
             TestClaimCertificate::random_evm(claimant),
             TestClaimCertificate::random_cosmos(claimant),
             TestClaimCertificate::random_discord(claimant, &keypair),
+            TestClaimCertificate::random_algorand(claimant),
             TestClaimCertificate::random_aptos(claimant),
             TestClaimCertificate::random_sui(claimant),
             TestClaimCertificate::random_solana(claimant),
@@ -182,7 +183,7 @@ impl DispenserSimulator {
 
     pub async fn setup_treasury(&mut self, mint_amount: u64) -> Result<(), BanksClientError> {
         self.mint_to_treasury(mint_amount).await.unwrap();
-        self.verify_token_account_data(self.pyth_treasury, mint_amount, COption::None, 0)
+        self.verify_token_account_data(self.wormhole_treasury, mint_amount, COption::None, 0)
             .await
             .unwrap();
 
@@ -191,7 +192,7 @@ impl DispenserSimulator {
             .unwrap();
 
         self.verify_token_account_data(
-            self.pyth_treasury,
+            self.wormhole_treasury,
             mint_amount,
             COption::Some(get_config_pda().0),
             mint_amount,
@@ -205,13 +206,13 @@ impl DispenserSimulator {
         let mint_to_ix = &[mint_to(
             &Token::id(),
             &self.mint_keypair.pubkey(),
-            &self.pyth_treasury,
-            &self.pyth_mint_authority.pubkey(),
+            &self.wormhole_treasury,
+            &self.wormhole_mint_authority.pubkey(),
             &[],
             mint_amount,
         )
         .unwrap()];
-        self.process_ix(mint_to_ix, &vec![&copy_keypair(&self.pyth_mint_authority)])
+        self.process_ix(mint_to_ix, &vec![&copy_keypair(&self.wormhole_mint_authority)])
             .await
     }
 
@@ -259,7 +260,7 @@ impl DispenserSimulator {
             Some(self.genesis_keypair.pubkey()),
             vec![
                 get_config_pda().0,
-                self.pyth_treasury,
+                self.wormhole_treasury,
                 self.mint_keypair.pubkey(),
                 spl_token::id(),
                 system_program::System::id(),
@@ -286,7 +287,7 @@ impl DispenserSimulator {
         let accounts = accounts::Initialize::populate(
             self.genesis_keypair.pubkey(),
             mint_pubkey_override.unwrap_or(self.mint_keypair.pubkey()),
-            treasury_pubkey_override.unwrap_or(self.pyth_treasury),
+            treasury_pubkey_override.unwrap_or(self.wormhole_treasury),
             address_lookup_table,
         )
         .to_account_metas(None);
@@ -371,9 +372,9 @@ impl DispenserSimulator {
     ) -> Result<(), BanksClientError> {
         let approve_ix = spl_token::instruction::approve(
             &Token::id(),
-            &self.pyth_treasury,
+            &self.wormhole_treasury,
             &delegate,
-            &self.pyth_mint_authority.pubkey(),
+            &self.wormhole_mint_authority.pubkey(),
             &[],
             amount,
         )
@@ -381,7 +382,7 @@ impl DispenserSimulator {
 
         self.process_ix(
             &[approve_ix],
-            &vec![&copy_keypair(&self.pyth_mint_authority)],
+            &vec![&copy_keypair(&self.wormhole_mint_authority)],
         )
         .await
     }
@@ -389,15 +390,15 @@ impl DispenserSimulator {
     pub async fn revoke_treasury_delegate(&mut self) -> Result<(), BanksClientError> {
         let revoke_ix = spl_token::instruction::revoke(
             &Token::id(),
-            &self.pyth_treasury,
-            &self.pyth_mint_authority.pubkey(),
+            &self.wormhole_treasury,
+            &self.wormhole_mint_authority.pubkey(),
             &[],
         )
         .unwrap();
 
         self.process_ix(
             &[revoke_ix],
-            &vec![&copy_keypair(&self.pyth_mint_authority)],
+            &vec![&copy_keypair(&self.wormhole_mint_authority)],
         )
         .await
     }

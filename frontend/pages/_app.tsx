@@ -9,9 +9,7 @@ import { EVMWalletProvider } from '@components/wallets/EVM'
 import { CosmosWalletProvider } from '@components/wallets/Cosmos'
 import { SessionProvider } from 'next-auth/react'
 import { EcosystemProviders } from '@components/Ecosystem'
-
 import '../styles/globals.css'
-import { SeiProvider } from '@components/wallets/Sei'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@components/Layout'
 import { Disclaimer } from '@components/modal/Disclaimer'
@@ -104,7 +102,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
               <SuiWalletProvider>
                 <EVMWalletProvider>
                   <CosmosWalletProvider>
-                    <SeiProvider>
                       {/* WARN: EcosystemProviders might use wallet provider addresses and hence
                  They should be inside all those providers. */}
                       <EcosystemProviders>
@@ -132,7 +129,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
                           }}
                         />
                       </EcosystemProviders>
-                    </SeiProvider>
                   </CosmosWalletProvider>
                 </EVMWalletProvider>
               </SuiWalletProvider>

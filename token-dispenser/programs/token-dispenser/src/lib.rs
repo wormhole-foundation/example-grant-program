@@ -30,32 +30,28 @@ use {
         },
     },
     ecosystems::{
-        aptos::{
+        algorand::{
+            AlgorandAddress, 
+            AlgorandMessage
+        }, aptos::{
             AptosAddress,
             AptosMessage,
-        },
-        check_payload,
-        cosmos::{
+        }, check_payload, cosmos::{
             CosmosBech32Address,
             CosmosMessage,
             UncompressedSecp256k1Pubkey,
-        },
-        discord::DiscordMessage,
-        ed25519::{
+        }, discord::DiscordMessage, ed25519::{
             Ed25519InstructionData,
             Ed25519Pubkey,
-        },
-        evm::EvmPrefixedMessage,
-        secp256k1::{
+        }, evm::EvmPrefixedMessage, secp256k1::{
             secp256k1_verify_signer,
             EvmPubkey,
             Secp256k1InstructionData,
             Secp256k1Signature,
-        },
-        sui::{
+        }, sui::{
             SuiAddress,
             SuiMessage,
-        },
+        }
     },
     pythnet_sdk::{
         accumulators::merkle::{
@@ -250,6 +246,7 @@ pub struct ClaimInfo {
 #[derive(AnchorDeserialize, AnchorSerialize, Clone)]
 pub enum Identity {
     Discord { username: String },
+    Algorand { address: AlgorandAddress },
     Solana { pubkey: Ed25519Pubkey },
     Evm { pubkey: EvmPubkey },
     Sui { address: SuiAddress },
@@ -270,6 +267,10 @@ pub enum IdentityCertificate {
     },
     Solana,
     Sui {
+        pubkey:                         Ed25519Pubkey,
+        verification_instruction_index: u8,
+    },
+    Algorand {
         pubkey:                         Ed25519Pubkey,
         verification_instruction_index: u8,
     },
@@ -432,6 +433,29 @@ impl IdentityCertificate {
                 CosmosMessage::check_hashed_payload(message, &cosmos_bech32, claimant)?;
                 Ok(Identity::Cosmwasm {
                     address: cosmos_bech32,
+                })
+            }
+            IdentityCertificate::Algorand {
+                pubkey,
+                verification_instruction_index,
+            } => {
+                let signature_verification_instruction = load_instruction_at_checked(
+                    *verification_instruction_index as usize,
+                    sysvar_instruction,
+                )?;
+                check_payload(
+                    AlgorandMessage::parse(
+                        &Ed25519InstructionData::extract_message_and_check_signature(
+                            &signature_verification_instruction,
+                            pubkey,
+                            verification_instruction_index,
+                        )?,
+                    )?
+                    .get_payload(),
+                    claimant,
+                )?;
+                Ok(Identity::Algorand {
+                    address: Into::<AlgorandAddress>::into(pubkey.clone()),
                 })
             }
             IdentityCertificate::Aptos {

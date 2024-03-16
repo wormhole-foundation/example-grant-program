@@ -1,4 +1,4 @@
-import { removeLeading0x } from '../index'
+import { base32decode, removeLeading0x } from '../index'
 import {
   evmGetFullMessage,
   splitEvmSignature,
@@ -15,6 +15,7 @@ import { Hash } from '@keplr-wallet/crypto'
 import { aptosGetFullMessage } from './aptos'
 import { splitSignatureAndPubkey, suiGetFullMessage } from './sui'
 import { blake2b } from '@noble/hashes/blake2b'
+import { algorandGetFullMessage } from './algorand'
 
 export type SignedMessage = {
   publicKey: Uint8Array
@@ -73,6 +74,19 @@ export function cosmwasmBuildSignedMessage(
       ),
       fullMessage: Hash.sha256(fullMessage),
     }
+  }
+}
+
+export function algorandBuildSignedMessage(
+  pubkey: string,
+  signature: string,
+  payload: string
+): SignedMessage {
+  return {
+    publicKey: base32decode(pubkey).subarray(0,32),
+    signature: Buffer.from(removeLeading0x(signature), 'hex'),
+    recoveryId: undefined,
+    fullMessage: Buffer.from(algorandGetFullMessage(payload), 'utf-8'),
   }
 }
 
