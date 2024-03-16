@@ -9,6 +9,7 @@ type AlgorandWalletButtonProps = {
 export function AlgorandWalletButton({
   disableOnConnect
 }: AlgorandWalletButtonProps) {
+  // TODO: Replace with a provider
   const peraWallet = new PeraWalletConnect();
   const [accountAddress, setAccountAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
