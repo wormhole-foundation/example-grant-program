@@ -7,6 +7,7 @@ import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react'
 import { useAccount } from 'wagmi'
 
 export function useAlgorandAddress(): string | undefined {
+  // TODO: Replace with a provider
   let { connector } = new PeraWalletConnect();
   return connector?.accounts[0];
 

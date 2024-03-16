@@ -31,6 +31,7 @@ export type SignMessageFn = (
 
 // This hook returns a function to sign message for the Algorand wallet.
 export function useAlgorandSignMessage(): SignMessageFn {
+  // TODO: Replace with a provider
   const peraWallet = new PeraWalletConnect()
   const account = peraWallet.connector?.accounts[0];
 
