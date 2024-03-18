@@ -1,6 +1,5 @@
 import { VersionedTransaction } from '@solana/web3.js'
 import { NextApiRequest, NextApiResponse } from 'next'
-import handlerFundTransaction from '../pages/api/grant/v1/fund_transaction'
 import {
   getAmountAndProofRoute,
   getFundTransactionRoute,
@@ -8,7 +7,9 @@ import {
   handleFundTransaction,
 } from '../utils/api'
 import { ClaimInfo, Ecosystem } from '../claim_sdk/claim'
-import handlerAmountAndProof from '../pages/api/grant/v1/amount_and_proof'
+
+//import handlerAmountAndProof from '../pages/api/grant/v1/amount_and_proof'
+//import handlerFundTransaction from '../pages/api/grant/v1/fund_transaction'
 
 export class NextApiResponseMock {
   public jsonBody: any
@@ -36,7 +37,7 @@ export async function mockfetchFundTransaction(
   } as unknown as NextApiRequest
   const res = new NextApiResponseMock()
 
-  await handlerFundTransaction(req, res as unknown as NextApiResponse)
+  //await handlerFundTransaction(req, res as unknown as NextApiResponse)
   return handleFundTransaction(res.statusCode, res.jsonBody)
 }
 
@@ -53,7 +54,7 @@ export async function mockFetchAmountAndProof(
   } as unknown as NextApiRequest
   const res = new NextApiResponseMock()
 
-  await handlerAmountAndProof(req, res as unknown as NextApiResponse)
+  //await handlerAmountAndProof(req, res as unknown as NextApiResponse)
   return handleAmountAndProofResponse(
     ecosystem,
     identity,

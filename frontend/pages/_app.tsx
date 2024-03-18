@@ -46,7 +46,7 @@ function useRedirect(isVersionChecked: boolean) {
     // 2. there is a last state -> redirect to that page
     if (lastStep === null) router.replace('/')
     if (lastStep) router.replace(lastStep)
-  }, [isVersionChecked])
+  }, [isVersionChecked, lastStep, router, pathname])
 
   useEffect(() => {
     if (!isVersionChecked) return
