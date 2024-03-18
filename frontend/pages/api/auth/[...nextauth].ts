@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions, Session } from 'next-auth'
+/*import NextAuth, { NextAuthOptions, Session } from 'next-auth'
 import DiscordProvider from 'next-auth/providers/discord'
 import { hashDiscordUserId } from 'utils/hashDiscord'
 
@@ -66,3 +66,4 @@ export const authOptions: NextAuthOptions = {
 }
 
 export default NextAuth(authOptions)
+*/

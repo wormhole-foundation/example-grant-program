@@ -1,3 +1,4 @@
+/*
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { loadFunderWallet } from '../../../../claim_sdk/testWallets'
 import {
@@ -75,3 +76,4 @@ export default async function handlerFundTransaction(
     return res.status(403).json({ error: 'Unauthorized transaction' })
   }
 }
+*/

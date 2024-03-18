@@ -1,3 +1,4 @@
+/*
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Pool } from 'pg'
 
@@ -7,6 +8,7 @@ const pool = new Pool()
 /**
  * This endpoint returns the amount of tokens allocated to a specific identity
  */
+/*
 export default async function handlerAmountAndProof(
   req: NextApiRequest,
   res: NextApiResponse
@@ -52,3 +54,4 @@ function lowerCapIfEvm(identity: string, ecosystem: string): string {
   }
   return identity
 }
+*/

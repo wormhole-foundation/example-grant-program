@@ -1,6 +1,6 @@
 import { VersionedTransaction } from '@solana/web3.js'
 import { NextApiRequest, NextApiResponse } from 'next'
-import handlerFundTransaction from '../pages/api/grant/v1/fund_transaction'
+//import handlerFundTransaction from '../pages/api/grant/v1/fund_transaction'
 import {
   getAmountAndProofRoute,
   getFundTransactionRoute,
@@ -8,7 +8,16 @@ import {
   handleFundTransaction,
 } from '../utils/api'
 import { ClaimInfo, Ecosystem } from '../claim_sdk/claim'
-import handlerAmountAndProof from '../pages/api/grant/v1/amount_and_proof'
+//import handlerAmountAndProof from '../pages/api/grant/v1/amount_and_proof'
+
+
+function handlerFundTransaction(...args: any[]) {
+  throw new Error('Function not implemented.')
+}
+
+function handlerAmountAndProof(...args: any[]) {
+  throw new Error('Function not implemented.')
+}
 
 export class NextApiResponseMock {
   public jsonBody: any

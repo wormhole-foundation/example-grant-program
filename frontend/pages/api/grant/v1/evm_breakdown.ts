@@ -1,3 +1,4 @@
+/*
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Pool } from 'pg'
 
@@ -7,6 +8,7 @@ const pool = new Pool()
 /**
  * This endpoint returns the breakdown by chain for the evm allocation of a given evm identity.
  */
+/*
 export default async function handlerEvmBreakdown(
   req: NextApiRequest,
   res: NextApiResponse
@@ -37,3 +39,4 @@ export default async function handlerEvmBreakdown(
     })
   }
 }
+*/
