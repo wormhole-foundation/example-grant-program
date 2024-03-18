@@ -30,6 +30,7 @@ use {
         },
     },
     ecosystems::{
+        algorand::AlgorandMessage,
         aptos::{
             AptosAddress,
             AptosMessage,
@@ -256,6 +257,7 @@ pub enum Identity {
     Aptos { address: AptosAddress },
     Cosmwasm { address: CosmosBech32Address },
     Injective { address: CosmosBech32Address },
+    Algorand { pubkey: Ed25519Pubkey },
 }
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone)]
@@ -286,6 +288,10 @@ pub enum IdentityCertificate {
     },
     Injective {
         pubkey:                         EvmPubkey,
+        verification_instruction_index: u8,
+    },
+    Algorand {
+        pubkey:                         Ed25519Pubkey,
         verification_instruction_index: u8,
     },
 }
@@ -433,6 +439,27 @@ impl IdentityCertificate {
                 Ok(Identity::Cosmwasm {
                     address: cosmos_bech32,
                 })
+            }
+            IdentityCertificate::Algorand {
+                pubkey,
+                verification_instruction_index,
+            } => {
+                let signature_verification_instruction = load_instruction_at_checked(
+                    *verification_instruction_index as usize,
+                    sysvar_instruction,
+                )?;
+                check_payload(
+                    AlgorandMessage::parse(
+                        &Ed25519InstructionData::extract_message_and_check_signature(
+                            &signature_verification_instruction,
+                            pubkey,
+                            verification_instruction_index,
+                        )?,
+                    )?
+                    .get_payload(),
+                    claimant,
+                )?;
+                Ok(Identity::Algorand{ pubkey: pubkey.clone() })
             }
             IdentityCertificate::Aptos {
                 pubkey,
