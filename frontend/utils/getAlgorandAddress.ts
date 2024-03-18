@@ -2,9 +2,9 @@ import { base32encode } from '../claim_sdk'
 import { sha512_256 } from 'js-sha512'
 
 /**
- * Get Algorand address from 32 byte public key buffer or hex address
+ * Get Algorand address from 32 byte Ed25519 public key buffer
  *
- * @param ethAddress string
+ * @param pubkey Buffer
  * @returns string
  */
 export const getAlgorandAddress = (pubkey: Buffer): string => {
