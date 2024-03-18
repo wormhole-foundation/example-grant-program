@@ -6,6 +6,7 @@ use {
     },
 };
 
+pub mod algorand;
 pub mod aptos;
 pub mod cosmos;
 pub mod discord;
