@@ -3,7 +3,8 @@ import { SolanaWalletProvider } from '@components/wallets/Solana'
 import type { AppProps } from 'next/app'
 import { FC, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { WalletKitProvider as SuiWalletProvider } from '@mysten/wallet-kit'
-import { NextSeo } from 'next-seo'
+import { DefaultSeo } from 'next-seo'
+import SEO from '../next-seo.config'
 import { Toaster } from 'react-hot-toast'
 import { EVMWalletProvider } from '@components/wallets/EVM'
 import { CosmosWalletProvider } from '@components/wallets/Cosmos'
@@ -99,10 +100,7 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
                  They should be inside all those providers. */}
                       <EcosystemProviders>
                         <Layout>
-                          <NextSeo
-                            title="Pyth Network Retrospective Airdrop"
-                            description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
-                          />
+                          <DefaultSeo {...SEO} />
                           <Component {...pageProps} />
                         </Layout>
                         <Toaster

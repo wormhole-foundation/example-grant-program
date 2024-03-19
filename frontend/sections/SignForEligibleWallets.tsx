@@ -12,6 +12,7 @@ import { TotalAllocationRow } from '@components/table/TotalAllocationRow'
 import { SignAndClaimRowLayout } from '@components/table/SignAndClaimRowLayout'
 import { Box } from '@components/Box'
 import { useDiscordSignMessage } from 'hooks/useDiscordSignMessage'
+import { BoxTitle } from '@components/BoxTitle'
 
 export const SignForEligibleWallets = ({
   onBack,
@@ -83,20 +84,22 @@ export const SignForEligibleWallets = ({
 
   return (
     <Box>
-      <div className="flex items-center justify-between border-b border-light-35 bg-[#242339] py-4 px-4 sm:py-8 sm:px-10">
-        <h4 className="font-header text-[20px] font-light leading-[1.2] sm:text-[28px]">
-          Sign Your Wallets and Claim
-        </h4>
-        <div className="flex gap-1 sm:gap-4">
-          <BackButton onBack={onBack} hideText={isMobile} />
-          <ProceedButton
-            onProceed={onProceed}
-            disabled={isProceedDisabled}
-            tooltipContent={proceedTooltipContent}
-            hideText={isMobile}
-          />
+      <BoxTitle>
+        <div className="flex items-center justify-between ">
+          <span className=" text-[20px]  sm:text-[28px]">
+            Sign Your Wallets and Claim
+          </span>
+          <div className="flex gap-1 sm:gap-4">
+            <BackButton onBack={onBack} hideText={isMobile} />
+            <ProceedButton
+              onProceed={onProceed}
+              disabled={isProceedDisabled}
+              tooltipContent={proceedTooltipContent}
+              hideText={isMobile}
+            />
+          </div>
         </div>
-      </div>
+      </BoxTitle>
 
       <table className="">
         <tbody>
