@@ -15,12 +15,8 @@ import { SeiProvider } from '@components/wallets/Sei'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@components/Layout'
 import { Disclaimer } from '@components/modal/Disclaimer'
-import Script from 'next/script'
 
-import {
-  PathnameStore,
-  resetOnVersionMismatch,
-} from 'utils/store'
+import { PathnameStore, resetOnVersionMismatch } from 'utils/store'
 
 function useRedirect(isVersionChecked: boolean) {
   // We are fetching it here and not in useEffect
@@ -76,55 +72,42 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
 
   return (
     <>
-      <Script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-C2TFD85LKJ"
-      />
-      <Script id="google-tag">
-        {`
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-C2TFD85LKJ');
-  `}
-      </Script>
       {isVersionChecked ? (
-          <SolanaWalletProvider>
-            <AptosWalletProvider>
-              <SuiWalletProvider>
-                <EVMWalletProvider>
-                  <CosmosWalletProvider>
-                    <SeiProvider>
-                      {/* WARN: EcosystemProviders might use wallet provider addresses and hence
+        <SolanaWalletProvider>
+          <AptosWalletProvider>
+            <SuiWalletProvider>
+              <EVMWalletProvider>
+                <CosmosWalletProvider>
+                  <SeiProvider>
+                    {/* WARN: EcosystemProviders might use wallet provider addresses and hence
                  They should be inside all those providers. */}
-                      <EcosystemProviders>
-                        <Layout>
-                          <DefaultSeo {...SEO} />
-                          <Component {...pageProps} />
-                        </Layout>
-                        <Toaster
-                          position="bottom-left"
-                          toastOptions={{
-                            style: {
-                              wordBreak: 'break-word',
-                            },
-                          }}
-                          reverseOrder={false}
-                        />
-                        <Disclaimer
-                          showModal={!disclaimerWasRead}
-                          onAgree={() => {
-                            setDisclaimerWasRead(true)
-                          }}
-                        />
-                      </EcosystemProviders>
-                    </SeiProvider>
-                  </CosmosWalletProvider>
-                </EVMWalletProvider>
-              </SuiWalletProvider>
-            </AptosWalletProvider>
-          </SolanaWalletProvider>
+                    <EcosystemProviders>
+                      <Layout>
+                        <DefaultSeo {...SEO} />
+                        <Component {...pageProps} />
+                      </Layout>
+                      <Toaster
+                        position="bottom-left"
+                        toastOptions={{
+                          style: {
+                            wordBreak: 'break-word',
+                          },
+                        }}
+                        reverseOrder={false}
+                      />
+                      <Disclaimer
+                        showModal={!disclaimerWasRead}
+                        onAgree={() => {
+                          setDisclaimerWasRead(true)
+                        }}
+                      />
+                    </EcosystemProviders>
+                  </SeiProvider>
+                </CosmosWalletProvider>
+              </EVMWalletProvider>
+            </SuiWalletProvider>
+          </AptosWalletProvider>
+        </SolanaWalletProvider>
       ) : (
         <></>
       )}
