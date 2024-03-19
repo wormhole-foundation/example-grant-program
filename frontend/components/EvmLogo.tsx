@@ -18,7 +18,7 @@ import Meter from '@images/evm-chains/meter.inline.svg'
 import Gnosis from '@images/evm-chains/gnosis.inline.svg'
 import Kcc from '@images/evm-chains/kcc.inline.svg'
 import Wemix from '@images/evm-chains/wemix.inline.svg'
-import { EvmChains } from 'utils/db'
+import { EvmChains } from 'utils/constants'
 
 export function EvmLogo({ chain }: { chain: EvmChains }) {
   switch (chain) {

@@ -48,10 +48,10 @@ export function middleware(req) {
     `
 
   // NextResponse object does not have a body property so we use Response instead
-  // return new Response(body, {
-  //   status: 200,
-  //   headers: {
-  //     'Content-Type': 'text/html',
-  //   },
-  // })
+  /*return new Response(body, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html',
+    },
+  })*/
 }
