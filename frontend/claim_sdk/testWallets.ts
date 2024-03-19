@@ -11,6 +11,7 @@ import {
 import { ethers } from 'ethers'
 import fs from 'fs'
 import { AminoSignResponse, Secp256k1HdWallet } from '@cosmjs/amino'
+import { HdPath, stringToPath } from '@cosmjs/crypto'
 import { makeADR36AminoSignDoc } from '@keplr-wallet/cosmos'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { Keypair, PublicKey } from '@solana/web3.js'
@@ -91,7 +92,7 @@ export async function loadTestWallets(): Promise<
   result['aptos'] = [TestAptosWallet.fromKeyfile(aptosPrivateKeyPath)]
   result['cosmwasm'] = [
     await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'osmo'),
-    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'terra'),
+    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'terra', [ stringToPath("m/44'/330'/0'/0/0") ]),
   ]
   result['injective'] = [TestEvmWallet.fromKeyfile(cosmosPrivateKeyPath, true)]
 
@@ -149,14 +150,15 @@ export class TestCosmWasmWallet implements TestWallet {
    */
   static async fromKeyFile(
     keyFile: string,
-    chainId?: string
+    prefix?: string,
+    hdPaths?: HdPath[]
   ): Promise<TestCosmWasmWallet> {
     const jsonContent = fs.readFileSync(keyFile, 'utf8')
 
     const mnemonic = JSON.parse(jsonContent).mnemonic
     const wallet: Secp256k1HdWallet = await Secp256k1HdWallet.fromMnemonic(
       mnemonic,
-      chainId ? { prefix: chainId } : {}
+      { prefix, hdPaths }
     )
 
     const { address: addressStr } = (await wallet.getAccounts())[0]
