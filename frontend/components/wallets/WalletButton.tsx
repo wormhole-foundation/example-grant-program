@@ -46,7 +46,7 @@ export function WalletConnectedButton({
 
 export function WalletLoadingButton() {
   return (
-    <button className="btn before:btn-bg btn--dark min-w-[107px] before:bg-dark hover:text-dark hover:before:bg-light sm:min-w-[207px]">
+    <button className=" wbtn wbtn-secondary min-w-[107px] sm:min-w-[207px]">
       <span className="relative inline-flex items-center gap-1 whitespace-nowrap  sm:gap-2.5">
         <WalletIcon />
         <span className="text-xs sm:text-base">Connecting...</span>
@@ -91,7 +91,7 @@ export function WalletModalButton({ wallets }: WalletModalButtonProps) {
   return (
     <>
       <button
-        className="wbtn min-w-[117px] sm:min-w-[207px]"
+        className="wbtn wbtn-secondary min-w-[117px] sm:min-w-[207px]"
         onClick={() => openModal(true)}
       >
         <span className="relative inline-flex items-center gap-1 whitespace-nowrap  sm:gap-2.5">
@@ -136,7 +136,7 @@ export type SingleWalletViewProps = {
 export function SingleWalletView({ wallet, onSelect }: SingleWalletViewProps) {
   return (
     <button
-      className="wbtn   min-w-[117px]  sm:min-w-[207px] "
+      className="wbtn wbtn-secondary  min-w-[117px]  sm:min-w-[207px] "
       onClick={() => {
         wallet.onSelect()
         onSelect()

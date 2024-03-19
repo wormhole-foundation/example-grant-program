@@ -11,7 +11,7 @@ const Modal = ({
 }) => {
   return (
     <ModalWrapper>
-      <div className="relative w-full max-w-[588px] border border-light-25 bg-black bg-opacity-60 p-12  text-center">
+      <div className="relative w-full max-w-[588px] border border-light-25 bg-black bg-opacity-50 p-12  text-center">
         <ModalCloseButton onClick={() => openModal(false)} />
         {children}
       </div>
