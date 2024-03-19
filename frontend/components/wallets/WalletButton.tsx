@@ -29,7 +29,7 @@ export function WalletConnectedButton({
 
   return (
     <button
-      className="btn before:btn-bg btn--dark min-w-[117px] before:bg-dark hover:text-dark hover:before:bg-light disabled:text-light disabled:before:bg-dark sm:min-w-[207px]"
+      className="wbtn disabled:text-light disabled:before:bg-dark sm:min-w-[207px]"
       onClick={onClick}
       onMouseEnter={() => !disabled && setButtonText(onHoverText)}
       onMouseLeave={() => !disabled && setButtonText(dispAddress)}
@@ -91,12 +91,12 @@ export function WalletModalButton({ wallets }: WalletModalButtonProps) {
   return (
     <>
       <button
-        className="btn before:btn-bg btn--dark min-w-[117px] before:bg-dark hover:text-dark hover:before:bg-light sm:min-w-[207px]"
+        className="wbtn min-w-[117px] sm:min-w-[207px]"
         onClick={() => openModal(true)}
       >
         <span className="relative inline-flex items-center gap-1 whitespace-nowrap  sm:gap-2.5">
           <Wallet />
-          <span className="text-xs sm:text-base">connect wallet</span>
+          <span>connect wallet</span>
         </span>
       </button>
       {modal && <WalletModal openModal={openModal} wallets={wallets} />}
@@ -136,7 +136,7 @@ export type SingleWalletViewProps = {
 export function SingleWalletView({ wallet, onSelect }: SingleWalletViewProps) {
   return (
     <button
-      className="before:btn-bg btn--dark relative flex h-[44px] min-w-[117px] items-center justify-center px-4 font-body text-base transition-all before:bg-dark hover:text-dark hover:before:bg-light sm:min-w-[207px] md:px-8 "
+      className="wbtn   min-w-[117px]  sm:min-w-[207px] "
       onClick={() => {
         wallet.onSelect()
         onSelect()

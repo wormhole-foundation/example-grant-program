@@ -81,7 +81,7 @@ const Eligibility = ({
       <BoxTitle>
         <div className="flex items-center justify-between ">
           <span className="">Verify Eligibility</span>
-          <div className="flex gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <BackButton onBack={onBack} hideText={isMobile} />
             <ProceedButton
               onProceed={onProceed}

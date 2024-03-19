@@ -110,7 +110,7 @@
 }
 
 .claim-ul li {
-  @apply mb-4 flex gap-2.5 before:h-5 before:w-5 before:flex-shrink-0 before:content-li;
+  @apply mb-4  list-inside list-disc;
 }
 
 .claim-ol {
@@ -166,4 +166,74 @@ body {
   background-repeat: no-repeat, no-repeat;
   background-size: cover, contain;
   min-height: 100vh;
+}
+
+.wbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background-color: transparent;
+  outline: 0;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  text-transform: none;
+  transition-delay: 0.1s;
+  border-radius: 0;
+  padding: 0 23px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  line-height: 1;
+  position: relative;
+  overflow: hidden;
+  padding-left: 23px;
+  padding-right: 23px;
+  height: 40px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  backdrop-filter: blur(4.5px);
+  background-color: rgba(255, 255, 255, 0.15);
+  position: relative;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+}
+
+.wbtn:before,
+.wbtn:after {
+  content: '';
+  position: absolute;
+  height: 50%;
+  width: 0;
+  background-color: #fff;
+  transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.wbtn:before {
+  left: 0;
+  top: 0;
+}
+
+.wbtn:after {
+  right: 0;
+  bottom: 0;
+}
+
+.wbtn:hover {
+  border-color: #fff;
+  background-color: transparent;
+  color: #000;
+}
+.wbtn:hover:before,
+.wbtn:hover:after {
+  width: 100%;
+}
+
+.wbtn-secondary {
+  background: rgba(0, 0, 0, 0.35);
 }

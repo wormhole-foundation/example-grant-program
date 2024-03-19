@@ -45,9 +45,7 @@ export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
 
   return (
     <button
-      className={
-        'btn before:btn-bg  btn--dark before:bg-dark hover:text-dark hover:before:bg-light disabled:text-light disabled:before:bg-dark'
-      }
+      className={'wbtn'}
       onClick={() => {
         if (status === 'unauthenticated')
           newTab('/discord-login', 'Pyth | Discord')
