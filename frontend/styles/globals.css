@@ -122,6 +122,14 @@
   @apply mb-4 before:h-5 before:w-5;
 }
 
+.disclaimer-title {
+  @apply border-b border-light-35 p-10 font-header text-[36px] font-light;
+  text-align: center;
+  line-height: normal;
+  padding: 1rem 2.5rem;
+  font-size: 2em;
+}
+
 .disabled td:first-of-type {
   opacity: 0.25;
   pointer-events: none;
