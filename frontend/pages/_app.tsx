@@ -7,7 +7,6 @@ import { NextSeo } from 'next-seo'
 import { Toaster } from 'react-hot-toast'
 import { EVMWalletProvider } from '@components/wallets/EVM'
 import { CosmosWalletProvider } from '@components/wallets/Cosmos'
-import { SessionProvider } from 'next-auth/react'
 import { EcosystemProviders } from '@components/Ecosystem'
 
 import '../styles/globals.css'
@@ -47,7 +46,7 @@ function useRedirect(isVersionChecked: boolean) {
     // 2. there is a last state -> redirect to that page
     if (lastStep === null) router.replace('/')
     if (lastStep) router.replace(lastStep)
-  }, [isVersionChecked])
+  }, [isVersionChecked, lastStep, router, pathname])
 
   useEffect(() => {
     if (!isVersionChecked) return
@@ -99,7 +98,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   `}
       </Script>
       {isVersionChecked ? (
-        <SessionProvider>
           <SolanaWalletProvider>
             <AptosWalletProvider>
               <SuiWalletProvider>
@@ -141,7 +139,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
               </SuiWalletProvider>
             </AptosWalletProvider>
           </SolanaWalletProvider>
-        </SessionProvider>
       ) : (
         <></>
       )}

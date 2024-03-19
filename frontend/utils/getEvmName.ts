@@ -1,4 +1,4 @@
-import { EvmChains } from 'utils/db'
+import { EvmChains } from 'utils/constants'
 
 export function getEvmName(chain: EvmChains) {
   switch (chain) {
