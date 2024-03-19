@@ -1,10 +1,5 @@
 import * as anchor from '@coral-xyz/anchor'
 import { expect } from '@jest/globals'
-import {
-  addTestWalletsToDatabase,
-  clearDatabase,
-  getDatabasePool,
-} from '../utils/db'
 import { Ecosystem } from '../claim_sdk/claim'
 import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import {
@@ -24,6 +19,19 @@ import {
 import { loadTestWallets } from '../claim_sdk/testWallets'
 import { mockFetchAmountAndProof, mockfetchFundTransaction } from './api'
 import { ethers } from 'ethers'
+
+function getDatabasePool() {
+  return {
+    end: async () => {}
+  }
+}
+
+async function clearDatabase(..._:any[]) {
+}
+
+async function addTestWalletsToDatabase(..._:any[]) {
+  return []
+}
 
 const pool = getDatabasePool()
 

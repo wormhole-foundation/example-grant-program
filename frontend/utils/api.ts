@@ -3,7 +3,7 @@ import { ClaimInfo, Ecosystem } from '../claim_sdk/claim'
 import { HASH_SIZE } from '../claim_sdk/merkleTree'
 import { PublicKey, VersionedTransaction } from '@solana/web3.js'
 import { SignedMessage } from '../claim_sdk/ecosystems/signatures'
-import { EvmChains, SOLANA_SOURCES } from './db'
+import { EvmChains, SOLANA_SOURCES } from './constants'
 
 function parseProof(proof: string) {
   const buffer = Buffer.from(proof, 'hex')
