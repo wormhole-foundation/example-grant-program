@@ -20,18 +20,21 @@ import {
 import { loadTestWallets } from '../claim_sdk/testWallets'
 import { mockFetchAmountAndProof, mockfetchFundTransaction } from './api'
 import { ethers } from 'ethers'
-import { addTestWalletsToDatabase as addTestWalletsToInMemoryDb, clearInMemoryDb, getInMemoryDb } from './utils'
+import {
+  addTestWalletsToDatabase as addTestWalletsToInMemoryDb,
+  clearInMemoryDb,
+  getInMemoryDb,
+} from './utils'
 
 function getDatabasePool() {
   return {
-    end: async () => {}
+    end: async () => {},
   }
 }
 
-async function clearDatabase(..._:any[]) {
-}
+async function clearDatabase(..._: any[]) {}
 
-async function addTestWalletsToDatabase(..._:any[]) {
+async function addTestWalletsToDatabase(..._: any[]) {
   return []
 }
 
@@ -54,7 +57,7 @@ describe('integration test', () => {
   })
 
   afterAll(() => {
-    clearInMemoryDb();
+    clearInMemoryDb()
   })
 
   describe('Api test', () => {
@@ -177,7 +180,9 @@ describe('integration test', () => {
     })
 
     it('submits an evm claim', async () => {
-      const { claimInfo, proofOfInclusion } = getInMemoryDb().get('evm').get(testWallets.evm[0].address())
+      const { claimInfo, proofOfInclusion } = getInMemoryDb()
+        .get('evm')
+        .get(testWallets.evm[0].address())
 
       const signedMessage = await testWallets.evm[0].signMessage(
         tokenDispenserProvider.generateAuthorizationPayload()

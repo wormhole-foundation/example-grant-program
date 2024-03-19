@@ -18,10 +18,8 @@ import { ClaimInfo, Ecosystem } from '../claim_sdk/claim'
 import { loadFunderWallet } from '../claim_sdk/testWallets'
 import { checkTransactions } from '../utils/verifyTransaction'
 
-
 //import handlerAmountAndProof from '../pages/api/grant/v1/amount_and_proof'
 //import handlerFundTransaction from '../pages/api/grant/v1/fund_transaction'
-
 
 const wallet = process.env.FUNDER_KEYPAIR
   ? new NodeWallet(
@@ -65,7 +63,9 @@ export async function handlerAmountAndProof(
   }
 
   try {
-    const result = { rows: [{ amount: 0, proof_of_inclusion: Buffer.from('')}] };/*await pool.query(
+    const result = {
+      rows: [{ amount: 0, proof_of_inclusion: Buffer.from('') }],
+    } /*await pool.query(
       'SELECT amount, proof_of_inclusion FROM claims WHERE ecosystem = $1 AND identity = $2',
       [ecosystem, lowerCapIfEvm(identity, ecosystem)]
     )*/

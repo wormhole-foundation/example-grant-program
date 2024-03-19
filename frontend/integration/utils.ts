@@ -1,4 +1,4 @@
-import "dotenv/config"; // Load environment variables from .env file
+import 'dotenv/config' // Load environment variables from .env file
 import * as anchor from '@coral-xyz/anchor'
 import {
   TestEvmWallet,
@@ -37,7 +37,7 @@ export const EVM_CHAINS = [
 
 export type SOLANA_SOURCES = 'nft' | 'defi'
 
-export type EvmChains = typeof EVM_CHAINS[number]
+export type EvmChains = (typeof EVM_CHAINS)[number]
 
 export type EvmBreakdownRow = {
   chain: string
@@ -51,15 +51,15 @@ export type SolanaBreakdownRow = {
   amount: anchor.BN
 }
 
-const DB = new Map<any, any>();
+const DB = new Map<any, any>()
 
 /** Get in memory db. */
-export function getInMemoryDb(): Map<any, any>  {
-    return DB;
+export function getInMemoryDb(): Map<any, any> {
+  return DB
 }
 
 export function clearInMemoryDb() {
-    DB.clear();
+  DB.clear()
 }
 
 export function addClaimInfosToInMemoryDb(claimInfos: ClaimInfo[]): Buffer {
@@ -70,10 +70,10 @@ export function addClaimInfosToInMemoryDb(claimInfos: ClaimInfo[]): Buffer {
       return claimInfo.toBuffer()
     })
   )
-  console.timeEnd("built merkle tree time");
+  console.timeEnd('built merkle tree time')
   let claimInfoChunks = []
   const chunkCounts = [...Array(Math.ceil(claimInfos.length / CHUNK_SIZE))]
-  console.time("claiminfoChunks time")
+  console.time('claiminfoChunks time')
   claimInfoChunks = chunkCounts.map((_, i) => {
     if (i % 100 === 0) {
       console.log(`\n\n making claimInfo chunk ${i}/${chunkCounts.length}\n\n`)
@@ -88,22 +88,24 @@ export function addClaimInfosToInMemoryDb(claimInfos: ClaimInfo[]): Buffer {
       }
     })
   })
-  console.timeEnd("claiminfoChunks time");
-  console.time("claimsInsert time");
+  console.timeEnd('claiminfoChunks time')
+  console.time('claimsInsert time')
   for (const claimInfoChunk of claimInfoChunks) {
     for (const claimInfo of claimInfoChunk) {
-        if (!DB.has(claimInfo.ecosystem)) {
-            DB.set(claimInfo.ecosystem, new Map<any, any>());
-        }
-        DB.get(claimInfo.ecosystem).set(claimInfo.identity, claimInfo);
+      if (!DB.has(claimInfo.ecosystem)) {
+        DB.set(claimInfo.ecosystem, new Map<any, any>())
+      }
+      DB.get(claimInfo.ecosystem).set(claimInfo.identity, claimInfo)
     }
   }
   const claimsInsertEnd = Date.now()
-  console.timeEnd("claimsInsert time");
+  console.timeEnd('claimsInsert time')
   return merkleTree.root
 }
 
-export function addTestWalletsToDatabase(testWallets: Record<Ecosystem, TestWallet[]>): [Buffer, anchor.BN] {
+export function addTestWalletsToDatabase(
+  testWallets: Record<Ecosystem, TestWallet[]>
+): [Buffer, anchor.BN] {
   const claimInfos: ClaimInfo[] = Ecosystems.map(
     (ecosystem, ecosystemIndex) => {
       return testWallets[ecosystem].map((testWallet, index) => {
@@ -120,4 +122,3 @@ export function addTestWalletsToDatabase(testWallets: Record<Ecosystem, TestWall
 
   return [addClaimInfosToInMemoryDb(claimInfos), maxAmount]
 }
-
