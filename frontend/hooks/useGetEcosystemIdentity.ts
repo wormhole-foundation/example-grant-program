@@ -4,6 +4,7 @@ import {
   useEVMAddress,
   useSolanaAddress,
   useSuiAddress,
+  useAlgorandAddress,
 } from './useAddress'
 import { useSession } from 'next-auth/react'
 import { Ecosystem } from '@components/Ecosystem'
@@ -24,6 +25,7 @@ export function useGetEcosystemIdentity() {
   const seiAddress = useCosmosAddress('sei', connectedSeiWallet ?? undefined)
   const solanaAddress = useSolanaAddress()
   const suiAddress = useSuiAddress()
+  const algorandAddress = useAlgorandAddress()
   const { data } = useSession()
 
   return useCallback(
@@ -55,6 +57,9 @@ export function useGetEcosystemIdentity() {
 
         case Ecosystem.DISCORD:
           return data?.user?.hashedUserId
+
+        case Ecosystem.ALGORAND:
+          return algorandAddress
       }
     },
     [
@@ -66,6 +71,7 @@ export function useGetEcosystemIdentity() {
       seiAddress,
       solanaAddress,
       suiAddress,
+      algorandAddress,
     ]
   )
 }

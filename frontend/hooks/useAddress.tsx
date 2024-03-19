@@ -4,6 +4,7 @@ import { useChainWallet } from '@cosmos-kit/react-lite'
 import { useWalletKit } from '@mysten/wallet-kit'
 import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react'
 import { useAccount } from 'wagmi'
+import { useWallet as useAlgorandWallet } from '@components/Ecosystem/AlgorandProvider'
 
 export function useAptosAddress(): string | undefined {
   const { account } = useAptosWallet()
@@ -31,4 +32,9 @@ export function useSolanaAddress(): string | undefined {
 export function useSuiAddress(): string | undefined {
   const { currentAccount } = useWalletKit()
   return currentAccount?.address
+}
+
+export function useAlgorandAddress(): string | undefined {
+  const { account } = useAlgorandWallet()
+  return account || undefined
 }

@@ -21,5 +21,7 @@ export function enumToSdkEcosystem(ecosystem: EnumEcosystem): SdkEcosystem {
       return 'sui'
     case EnumEcosystem.DISCORD:
       return 'discord'
+    case EnumEcosystem.ALGORAND:
+      return 'algorand'
   }
 }

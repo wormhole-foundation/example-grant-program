@@ -36,9 +36,9 @@ export const ERROR_CRAFTING_TX = 'error: crafting transaction'
 type bump = number
 // NOTE: This must be kept in sync with the on-chain program
 const AUTHORIZATION_PAYLOAD = [
-  'Pyth Grant PID:\n',
+  'W Airdrop PID:\n',
   '\nI authorize Solana wallet\n',
-  '\nto claim my token grant.\n',
+  '\nto claim my W tokens.\n',
 ]
 
 /**
@@ -368,6 +368,7 @@ export class TokenDispenserProvider {
         case 'evm':
         case 'aptos':
         case 'sui':
+        case 'algorand':
         case 'injective': {
           return {
             [claimInfo.ecosystem]: {
@@ -431,6 +432,7 @@ export class TokenDispenserProvider {
         }
         case 'discord':
         case 'sui':
+        case 'algorand':
         case 'aptos': {
           return Ed25519Program.createInstructionWithPublicKey({
             publicKey: signedMessage.publicKey,

@@ -20,6 +20,7 @@ import { aptosGetFullMessage } from './ecosystems/aptos'
 import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
 import { hashDiscordUserId } from '../utils/hashDiscord'
 import { getInjectiveAddress } from '../utils/getInjectiveAddress'
+import { algorandGetFullMessage } from './ecosystems/algorand'
 
 dotenv.config() // Load environment variables from .env file
 
@@ -66,6 +67,10 @@ export async function loadTestWallets(): Promise<
   const cosmosPrivateKeyPath = path.resolve(KEY_DIR, 'cosmos_private_key.json')
   const aptosPrivateKeyPath = path.resolve(KEY_DIR, 'aptos_private_key.json')
   const suiPrivateKeyPath = path.resolve(KEY_DIR, 'sui_private_key.json')
+  const algorandPrivateKeyPath = path.resolve(
+    KEY_DIR,
+    'algorand_private_key.json'
+  )
 
   const dispenserGuardKeyPath = path.resolve(
     KEY_DIR,
@@ -81,6 +86,7 @@ export async function loadTestWallets(): Promise<
     aptos: [],
     cosmwasm: [],
     injective: [],
+    algorand: [],
   }
   result['discord'] = [
     DiscordTestWallet.fromKeyfile(TEST_DISCORD_USERNAME, dispenserGuardKeyPath),
@@ -95,6 +101,7 @@ export async function loadTestWallets(): Promise<
     await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'neutron'),
   ]
   result['injective'] = [TestEvmWallet.fromKeyfile(cosmosPrivateKeyPath, true)]
+  result['algorand'] = [TestAlgorandWallet.fromKeyfile(algorandPrivateKeyPath)]
 
   return result
 }
@@ -281,5 +288,26 @@ export class TestSuiWallet implements TestWallet {
     ).signature
 
     return suiBuildSignedMessage(response, payload)
+  }
+}
+
+export class TestAlgorandWallet implements TestWallet {
+  constructor(readonly wallet: Keypair) {}
+  static fromKeyfile(keyFile: string): TestSolanaWallet {
+    const keypair = Keypair.fromSecretKey(
+      new Uint8Array(JSON.parse(fs.readFileSync(keyFile, 'utf-8')))
+    )
+    return new TestAlgorandWallet(keypair)
+  }
+
+  async signMessage(payload: string): Promise<SignedMessage> {
+    return hardDriveSignMessage(
+      Buffer.from(algorandGetFullMessage(payload), 'utf-8'),
+      this.wallet
+    )
+  }
+
+  public address(): string {
+    return this.wallet.publicKey.toBase58()
   }
 }

@@ -22,6 +22,7 @@ import {
   PathnameStore,
   resetOnVersionMismatch,
 } from 'utils/store'
+import { AlgorandWalletProvider } from '../components/Ecosystem/AlgorandProvider'
 
 function useRedirect(isVersionChecked: boolean) {
   // We are fetching it here and not in useEffect
@@ -102,39 +103,41 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
           <SolanaWalletProvider>
             <AptosWalletProvider>
               <SuiWalletProvider>
-                <EVMWalletProvider>
-                  <CosmosWalletProvider>
-                    <SeiProvider>
-                      {/* WARN: EcosystemProviders might use wallet provider addresses and hence
-                 They should be inside all those providers. */}
-                      <EcosystemProviders>
-                        <Layout>
-                          <NextSeo
-                            title="Pyth Network Retrospective Airdrop"
-                            description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
+                <AlgorandWalletProvider>
+                  <EVMWalletProvider>
+                    <CosmosWalletProvider>
+                      <SeiProvider>
+                        {/* WARN: EcosystemProviders might use wallet provider addresses and hence
+                  They should be inside all those providers. */}
+                        <EcosystemProviders>
+                          <Layout>
+                            <NextSeo
+                              title="W Token Airdrop"
+                              description="This is the official claim webpage for the W Token Airdrop program."
+                            />
+                            <Component {...pageProps} />
+                          </Layout>
+                          <Toaster
+                            position="bottom-left"
+                            toastOptions={{
+                              style: {
+                                wordBreak: 'break-word',
+                              },
+                            }}
+                            reverseOrder={false}
                           />
-                          <Component {...pageProps} />
-                        </Layout>
-                        <Toaster
-                          position="bottom-left"
-                          toastOptions={{
-                            style: {
-                              wordBreak: 'break-word',
-                            },
-                          }}
-                          reverseOrder={false}
-                        />
-                        <Disclaimer
-                          showModal={!disclaimerWasRead}
-                          onAgree={() => {
-                            DisclaimerCheckStore.set('true')
-                            setDisclaimerWasRead(true)
-                          }}
-                        />
-                      </EcosystemProviders>
-                    </SeiProvider>
-                  </CosmosWalletProvider>
-                </EVMWalletProvider>
+                          <Disclaimer
+                            showModal={!disclaimerWasRead}
+                            onAgree={() => {
+                              DisclaimerCheckStore.set('true')
+                              setDisclaimerWasRead(true)
+                            }}
+                          />
+                        </EcosystemProviders>
+                      </SeiProvider>
+                    </CosmosWalletProvider>
+                  </EVMWalletProvider>
+                </AlgorandWalletProvider>
               </SuiWalletProvider>
             </AptosWalletProvider>
           </SolanaWalletProvider>
