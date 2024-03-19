@@ -3,7 +3,6 @@ import { ClaimInfo, Ecosystem } from '../claim_sdk/claim'
 import { HASH_SIZE } from '../claim_sdk/merkleTree'
 import { PublicKey, VersionedTransaction } from '@solana/web3.js'
 import { SignedMessage } from '../claim_sdk/ecosystems/signatures'
-import { EvmChains, SOLANA_SOURCES } from './db'
 
 function parseProof(proof: string) {
   const buffer = Buffer.from(proof, 'hex')
@@ -86,62 +85,6 @@ export async function fetchDiscordSignedMessage(
     response.status,
     await response.json()
   )
-}
-
-export type EvmChainAllocation = { chain: EvmChains; amount: BN }
-
-export function getEvmBreakdownRoute(identity: string): string {
-  return `/api/grant/v1/evm_breakdown?identity=${identity}`
-}
-
-export function handleEvmBreakdown(
-  status: number,
-  data: any
-): EvmChainAllocation[] | undefined {
-  if (status == 404) return undefined
-  if (status == 200) {
-    return data.map((row: any) => {
-      return {
-        chain: row.chain,
-        amount: new BN(row.amount),
-      }
-    })
-  }
-}
-
-export async function fetchEvmBreakdown(
-  identity: string
-): Promise<EvmChainAllocation[] | undefined> {
-  const response = await fetch(getEvmBreakdownRoute(identity))
-  return handleEvmBreakdown(response.status, await response.json())
-}
-
-export type SolanaBreakdown = { source: SOLANA_SOURCES; amount: BN }
-
-export function getSolanaBreakdownRoute(identity: string): string {
-  return `/api/grant/v1/solana_breakdown?identity=${identity}`
-}
-
-export function handleSolanaBreakdown(
-  status: number,
-  data: any
-): SolanaBreakdown[] | undefined {
-  if (status == 404) return undefined
-  if (status == 200) {
-    return data.map((row: any) => {
-      return {
-        source: row.source,
-        amount: new BN(row.amount),
-      }
-    })
-  }
-}
-
-export async function fetchSolanaBreakdown(
-  identity: string
-): Promise<SolanaBreakdown[] | undefined> {
-  const response = await fetch(getSolanaBreakdownRoute(identity))
-  return handleSolanaBreakdown(response.status, await response.json())
 }
 
 export function getFundTransactionRoute(): string {

@@ -1,10 +1,6 @@
 import * as anchor from '@coral-xyz/anchor'
 import { expect } from '@jest/globals'
-import {
-  addTestWalletsToDatabase,
-  clearDatabase,
-  getDatabasePool,
-} from '../utils/db'
+
 import { Ecosystem } from '../claim_sdk/claim'
 import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import {
@@ -24,6 +20,23 @@ import {
 import { loadTestWallets } from '../claim_sdk/testWallets'
 import { mockFetchAmountAndProof, mockfetchFundTransaction } from './api'
 import { ethers } from 'ethers'
+import {
+  addTestWalletsToDatabase as addTestWalletsToInMemoryDb,
+  clearInMemoryDb,
+  getInMemoryDb,
+} from './utils'
+
+function getDatabasePool() {
+  return {
+    end: async () => {},
+  }
+}
+
+async function clearDatabase(..._: any[]) {}
+
+async function addTestWalletsToDatabase(..._: any[]) {
+  return []
+}
 
 const pool = getDatabasePool()
 
@@ -34,22 +47,22 @@ describe('integration test', () => {
   let dispenserGuard: PublicKey
 
   beforeAll(async () => {
-    await clearDatabase(pool)
     testWallets = await loadTestWallets()
-    let result = await addTestWalletsToDatabase(pool, testWallets)
+    // TODO replace it with a in memory flat file db
+    let result = addTestWalletsToInMemoryDb(testWallets)
     root = result[0]
     maxAmount = result[1]
     dispenserGuard = (testWallets.discord[0] as unknown as DiscordTestWallet)
       .dispenserGuardPublicKey
   })
 
-  afterAll(async () => {
-    await clearDatabase(pool)
-    await pool.end()
+  afterAll(() => {
+    clearInMemoryDb()
   })
 
   describe('Api test', () => {
-    it('call the api with a real identity', async () => {
+    // Test does not add any value since it test the API call that was removed
+    it.skip('call the api with a real identity', async () => {
       const response = await mockFetchAmountAndProof(
         'evm',
         testWallets.evm[0].address()
@@ -62,7 +75,8 @@ describe('integration test', () => {
       })
     })
 
-    it('call the api with a fake identity', async () => {
+    // Test does not add any value since it test the API call that was removed
+    it.skip('call the api with a fake identity', async () => {
       expect(
         await mockFetchAmountAndProof('evm', 'this_is_a_fake_address')
       ).toBeFalsy()
@@ -166,10 +180,9 @@ describe('integration test', () => {
     })
 
     it('submits an evm claim', async () => {
-      const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
-        'evm',
-        testWallets.evm[0].address()
-      ))!
+      const { claimInfo, proofOfInclusion } = getInMemoryDb()
+        .get('evm')
+        .get(testWallets.evm[0].address())
 
       const signedMessage = await testWallets.evm[0].signMessage(
         tokenDispenserProvider.generateAuthorizationPayload()
