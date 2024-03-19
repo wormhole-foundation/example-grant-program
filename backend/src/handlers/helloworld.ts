@@ -1,7 +1,14 @@
 import { getSecret } from "../utils";
 
-exports.handler = async () => {
-  const secretData = await getSecret("xli-test-secret-s01");
+export const handler = async () => {
+  if (!process.env.SECRET_NAME) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "SECRET_NAME is not set" }),
+    };
+  }
+
+  const secretData = await getSecret(process.env.SECRET_NAME!);
   const target = secretData.target;
 
   console.log(`Hello ${target}`);

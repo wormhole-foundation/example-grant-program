@@ -8,7 +8,7 @@ interface DiscordSignedDigestRequest {
   discordId: string;
 }
 
-exports.handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const signDiscordMessage = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     const requestBody = JSON.parse(event.body!) as DiscordSignedDigestRequest;
     const { publicKey, discordId } = requestBody;
@@ -44,7 +44,7 @@ exports.handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyRe
 
 async function loadDispenserGuard() {
   // TODO: Update secret name based on the secret you created in the AWS Secrets Manager
-  const secretData = await getSecret("xli-test-secret-dispenser-guard");
+  const secretData = await getSecret(process.env.DISPENSER_KEY_SECRET_NAME ?? "xli-test-secret-dispenser-guard");
   const dispenserGuardKey = secretData.target;
 
   const dispenserGuard = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(dispenserGuardKey)));
