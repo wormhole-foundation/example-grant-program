@@ -99,15 +99,6 @@ class PathnameStore_ extends Store<string> {
   }
 }
 
-class DisclaimerCheckStore_ extends Store<'true' | 'false'> {
-  readonly appVersion = '1'
-  get() {
-    if (typeof window === 'undefined') return null
-
-    return localStorage.getItem(this.key) as 'true' | 'false'
-  }
-}
-
 class VersionStore_ extends Store<string> {
   readonly appVersion = '1'
   get() {
@@ -121,7 +112,6 @@ export const ActivityStore = new ActivityStore_('activity-store')
 export const EligibilityStore = new EligibilityStore_('eligibility-key')
 export const SignatureStore = new SignatureStore_('signature-key')
 export const PathnameStore = new PathnameStore_('last-step-status-key')
-export const DisclaimerCheckStore = new DisclaimerCheckStore_('disclaimer-read')
 export const VersionStore = new VersionStore_('version-store-key')
 
 export function resetLocalState() {
@@ -129,7 +119,6 @@ export function resetLocalState() {
   EligibilityStore.remove()
   SignatureStore.remove()
   PathnameStore.remove()
-  DisclaimerCheckStore.remove()
 
   // NOTE: Do not clear version store. We are using it as a flag
   // to safely update the website

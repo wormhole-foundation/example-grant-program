@@ -17,7 +17,6 @@ import { Disclaimer } from '@components/modal/Disclaimer'
 import Script from 'next/script'
 
 import {
-  DisclaimerCheckStore,
   PathnameStore,
   resetOnVersionMismatch,
 } from 'utils/store'
@@ -72,13 +71,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
     setIsVersionChecked(true)
   }, [router])
 
-  useLayoutEffect(() => {
-    if (isVersionChecked) {
-      const wasRead = DisclaimerCheckStore.get()
-      if (wasRead === 'true') setDisclaimerWasRead(true)
-    }
-  }, [isVersionChecked])
-
   useRedirect(isVersionChecked)
 
   return (
@@ -125,7 +117,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
                         <Disclaimer
                           showModal={!disclaimerWasRead}
                           onAgree={() => {
-                            DisclaimerCheckStore.set('true')
                             setDisclaimerWasRead(true)
                           }}
                         />
