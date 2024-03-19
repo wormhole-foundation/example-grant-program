@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 
 import Discord from '@images/discord.inline.svg'
 
-import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 
 type DiscordButtonProps = {
@@ -19,7 +18,8 @@ const newTab = (url: string, title: string) => {
 }
 
 export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
-  const { data, status } = useSession()
+  // TODO update logic to get discord data from lambda function execution
+  const { data = {}, status = '' } = {} as any;
 
   const { logo, text } = useMemo(() => {
     if (status === 'authenticated')

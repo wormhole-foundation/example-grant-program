@@ -113,6 +113,23 @@
   @apply mb-4 flex gap-2.5 before:h-5 before:w-5 before:flex-shrink-0 before:content-li;
 }
 
+.claim-ol {
+  @apply list-decimal;
+  margin-left: 1rem;
+  margin-top: 1rem;
+}
+.claim-ol li {
+  @apply mb-4 before:h-5 before:w-5;
+}
+
+.disclaimer-title {
+  @apply border-b border-light-35 p-10 font-header text-[36px] font-light;
+  text-align: center;
+  line-height: normal;
+  padding: 1rem 2.5rem;
+  font-size: 2em;
+}
+
 .disabled td:first-of-type {
   opacity: 0.25;
   pointer-events: none;

@@ -5,7 +5,7 @@ import {
   useSolanaAddress,
   useSuiAddress,
 } from './useAddress'
-import { useSession } from 'next-auth/react'
+
 import { Ecosystem } from '@components/Ecosystem'
 import { useCallback } from 'react'
 import { useSeiWalletContext } from '@components/wallets/Sei'
@@ -24,7 +24,9 @@ export function useGetEcosystemIdentity() {
   const seiAddress = useCosmosAddress('sei', connectedSeiWallet ?? undefined)
   const solanaAddress = useSolanaAddress()
   const suiAddress = useSuiAddress()
-  const { data } = useSession()
+  // TODO update logic to get discord data from lambda function execution
+  // const { data } = useSession()
+  const data = {} as any
 
   return useCallback(
     (ecosystem: Ecosystem) => {

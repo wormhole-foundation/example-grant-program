@@ -1,11 +1,16 @@
 import { Box } from '@components/Box'
-import { signOut, useSession } from 'next-auth/react'
+//import { signOut, useSession } from 'next-auth/react'
 import Loader from '@images/loader.inline.svg'
 import { useEffect } from 'react'
 
-const DiscordLogout = () => {
-  const { data: session, status } = useSession()
+function signOut() {
+  console.log('dummy sign-out')
+}
 
+const DiscordLogout = () => {
+  // TODO update logic to get discord data from lambda function execution
+  // const { data: session, status } = useSession()
+  const { session, status } = {} as any
   useEffect(() => {
     if (!(status === 'loading') && session) void signOut()
     if (session === null) window.close()

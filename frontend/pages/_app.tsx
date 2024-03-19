@@ -7,7 +7,6 @@ import { NextSeo } from 'next-seo'
 import { Toaster } from 'react-hot-toast'
 import { EVMWalletProvider } from '@components/wallets/EVM'
 import { CosmosWalletProvider } from '@components/wallets/Cosmos'
-import { SessionProvider } from 'next-auth/react'
 import { EcosystemProviders } from '@components/Ecosystem'
 
 import '../styles/globals.css'
@@ -18,7 +17,6 @@ import { Disclaimer } from '@components/modal/Disclaimer'
 import Script from 'next/script'
 
 import {
-  DisclaimerCheckStore,
   PathnameStore,
   resetOnVersionMismatch,
 } from 'utils/store'
@@ -46,7 +44,7 @@ function useRedirect(isVersionChecked: boolean) {
     // 2. there is a last state -> redirect to that page
     if (lastStep === null) router.replace('/')
     if (lastStep) router.replace(lastStep)
-  }, [isVersionChecked])
+  }, [isVersionChecked, lastStep, router, pathname])
 
   useEffect(() => {
     if (!isVersionChecked) return
@@ -73,13 +71,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
     setIsVersionChecked(true)
   }, [router])
 
-  useLayoutEffect(() => {
-    if (isVersionChecked) {
-      const wasRead = DisclaimerCheckStore.get()
-      if (wasRead === 'true') setDisclaimerWasRead(true)
-    }
-  }, [isVersionChecked])
-
   useRedirect(isVersionChecked)
 
   return (
@@ -98,7 +89,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   `}
       </Script>
       {isVersionChecked ? (
-        <SessionProvider>
           <SolanaWalletProvider>
             <AptosWalletProvider>
               <SuiWalletProvider>
@@ -127,7 +117,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
                         <Disclaimer
                           showModal={!disclaimerWasRead}
                           onAgree={() => {
-                            DisclaimerCheckStore.set('true')
                             setDisclaimerWasRead(true)
                           }}
                         />
@@ -138,7 +127,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
               </SuiWalletProvider>
             </AptosWalletProvider>
           </SolanaWalletProvider>
-        </SessionProvider>
       ) : (
         <></>
       )}
