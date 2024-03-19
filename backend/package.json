@@ -10,12 +10,16 @@
     "test": "jest --clearCache --coverage"
   },
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.535.0"
+    "@aws-sdk/client-secrets-manager": "^3.535.0",
+    "@coral-xyz/anchor": "^0.29.0",
+    "@solana/web3.js": "^1.91.1",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@swc/cli": "^0.3.10",
     "@swc/core": "^1.4.8",
     "@swc/jest": "^0.2.36",
+    "@types/aws-lambda": "^8.10.136",
     "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",
