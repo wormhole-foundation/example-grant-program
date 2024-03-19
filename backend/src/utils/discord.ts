@@ -6,7 +6,7 @@ import * as anchor from '@coral-xyz/anchor'
 
 const DISCORD_AUTH_ME_URL = 'https://discord.com/api/users/@me';
 
-export async function isAuthTokenValid (discordId: string, token: string): Promise<boolean> {
+export async function isAccessTokenValid (discordId: string, token: string): Promise<boolean> {
     try {
         const response = await fetch(DISCORD_AUTH_ME_URL, {
             headers: {
@@ -22,10 +22,11 @@ export async function isAuthTokenValid (discordId: string, token: string): Promi
     }
 }
 
+// TODO: Update IDL with wormhole token dispenser program IDL
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const coder = new anchor.BorshCoder(IDL as any)
 
-function hardDriveSignMessage(
+function hardDriveSignDigest(
   fullMessage: Uint8Array,
   keypair: Keypair
 ): SignedMessage {
@@ -37,12 +38,12 @@ function hardDriveSignMessage(
   }
 }
 
-export function signDiscordMessage(
+export function signDiscordDigest(
   username: string,
   claimant: PublicKey,
   dispenserGuard: Keypair
 ): SignedMessage {
-  return hardDriveSignMessage(
+  return hardDriveSignDigest(
     coder.types.encode('DiscordMessage', {
       username,
       claimant,

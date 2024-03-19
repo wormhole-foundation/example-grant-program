@@ -1,7 +1,7 @@
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { getSecret } from "../utils";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { isAuthTokenValid, signDiscordMessage } from "../utils/discord";
+import { isAccessTokenValid, signDiscordDigest } from "../utils/discord";
 
 interface DiscordSignedMessageRequest {
   publicKey: string;
@@ -13,36 +13,37 @@ exports.handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyRe
     const requestBody = JSON.parse(event.body!) as DiscordSignedMessageRequest;
     const { publicKey, discordId } = requestBody;
 
-    const authToken = event.headers["x-auth-token"];
+    const accessToken = event.headers["x-auth-token"];
 
     validatePublicKey(publicKey);
-    validateAuthTokenAndDiscordId(authToken, discordId);
+    validateAccessTokenAndDiscordId(accessToken, discordId);
 
-    await isAuthTokenValid(discordId, authToken!);
+    await isAccessTokenValid(discordId, accessToken!);
 
     const claimant = new PublicKey(publicKey!);
     const dispenserGuard = await loadDispenserGuard();
 
-    const signedMessage = signDiscordMessage(discordId, claimant, dispenserGuard);
+    const signedDigest = signDiscordDigest(discordId, claimant, dispenserGuard);
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        signature: Buffer.from(signedMessage.signature).toString("hex"),
-        publicKey: Buffer.from(signedMessage.publicKey).toString("hex"), // The dispenser guard's public key
-        fullMessage: Buffer.from(signedMessage.fullMessage).toString("hex"),
+        signature: Buffer.from(signedDigest.signature).toString("hex"),
+        publicKey: Buffer.from(signedDigest.publicKey).toString("hex"), // The dispenser guard's public key
+        fullMessage: Buffer.from(signedDigest.fullMessage).toString("hex"),
       }),
     };
   } catch (err) {
-    console.error("Error validating discord access token", err);
+    console.error("Error generating signed discord digest", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Error validating discord access token" }),
+      body: JSON.stringify({ error: "Error generating signed discord digest" }),
     };
   }
 };
 
 async function loadDispenserGuard() {
+  // TODO: Update secret name based on the secret you created in the AWS Secrets Manager
   const secretData = await getSecret("xli-test-secret-dispenser-guard");
   const dispenserGuardKey = secretData.target;
 
@@ -76,8 +77,8 @@ function validatePublicKey(publicKey?: string) {
   }
 }
 
-function validateAuthTokenAndDiscordId(authToken?: string, discordId?: string) {
-  if (!authToken) {
+function validateAccessTokenAndDiscordId(AccessToken?: string, discordId?: string) {
+  if (!AccessToken) {
     return {
       statusCode: 400,
       body: JSON.stringify({ error: "Must provide discord auth token" }),
