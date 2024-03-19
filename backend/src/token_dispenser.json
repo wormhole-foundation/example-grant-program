@@ -4,9 +4,7 @@
   "instructions": [
     {
       "name": "initialize",
-      "docs": [
-        "This can only be called once and should be called right after the program is deployed."
-      ],
+      "docs": ["This can only be called once and should be called right after the program is deployed."],
       "accounts": [
         {
           "name": "payer",
@@ -22,9 +20,7 @@
           "name": "mint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "Mint of the treasury"
-          ]
+          "docs": ["Mint of the treasury"]
         },
         {
           "name": "treasury",
@@ -51,10 +47,7 @@
         {
           "name": "merkleRoot",
           "type": {
-            "array": [
-              "u8",
-              20
-            ]
+            "array": ["u8", 20]
           }
         },
         {
@@ -91,10 +84,7 @@
           "name": "claimantFund",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "Claimant's associated token account to receive the tokens",
-            "Should be initialized outside of this program."
-          ]
+          "docs": ["Claimant's associated token account to receive the tokens", "Should be initialized outside of this program."]
         },
         {
           "name": "config",
@@ -158,10 +148,7 @@
           {
             "name": "merkleRoot",
             "type": {
-              "array": [
-                "u8",
-                20
-              ]
+              "array": ["u8", 20]
             }
           },
           {
@@ -359,10 +346,7 @@
             "name": "proofOfInclusion",
             "type": {
               "vec": {
-                "array": [
-                  "u8",
-                  20
-                ]
+                "array": ["u8", 20]
               }
             }
           }
@@ -392,10 +376,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               }
             ]
@@ -406,10 +387,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    20
-                  ]
+                  "array": ["u8", 20]
                 }
               }
             ]
@@ -420,10 +398,7 @@
               {
                 "name": "address",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               }
             ]
@@ -434,10 +409,7 @@
               {
                 "name": "address",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               }
             ]
@@ -487,10 +459,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    20
-                  ]
+                  "array": ["u8", 20]
                 }
               },
               {
@@ -508,10 +477,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               },
               {
@@ -526,10 +492,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               },
               {
@@ -548,10 +511,7 @@
               {
                 "name": "signature",
                 "type": {
-                  "array": [
-                    "u8",
-                    64
-                  ]
+                  "array": ["u8", 64]
                 }
               },
               {
@@ -561,10 +521,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    65
-                  ]
+                  "array": ["u8", 65]
                 }
               },
               {
@@ -579,10 +536,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    20
-                  ]
+                  "array": ["u8", 20]
                 }
               },
               {
