@@ -56,7 +56,9 @@ function validatePublicKey(publicKey?: string) {
   if (!publicKey) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: "Must provide the 'publicKey' query parameter" }),
+      body: JSON.stringify({
+        error: "Must provide the 'publicKey' query parameter",
+      }),
     };
   }
 
