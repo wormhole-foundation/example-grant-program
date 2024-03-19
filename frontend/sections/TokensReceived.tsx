@@ -19,7 +19,7 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
       <Box>
         <BoxTitle>
           <div className="flex items-center justify-between">
-            <h4 className="sm:text-[28px] ">🔮 Congratulations!</h4>
+            <h4 className="sm:text-[28px] ">Congratulations!</h4>
             <Button
               onClick={() => {
                 resetLocalState()

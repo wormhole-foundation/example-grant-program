@@ -98,7 +98,7 @@
 }
 
 .btn-square {
-  @apply before:btn-bg btn--dark relative flex h-[42px] w-[42px] items-center justify-center  transition-all before:bg-dark hover:text-dark hover:before:bg-light;
+  @apply relative flex h-[42px] w-[42px] items-center justify-center  border border-light-25 bg-black bg-opacity-25 transition-all hover:bg-light hover:text-black;
 }
 
 .btn--dark {
