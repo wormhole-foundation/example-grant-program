@@ -3,14 +3,14 @@ import { getSecret } from "../utils";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { isAccessTokenValid, signDiscordDigest } from "../utils/discord";
 
-interface DiscordSignedMessageRequest {
+interface DiscordSignedDigestRequest {
   publicKey: string;
   discordId: string;
 }
 
 exports.handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    const requestBody = JSON.parse(event.body!) as DiscordSignedMessageRequest;
+    const requestBody = JSON.parse(event.body!) as DiscordSignedDigestRequest;
     const { publicKey, discordId } = requestBody;
 
     const accessToken = event.headers["x-auth-token"];
