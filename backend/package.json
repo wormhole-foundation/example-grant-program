@@ -9,7 +9,9 @@
     "prettier": "prettier \"src/**/*.{json,js,jsx,ts,tsx}\" --write",
     "test": "jest --clearCache --coverage"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.535.0"
+  },
   "devDependencies": {
     "@swc/cli": "^0.3.10",
     "@swc/core": "^1.4.8",
