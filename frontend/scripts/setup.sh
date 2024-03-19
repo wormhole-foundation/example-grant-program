@@ -37,7 +37,7 @@ case $i in
     shift
     ;;
     -t|--test)
-    if [ "$dev" -eq 1 ] || [ "$csv" -eq 1 ]; then
+    if [ "$dev" -eq 1 ]; then
       usage
       exit
     else
@@ -84,16 +84,14 @@ function stop_anchor_localnet() {
   solana_pid=$(pgrep -f '[s]olana-test-validator' || true)
   if [ -n "$solana_pid" ]; then
     echo "killing solana-test-validator with pid: $solana_pid"
-    kill "$solana_pid"
+    kill -9 "$solana_pid"
+    pgrep -f 'solana-test-validator' | xargs kill -9
   else
     echo "No solana-test-validator process found to stop"
   fi
 }
 
 function cleanup() {
-  if [ "$verbose" -eq 1 ]; then
-    echo "cleaning up postgres docker"
-  fi
   if [ "$verbose" -eq 1 ]; then
       echo "shutting down solana-test-validator if running"
   fi
