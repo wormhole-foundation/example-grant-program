@@ -44,8 +44,8 @@ export const signDiscordMessage = async (event: APIGatewayProxyEvent): Promise<A
 
 async function loadDispenserGuard() {
   // TODO: Update secret name based on the secret you created in the AWS Secrets Manager
-  const secretData = await getSecret(process.env.DISPENSER_KEY_SECRET_NAME ?? "xli-test-secret-dispenser-guard");
-  const dispenserGuardKey = secretData.target;
+  const secretData = await getSecret(process.env.DISPENSER_KEY_SECRET_NAME ?? "xl-dispenser-guard-key");
+  const dispenserGuardKey = secretData.key;
 
   const dispenserGuard = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(dispenserGuardKey)));
 

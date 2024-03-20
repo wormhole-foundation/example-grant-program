@@ -4,7 +4,7 @@ import nacl from "tweetnacl";
 import IDL from "../token_dispenser.json";
 import * as anchor from "@coral-xyz/anchor";
 
-const DISCORD_AUTH_ME_URL = "https://discord.com/api/users/@me";
+const DISCORD_AUTH_ME_URL = "https://discord.com/api/v10/users/@me";
 
 export async function isAccessTokenValid(discordId: string, token: string): Promise<boolean> {
   try {
