@@ -50,7 +50,7 @@ async function loadFunderWallet(): Promise<NodeWallet> {
     process.env.FUNDER_WALLET_KEY_SECRET_NAME ??
       'xli-test-secret-funder-wallet',
   )
-  const funderWalletKey = secretData.target
+  const funderWalletKey = secretData.key
 
   const keypair = Keypair.fromSecretKey(new Uint8Array(funderWalletKey))
 
