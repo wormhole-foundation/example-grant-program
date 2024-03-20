@@ -50,7 +50,7 @@ function useRedirect(isVersionChecked: boolean) {
     if (!isVersionChecked) return
     // If the pathname for the current page is the once used for discord oauth,
     // don't store it.
-    if (pathname === '/discord-login' || pathname === '/discord-logout') return
+    if (pathname === '/auth/discord') return
     else
       PathnameStore.set(
         `${pathname}${params.toString() ? '?' + params.toString() : ''}`
