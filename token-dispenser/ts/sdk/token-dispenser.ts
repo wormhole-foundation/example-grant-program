@@ -8,7 +8,6 @@ import { derivePda } from './utils';
 
 const CONFIG_SEED_PREFIX = 'config';
 
-// export type ExampleTokenDispenser = 
 export class TokenDispenserSdk {
   readonly program: Program<TokenDispenser>;
   // readonly mint: PublicKey;
