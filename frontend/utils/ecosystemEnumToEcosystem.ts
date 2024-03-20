@@ -10,9 +10,9 @@ export function enumToSdkEcosystem(ecosystem: EnumEcosystem): SdkEcosystem {
     case EnumEcosystem.INJECTIVE:
       return 'injective'
     case EnumEcosystem.TERRA:
-      return 'cosmwasm'
+      return 'terra'
     case EnumEcosystem.OSMOSIS:
-      return 'cosmwasm'
+      return 'osmosis'
     case EnumEcosystem.SOLANA:
       return 'solana'
     case EnumEcosystem.SUI:
