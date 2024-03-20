@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && swc ./src -d ./dist --ignore \"**/*.test.ts,**/__test__/**\"",
-    "lint": "eslint \"src/**/*.{json,js,jsx,ts,tsx}\" && tsc --noemit",
+    "build": "tsc --noemit && rm -rf dist && swc ./src -d ./dist --ignore \"**/*.test.ts,**/__test__/**\"",
+    "lint": "eslint \"src/**/*.{json,js,jsx,ts,tsx}\"",
     "prettier": "prettier \"src/**/*.{json,js,jsx,ts,tsx}\" --write",
     "test": "jest --clearCache --coverage"
   },

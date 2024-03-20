@@ -16,7 +16,7 @@ export const fundTransaction = async (
 ): Promise<APIGatewayProxyResult> => {
   try {
     const requestBody = JSON.parse(event.body!) as FundTransactionRequest
-
+    validateFundTransactions(requestBody.transactions)
     const transactions = deserializeTransactions(requestBody.transactions)
     const isTransactionsValid = await checkTransactions(transactions)
 
@@ -40,7 +40,23 @@ export const fundTransaction = async (
     console.error('Error fully signing transactions', err)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error fully signing transactions' }),
+      body: JSON.stringify({ error: 'Internal server error' }),
+    }
+  }
+}
+
+function validateFundTransactions(transactions: unknown) {
+  if (!Array.isArray(transactions) || transactions.length === 0) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Must provide transactions' }),
+    }
+  }
+
+  if (transactions.length >= 10) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Too many transactions' }),
     }
   }
 }

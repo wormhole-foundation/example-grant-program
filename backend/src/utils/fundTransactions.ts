@@ -10,14 +10,12 @@ import { getSecret } from './index'
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
 
 export function deserializeTransactions(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transactions: any,
+  transactions: unknown,
 ): VersionedTransaction[] {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return transactions.map((serializedTx: any) => {
-      return VersionedTransaction.deserialize(Buffer.from(serializedTx))
-    })
+    return (transactions as Uint8Array[]).map((serializedTx) =>
+      VersionedTransaction.deserialize(Buffer.from(serializedTx)),
+    )
   } catch (err) {
     console.error('Failed to deserialize transactions', err)
     throw err

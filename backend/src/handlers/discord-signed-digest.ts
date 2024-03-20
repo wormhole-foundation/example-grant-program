@@ -39,7 +39,7 @@ export const signDiscordMessage = async (
     console.error('Error generating signed discord digest', err)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error generating signed discord digest' }),
+      body: JSON.stringify({ error: 'Internal server error' }),
     }
   }
 }
