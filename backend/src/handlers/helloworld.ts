@@ -4,7 +4,7 @@ export const handler = async () => {
   if (!process.env.SECRET_NAME) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'SECRET_NAME is not set' }),
+      body: JSON.stringify({ error: 'SECRET_NAME is not set' })
     }
   }
 
@@ -14,6 +14,6 @@ export const handler = async () => {
   console.log(`Hello ${target}`)
   return {
     statusCode: 200,
-    body: JSON.stringify({ message: `Hello ${target}` }),
+    body: JSON.stringify({ message: `Hello ${target}` })
   }
 }

@@ -8,13 +8,13 @@ const DISCORD_AUTH_ME_URL = 'https://discord.com/api/v10/users/@me'
 
 export async function isAccessTokenValid(
   discordId: string,
-  token: string,
+  token: string
 ): Promise<boolean> {
   try {
     const response = await fetch(DISCORD_AUTH_ME_URL, {
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     })
 
     const userData = await response.json()
@@ -31,26 +31,26 @@ const coder = new anchor.BorshCoder(IDL as any)
 
 function hardDriveSignDigest(
   fullMessage: Uint8Array,
-  keypair: Keypair,
+  keypair: Keypair
 ): SignedMessage {
   return {
     publicKey: keypair.publicKey.toBytes(),
     signature: nacl.sign.detached(fullMessage, keypair.secretKey),
     recoveryId: undefined,
-    fullMessage,
+    fullMessage
   }
 }
 
 export function signDiscordDigest(
   username: string,
   claimant: PublicKey,
-  dispenserGuard: Keypair,
+  dispenserGuard: Keypair
 ): SignedMessage {
   return hardDriveSignDigest(
     coder.types.encode('DiscordMessage', {
       username,
-      claimant,
+      claimant
     }),
-    dispenserGuard,
+    dispenserGuard
   )
 }

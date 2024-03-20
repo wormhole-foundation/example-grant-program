@@ -3,18 +3,18 @@ import {
   Ed25519Program,
   PublicKey,
   Secp256k1Program,
-  VersionedTransaction,
+  VersionedTransaction
 } from '@solana/web3.js'
 import { getSecret } from './index'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
 
 export function deserializeTransactions(
-  transactions: unknown,
+  transactions: unknown
 ): VersionedTransaction[] {
   try {
     return (transactions as Uint8Array[]).map((serializedTx) =>
-      VersionedTransaction.deserialize(Buffer.from(serializedTx)),
+      VersionedTransaction.deserialize(Buffer.from(serializedTx))
     )
   } catch (err) {
     console.error('Failed to deserialize transactions', err)
@@ -25,7 +25,7 @@ export function deserializeTransactions(
 async function loadTokenDispenserProgramId(): Promise<string> {
   const secretData = await getSecret(
     process.env.TOKEN_DISPENSER_PROGRAM_ID_SECRET_NAME ??
-      'xli-test-secret-token-dispenser-program-id',
+      'xli-test-secret-token-dispenser-program-id'
   )
   const programId = secretData.target
 
@@ -38,20 +38,18 @@ async function loadWhitelistedProgramIds(): Promise<PublicKey[]> {
     PROGRAM_ID,
     Secp256k1Program.programId,
     Ed25519Program.programId,
-    ComputeBudgetProgram.programId,
+    ComputeBudgetProgram.programId
   ]
 }
 
 export function checkAllProgramsWhitelisted(
   transaction: VersionedTransaction,
-  whitelist: PublicKey[],
+  whitelist: PublicKey[]
 ): boolean {
   for (const ix of transaction.message.compiledInstructions) {
     if (
       !whitelist.some((program) =>
-        transaction.message.staticAccountKeys[ix.programIdIndex].equals(
-          program,
-        ),
+        transaction.message.staticAccountKeys[ix.programIdIndex].equals(program)
       )
     ) {
       return false
@@ -65,12 +63,12 @@ export function checkV0(transaction: VersionedTransaction) {
 }
 
 export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
-  transaction: VersionedTransaction,
+  transaction: VersionedTransaction
 ) {
   for (const ix of transaction.message.compiledInstructions) {
     if (
       transaction.message.staticAccountKeys[ix.programIdIndex].equals(
-        ComputeBudgetProgram.programId,
+        ComputeBudgetProgram.programId
       )
     ) {
       if (ix.data[0] !== SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT) {
@@ -83,7 +81,7 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
 
 export function checkProgramAppears(
   transaction: VersionedTransaction,
-  program: PublicKey,
+  program: PublicKey
 ): boolean {
   for (const ix of transaction.message.compiledInstructions) {
     if (
@@ -96,7 +94,7 @@ export function checkProgramAppears(
 }
 
 export function countTotalSignatures(
-  transaction: VersionedTransaction,
+  transaction: VersionedTransaction
 ): number {
   return (
     transaction.signatures.length +
@@ -107,12 +105,12 @@ export function countTotalSignatures(
 
 export function countPrecompiledSignatures(
   transaction: VersionedTransaction,
-  program: PublicKey,
+  program: PublicKey
 ): number {
   return transaction.message.compiledInstructions
     .filter((ix) => {
       return transaction.message.staticAccountKeys[ix.programIdIndex].equals(
-        program,
+        program
       )
     })
     .reduce((acc, ix) => acc + ix.data[0], 0)
@@ -120,7 +118,7 @@ export function countPrecompiledSignatures(
 
 // TODO: Verify if this is the expected behavior
 export function checkNumberOfSignatures(
-  transaction: VersionedTransaction,
+  transaction: VersionedTransaction
 ): boolean {
   return countTotalSignatures(transaction) <= 3
 }
@@ -128,7 +126,7 @@ export function checkNumberOfSignatures(
 export function checkTransaction(
   transaction: VersionedTransaction,
   tokenDispenser: PublicKey,
-  whitelist: PublicKey[],
+  whitelist: PublicKey[]
 ): boolean {
   // TODO: Also check if priority fee/compute unit price is set, also can use helius api here to verify with some diff percentage
   return (
@@ -141,11 +139,11 @@ export function checkTransaction(
 }
 
 export async function checkTransactions(
-  transactions: VersionedTransaction[],
+  transactions: VersionedTransaction[]
 ): Promise<boolean> {
   const whitelist = await loadWhitelistedProgramIds()
 
   return transactions.every((tx) =>
-    checkTransaction(tx, whitelist[0], whitelist),
+    checkTransaction(tx, whitelist[0], whitelist)
   )
 }

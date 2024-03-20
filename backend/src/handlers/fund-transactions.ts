@@ -3,7 +3,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getSecret } from '../utils'
 import {
   checkTransactions,
-  deserializeTransactions,
+  deserializeTransactions
 } from '../utils/fundTransactions'
 import { Keypair } from '@solana/web3.js'
 
@@ -12,7 +12,7 @@ interface FundTransactionRequest {
 }
 
 export const fundTransaction = async (
-  event: APIGatewayProxyEvent,
+  event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
     const requestBody = JSON.parse(event.body!) as FundTransactionRequest
@@ -23,7 +23,7 @@ export const fundTransaction = async (
     if (!isTransactionsValid) {
       return {
         statusCode: 403,
-        body: JSON.stringify({ error: 'Unauthorized transactions' }),
+        body: JSON.stringify({ error: 'Unauthorized transactions' })
       }
     }
 
@@ -33,14 +33,14 @@ export const fundTransaction = async (
     return {
       statusCode: 200,
       body: JSON.stringify({
-        signedTransactions: signedTransactions.map((tx) => tx.serialize()),
-      }),
+        signedTransactions: signedTransactions.map((tx) => tx.serialize())
+      })
     }
   } catch (err) {
     console.error('Error fully signing transactions', err)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' }),
+      body: JSON.stringify({ error: 'Internal server error' })
     }
   }
 }
@@ -49,22 +49,21 @@ function validateFundTransactions(transactions: unknown) {
   if (!Array.isArray(transactions) || transactions.length === 0) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Must provide transactions' }),
+      body: JSON.stringify({ error: 'Must provide transactions' })
     }
   }
 
   if (transactions.length >= 10) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Too many transactions' }),
+      body: JSON.stringify({ error: 'Too many transactions' })
     }
   }
 }
 
 async function loadFunderWallet(): Promise<NodeWallet> {
   const secretData = await getSecret(
-    process.env.FUNDER_WALLET_KEY_SECRET_NAME ??
-      'xli-test-secret-funder-wallet',
+    process.env.FUNDER_WALLET_KEY_SECRET_NAME ?? 'xli-test-secret-funder-wallet'
   )
   const funderWalletKey = secretData.key
 

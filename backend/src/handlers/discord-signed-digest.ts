@@ -9,7 +9,7 @@ interface DiscordSignedDigestRequest {
 }
 
 export const signDiscordMessage = async (
-  event: APIGatewayProxyEvent,
+  event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
     const requestBody = JSON.parse(event.body!) as DiscordSignedDigestRequest
@@ -32,14 +32,14 @@ export const signDiscordMessage = async (
       body: JSON.stringify({
         signature: Buffer.from(signedDigest.signature).toString('hex'),
         publicKey: Buffer.from(signedDigest.publicKey).toString('hex'), // The dispenser guard's public key
-        fullMessage: Buffer.from(signedDigest.fullMessage).toString('hex'),
-      }),
+        fullMessage: Buffer.from(signedDigest.fullMessage).toString('hex')
+      })
     }
   } catch (err) {
     console.error('Error generating signed discord digest', err)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' }),
+      body: JSON.stringify({ error: 'Internal server error' })
     }
   }
 }
@@ -47,12 +47,12 @@ export const signDiscordMessage = async (
 async function loadDispenserGuard() {
   // TODO: Update secret name based on the secret you created in the AWS Secrets Manager
   const secretData = await getSecret(
-    process.env.DISPENSER_KEY_SECRET_NAME ?? 'xl-dispenser-guard-key',
+    process.env.DISPENSER_KEY_SECRET_NAME ?? 'xl-dispenser-guard-key'
   )
   const dispenserGuardKey = secretData.key
 
   const dispenserGuard = Keypair.fromSecretKey(
-    Uint8Array.from(JSON.parse(dispenserGuardKey)),
+    Uint8Array.from(JSON.parse(dispenserGuardKey))
   )
 
   return dispenserGuard
@@ -63,15 +63,15 @@ function validatePublicKey(publicKey?: string) {
     return {
       statusCode: 400,
       body: JSON.stringify({
-        error: "Must provide the 'publicKey' query parameter",
-      }),
+        error: "Must provide the 'publicKey' query parameter"
+      })
     }
   }
 
   if (typeof publicKey !== 'string') {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: "Invalid 'publicKey' query parameter" }),
+      body: JSON.stringify({ error: "Invalid 'publicKey' query parameter" })
     }
   }
 
@@ -80,26 +80,26 @@ function validatePublicKey(publicKey?: string) {
   } catch {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: "Invalid 'publicKey' query parameter" }),
+      body: JSON.stringify({ error: "Invalid 'publicKey' query parameter" })
     }
   }
 }
 
 function validateAccessTokenAndDiscordId(
   AccessToken?: string,
-  discordId?: string,
+  discordId?: string
 ) {
   if (!AccessToken) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Must provide discord auth token' }),
+      body: JSON.stringify({ error: 'Must provide discord auth token' })
     }
   }
 
   if (!discordId) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Must provide discord id' }),
+      body: JSON.stringify({ error: 'Must provide discord id' })
     }
   }
 }
