@@ -376,6 +376,7 @@ export class TokenDispenserProvider {
             },
           }
         }
+        case 'osmosis':
         case 'terra': {
           return {
             cosmwasm: {
@@ -426,6 +427,7 @@ export class TokenDispenserProvider {
             recoveryId: signedMessage.recoveryId!,
           })
         }
+        case 'osmosis':
         case 'terra': {
           return undefined
         }

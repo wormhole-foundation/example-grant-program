@@ -242,11 +242,11 @@ describe('integration test', () => {
 
     it('submits a cosmwasm claim', async () => {
       const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
-        'cosmwasm',
-        testWallets.cosmwasm[0].address()
+        'terra',
+        testWallets.terra[0].address()
       ))!
 
-      const signedMessage = await testWallets.cosmwasm[0].signMessage(
+      const signedMessage = await testWallets.terra[0].signMessage(
         tokenDispenserProvider.generateAuthorizationPayload()
       )
 
@@ -283,7 +283,7 @@ describe('integration test', () => {
       const cosmClaimEvent = txnEvents[0].event!
       expect(cosmClaimEvent.claimant.equals(wallet.publicKey)).toBeTruthy()
       expect(cosmClaimEvent.claimInfo.identity).toEqual({
-        cosmwasm: { address: testWallets.cosmwasm[0].address() },
+        cosmwasm: { address: testWallets.terra[0].address() },
       })
       expect(
         new anchor.BN(cosmClaimEvent.claimInfo.amount.toString()).eq(
@@ -300,14 +300,14 @@ describe('integration test', () => {
 
     it('submits multiple claims at once', async () => {
       const wallets: TestWallet[] = [
-        testWallets.cosmwasm[1],
-        testWallets.cosmwasm[2],
+        testWallets.terra[1],
+        testWallets.terra[2],
       ]
 
       const claims = await Promise.all(
         wallets.map(async (wallet) => {
           const { claimInfo, proofOfInclusion } =
-            (await mockFetchAmountAndProof('cosmwasm', wallet.address()))!
+            (await mockFetchAmountAndProof('terra', wallet.address()))!
           return {
             claimInfo,
             proofOfInclusion,
