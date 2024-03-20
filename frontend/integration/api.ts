@@ -9,7 +9,6 @@ import {
 } from '@solana/web3.js'
 import { NextApiRequest, NextApiResponse } from 'next'
 import {
-  getAmountAndProofRoute,
   getFundTransactionRoute,
   handleAmountAndProofResponse,
   handleFundTransaction,
@@ -37,6 +36,10 @@ const WHITELISTED_PROGRAMS: PublicKey[] = [
   Ed25519Program.programId,
   ComputeBudgetProgram.programId,
 ]
+
+function getAmountAndProofRoute(..._: any[]): string {
+  return ''
+}
 
 function lowerCapIfEvm(identity: string, ecosystem: string): string {
   if (ecosystem === 'evm') {

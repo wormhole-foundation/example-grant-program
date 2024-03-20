@@ -107,6 +107,7 @@ const Eligibility = ({
 type TableRowProps = {
   ecosystem: Ecosystem
 }
+
 function TableRow({ ecosystem }: TableRowProps) {
   const { activity } = useActivity()
   const getEcosystemIdentity = useGetEcosystemIdentity()
@@ -181,6 +182,7 @@ function TableRow({ ecosystem }: TableRowProps) {
     eligibility?.isClaimAlreadySubmitted,
     identity,
     isActive,
+    ecosystem,
   ])
 
   return (

@@ -1,29 +1,42 @@
 export const assets = [
   {
     $schema: '../assetlist.schema.json',
-    chain_name: 'neutron',
+    chain_name: 'terra',
     assets: [
       {
-        description: 'The native token of Neutron chain.',
+        description: 'The native staking token of Terra Classic.',
         denom_units: [
           {
-            denom: 'untrn',
+            denom: 'uluna',
             exponent: 0,
+            aliases: ['microluna'],
           },
           {
-            denom: 'ntrn',
+            denom: 'mluna',
+            exponent: 3,
+            aliases: ['milliluna'],
+          },
+          {
+            denom: 'luna',
             exponent: 6,
+            aliases: ['lunc'],
           },
         ],
-        base: 'untrn',
-        name: 'Neutron',
-        display: 'ntrn',
-        symbol: 'NTRN',
+        base: 'uluna',
+        name: 'Luna Classic',
+        display: 'luna',
+        symbol: 'LUNC',
         logo_URIs: {
-          png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/ntrn.png',
-          svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/ntrn.svg',
+          png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/luna.png',
+          svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/luna.svg',
         },
-        coingecko_id: 'neutron',
+        coingecko_id: 'terra-luna',
+        images: [
+          {
+            png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/luna.png',
+            svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/luna.svg',
+          },
+        ],
       },
     ],
   },
@@ -56,467 +69,368 @@ export const assets = [
       },
     ],
   },
-  {
-    $schema: '../assetlist.schema.json',
-    chain_name: 'sei',
-    assets: [
-      {
-        description: 'The native staking token of Sei.',
-        denom_units: [
-          {
-            denom: 'usei',
-            exponent: 0,
-          },
-          {
-            denom: 'sei',
-            exponent: 6,
-          },
-        ],
-        base: 'usei',
-        name: 'Sei',
-        display: 'sei',
-        symbol: 'SEI',
-        logo_URIs: {
-          png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/sei/images/sei.png',
-          svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/sei/images/sei.svg',
-        },
-        coingecko_id: 'sei-network',
-      },
-      {
-        description:
-          'OIN Token ($OIN) is a groundbreaking digital asset developed on the $SEI Blockchain. It transcends being merely a cryptocurrency; $OIN stands as a robust store of value, symbolizing the future of decentralized finance and its potential to reshape the crypto landscape.',
-        denom_units: [
-          {
-            denom: 'factory/sei12q0zv3c4cd9jkupn0krazdycc5ftw9wzt9vmhu/OIN',
-            exponent: 0,
-          },
-          {
-            denom: 'oin',
-            exponent: 6,
-          },
-        ],
-        address: 'sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w',
-        base: 'factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN',
-        name: 'OIN STORE OF VALUE',
-        display: 'oin',
-        symbol: 'OIN',
-        logo_URIs: {
-          png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/sei/images/oin.png',
-        },
-        coingecko_id: '',
-      },
-    ],
-  },
 ]
 
 export const chains = [
   {
     $schema: '../chain.schema.json',
-    chain_name: 'sei',
+    chain_name: 'terra',
     status: 'live',
-    website: 'https://www.sei.io/',
     network_type: 'mainnet',
-    pretty_name: 'Sei',
-    chain_id: 'pacific-1',
-    bech32_prefix: 'sei',
-    daemon_name: 'seid',
-    node_home: '$HOME/.sei',
-    key_algos: ['secp256k1'],
-    slip44: 118,
+    pretty_name: 'Terra Classic',
+    chain_id: 'columbus-5',
+    daemon_name: 'terrad',
+    node_home: '$HOME/.terra',
+    bech32_prefix: 'terra',
+    slip44: 330,
     fees: {
       fee_tokens: [
         {
-          denom: 'usei',
-          fixed_min_gas_price: 0.1,
-          low_gas_price: 0.1,
-          average_gas_price: 0.1,
-          high_gas_price: 0.25,
+          denom: 'uluna',
+          low_gas_price: 28.325,
+          average_gas_price: 28.325,
+          high_gas_price: 50,
+        },
+        {
+          denom: 'usdr',
+          low_gas_price: 0.52469,
+          average_gas_price: 0.52469,
+          high_gas_price: 0.52469,
+        },
+        {
+          denom: 'uusd',
+          low_gas_price: 0.75,
+          average_gas_price: 0.75,
+          high_gas_price: 0.75,
+        },
+        {
+          denom: 'ukrw',
+          low_gas_price: 850,
+          average_gas_price: 850,
+          high_gas_price: 850,
+        },
+        {
+          denom: 'umnt',
+          low_gas_price: 2142.855,
+          average_gas_price: 2142.855,
+          high_gas_price: 2142.855,
+        },
+        {
+          denom: 'ueur',
+          low_gas_price: 0.625,
+          average_gas_price: 0.625,
+          high_gas_price: 0.625,
+        },
+        {
+          denom: 'ucny',
+          low_gas_price: 4.9,
+          average_gas_price: 4.9,
+          high_gas_price: 4.9,
+        },
+        {
+          denom: 'ujpy',
+          low_gas_price: 81.85,
+          average_gas_price: 81.85,
+          high_gas_price: 81.85,
+        },
+        {
+          denom: 'ugbp',
+          low_gas_price: 0.55,
+          average_gas_price: 0.55,
+          high_gas_price: 0.55,
+        },
+        {
+          denom: 'uinr',
+          low_gas_price: 54.4,
+          average_gas_price: 54.4,
+          high_gas_price: 54.4,
+        },
+        {
+          denom: 'ucad',
+          low_gas_price: 0.95,
+          average_gas_price: 0.95,
+          high_gas_price: 0.95,
+        },
+        {
+          denom: 'uchf',
+          low_gas_price: 0.7,
+          average_gas_price: 0.7,
+          high_gas_price: 0.7,
+        },
+        {
+          denom: 'uaud',
+          low_gas_price: 0.95,
+          average_gas_price: 0.95,
+          high_gas_price: 0.95,
+        },
+        {
+          denom: 'usgd',
+          low_gas_price: 1,
+          average_gas_price: 1,
+          high_gas_price: 1,
+        },
+        {
+          denom: 'uthb',
+          low_gas_price: 23.1,
+          average_gas_price: 23.1,
+          high_gas_price: 23.1,
+        },
+        {
+          denom: 'usek',
+          low_gas_price: 6.25,
+          average_gas_price: 6.25,
+          high_gas_price: 6.25,
+        },
+        {
+          denom: 'unok',
+          low_gas_price: 6.25,
+          average_gas_price: 6.25,
+          high_gas_price: 6.25,
+        },
+        {
+          denom: 'udkk',
+          low_gas_price: 4.5,
+          average_gas_price: 4.5,
+          high_gas_price: 4.5,
+        },
+        {
+          denom: 'uidr',
+          low_gas_price: 10900,
+          average_gas_price: 10900,
+          high_gas_price: 10900,
+        },
+        {
+          denom: 'uphp',
+          low_gas_price: 38,
+          average_gas_price: 38,
+          high_gas_price: 38,
+        },
+        {
+          denom: 'uhkd',
+          low_gas_price: 5.85,
+          average_gas_price: 5.85,
+          high_gas_price: 5.85,
+        },
+        {
+          denom: 'umyr',
+          low_gas_price: 3,
+          average_gas_price: 3,
+          high_gas_price: 3,
+        },
+        {
+          denom: 'utwd',
+          low_gas_price: 20,
+          average_gas_price: 20,
+          high_gas_price: 20,
         },
       ],
     },
     staking: {
       staking_tokens: [
         {
-          denom: 'usei',
+          denom: 'uluna',
         },
       ],
     },
     codebase: {
-      git_repo: 'https://github.com/sei-protocol/sei-chain',
-      recommended_version: 'v3.0.9',
-      compatible_versions: ['v3.0.9'],
-      ibc_go_version: 'v3.1.0',
-      cosmos_sdk_version: 'v0.45.10',
-      cosmwasm_version: 'v0.27.0',
-      cosmwasm_enabled: true,
-      cosmwasm_path: '$HOME/.sei/wasm',
+      git_repo: 'https://github.com/classic-terra/core',
+      recommended_version: 'v2.1.1',
+      compatible_versions: ['v2.1.1'],
       genesis: {
-        genesis_url:
-          'https://raw.githubusercontent.com/sei-protocol/testnet/main/pacific-1/genesis.json',
+        name: '1.0.5',
+        genesis_url: 'https://tfl-columbus-5.s3.amazonaws.com/genesis.json',
       },
       versions: [
         {
-          name: '',
-          recommended_version: '3.0.8',
-          compatible_versions: ['3.0.8'],
-          ibc_go_version: 'v3.0.0',
-          cosmos_sdk_version: 'v0.45.10',
-          cosmwasm_version: 'v0.27.0',
-          cosmwasm_enabled: true,
-          cosmwasm_path: '$HOME/.sei/wasm',
-          next_version_name: 'v3.0.9',
+          name: '1.0.5',
+          tag: 'v1.0.5-full-archive',
+          height: 0,
+          next_version_name: '1.1.0',
+          binaries: {
+            'linux/amd64':
+              'https://github.com/terra-money/classic-core/releases/download/v1.0.5-full-archive/terra_1.0.5_Linux_x86_64.tar.gz?checksum=sha256:af3ee3bd99bd719d6d9a93a40af9f0bc49bb3866c68e923e284876784126f38c',
+          },
         },
         {
-          name: 'v3.0.9',
-          recommended_version: 'v3.0.9',
-          compatible_versions: ['v3.0.9'],
-          proposal: 24,
-          height: 25259000,
-          ibc_go_version: 'v3.1.0',
-          cosmos_sdk_version: 'v0.45.10',
-          cosmwasm_version: 'v0.27.0',
+          name: '1.1.0',
+          tag: 'v1.1.0',
+          height: 11734000,
+          recommended_version: 'v1.1.0',
+          compatible_versions: ['v1.1.0'],
+          next_version_name: '2.0.1',
+          binaries: {
+            'linux/amd64':
+              'https://github.com/terra-money/classic-core/releases/download/v1.1.0/terra_1.1.0_Linux_x86_64.tar.gz?checksum=sha256:fd83c14bcfadea36ad444c219ab557b9d65d2f74be0684498a5c41e3df7cb535',
+          },
+        },
+        {
+          name: '2.0.1',
+          tag: 'v2.0.1',
+          height: 12815210,
+          cosmos_sdk_version: '0.45.13',
           cosmwasm_enabled: true,
-          cosmwasm_path: '$HOME/.sei/wasm',
-          next_version_name: '',
+          cosmwasm_version: '0.16.7',
+          ibc_go_version: '1.3.1',
+          consensus: {
+            type: 'tendermint',
+            version: '0.34.24',
+          },
+          binaries: {
+            'linux/amd64':
+              'https://github.com/terra-money/classic-core/releases/download/v2.0.1/terra_2.0.1_Linux_x86_64.tar.gz?checksum=sha256:b9edfd51080c9c9ae16b30afd1b8490d7278e51d521ccc0f2afcbb7e3b389b8d',
+          },
+        },
+        {
+          name: '2.1.1',
+          tag: 'v2.1.1',
+          height: 13215800,
+          cosmos_sdk_version: '0.45.14',
+          cosmwasm_enabled: true,
+          cosmwasm_version: '0.30.0',
+          ibc_go_version: '4.3.1',
+          consensus: {
+            type: 'tendermint',
+            version: '0.34.24',
+          },
+          binaries: {
+            'linux/amd64':
+              'https://github.com/terra-money/classic-core/releases/download/v2.1.1/terra_2.1.1_Linux_x86_64.tar.gz?checksum=sha256:9bf91be244af95f1afcf7fc1ddb1852aa96651adf94e9668c16c7df5596100d6',
+          },
         },
       ],
     },
     logo_URIs: {
-      png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/sei/images/sei.png',
-      svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/sei/images/sei.svg',
+      png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/luna.png',
+      svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/luna.svg',
     },
     peers: {
       seeds: [
         {
-          id: '20e1000e88125698264454a884812746c2eb4807',
-          address: 'seeds.lavenderfive.com:11956',
-          provider: 'Lavender.Five Nodes 🐝',
+          id: 'ebc272824924ea1a27ea3183dd0b9ba713494f83',
+          address: 'terraclassic-mainnet-seed.autostake.com:26676',
+          provider: 'AutoStake 🛡️ Slash Protected',
         },
         {
-          id: '7cbcea0b3041960d1d7b8a6a2eccce0e1f7add50',
-          address: 'seeds.whispernode.com:11956',
-          provider: 'WhisperNode 🤐',
+          id: 'b1bdf6249fb58b4c8284aff8a9c5b2804d822261',
+          address: 'seed.terra.synergynodes.com:26656',
+          provider: 'www.synergynodes.com',
+        },
+        {
+          id: '65d86ab6024153286b823a3950e9055478effb04',
+          address: 'terra.inotel.ro:26656',
+          provider: 'www.inotel.ro',
+        },
+        {
+          id: '8542cd7e6bf9d260fef543bc49e59be5a3fa9074',
+          address: 'seed.publicnode.com:26656',
+          provider: 'Allnodes ⚡️ Nodes & Staking',
         },
       ],
       persistent_peers: [
         {
-          id: '20e1000e88125698264454a884812746c2eb4807',
-          address: 'seeds.lavenderfive.com:11956',
-          provider: 'Lavender.Five Nodes 🐝',
+          id: 'ebc272824924ea1a27ea3183dd0b9ba713494f83',
+          address: 'terraclassic-mainnet-peer.autostake.com:26676',
+          provider: 'AutoStake 🛡️ Slash Protected',
+        },
+        {
+          id: 'b1bdf6249fb58b4c8284aff8a9c5b2804d822261',
+          address: 'seed.terra.synergynodes.com:26656',
+          provider: 'www.synergynodes.com',
+        },
+        {
+          id: '65d86ab6024153286b823a3950e9055478effb04',
+          address: 'terra.inotel.ro:26656',
+          provider: 'www.inotel.ro',
         },
       ],
     },
     apis: {
       rpc: [
         {
-          address: 'https://sei-rpc.lavenderfive.com:443',
-          provider: 'Lavender.Five Nodes 🐝',
+          address: 'https://terra-classic-rpc.publicnode.com:443',
+          provider: 'Allnodes ⚡️ Nodes & Staking',
         },
         {
-          address: 'https://sei-rpc.polkachu.com/',
-          provider: 'polkachu.com',
+          address: 'https://rpc-terra-ia.cosmosia.notional.ventures/',
+          provider: 'Notional',
         },
         {
-          address: 'https://sei-rpc.brocha.in/',
-          provider: 'Brochain',
+          address: 'https://terraclassic-mainnet-rpc.autostake.com:443',
+          provider: 'AutoStake 🛡️ Slash Protected',
         },
         {
-          address: 'https://rpc-sei.stingray.plus/',
-          provider: 'StingRay',
-        },
-        {
-          address: 'https://rpc-sei.rhinostake.com',
-          provider: 'RHINO',
-        },
-        {
-          address: 'https://rpc-sei.whispernode.com:443',
-          provider: 'WhisperNode 🤐',
+          address: 'https://terraclassic-rpc-server-01.stakely.io',
+          provider: 'Stakely',
         },
       ],
       rest: [
         {
-          address: 'https://sei-api.lavenderfive.com:443',
-          provider: 'Lavender.Five Nodes 🐝',
+          address: 'https://terra-classic-lcd.publicnode.com',
+          provider: 'Allnodes ⚡️ Nodes & Staking',
         },
         {
-          address: 'https://sei-api.polkachu.com/',
-          provider: 'polkachu.com',
+          address: 'https://api-terra-ia.cosmosia.notional.ventures/',
+          provider: 'Notional',
         },
         {
-          address: 'https://sei-rest.brocha.in/',
-          provider: 'Brochain',
+          address: 'https://terraclassic-mainnet-lcd.autostake.com:443',
+          provider: 'AutoStake 🛡️ Slash Protected',
         },
         {
-          address: 'https://api-sei.stingray.plus/',
-          provider: 'StingRay',
-        },
-        {
-          address: 'https://rest-sei.rhinostake.com',
-          provider: 'RHINO',
-        },
-        {
-          address: 'https://lcd-sei.whispernode.com:443',
-          provider: 'WhisperNode 🤐',
+          address: 'https://terraclassic-lcd-server-01.stakely.io',
+          provider: 'Stakely',
         },
       ],
       grpc: [
         {
-          address: 'https://sei-grpc.lavenderfive.com:443',
-          provider: 'Lavender.Five Nodes 🐝',
+          address: 'grpc.terrarebels.net',
+          provider: 'Terra Rebels',
         },
         {
-          address: 'https://sei-grpc.polkachu.com:11990/',
-          provider: 'polkachu.com',
+          address: 'terra-classic-grpc.publicnode.com:443',
+          provider: 'Allnodes ⚡️ Nodes & Staking',
         },
         {
-          address: 'https://grpc-sei.whispernode.com:443',
-          provider: 'WhisperNode 🤐',
+          address: 'grpc-terra-ia.cosmosia.notional.ventures:443',
+          provider: 'Notional',
+        },
+        {
+          address: 'terraclassic-mainnet-grpc.autostake.com:443',
+          provider: 'AutoStake 🛡️ Slash Protected',
         },
       ],
     },
     explorers: [
       {
         kind: 'ping.pub',
-        url: 'https://ping.pub/sei',
-        tx_page: 'https://ping.pub/sei/tx/${txHash}',
-        account_page: 'https://ping.pub/sei/account/${accountAddress}',
+        url: 'https://ping.pub/terra-luna',
+        tx_page: 'https://ping.pub/terra-luna/tx/${txHash}',
       },
       {
-        kind: 'mintscan',
-        url: 'https://www.mintscan.io/sei',
-        tx_page: 'https://www.mintscan.io/sei/transactions/${txHash}',
-        account_page: 'https://www.mintscan.io/sei/accounts/${accountAddress}',
+        kind: 'atomscan',
+        url: 'https://atomscan.com/terra',
+        tx_page: 'https://atomscan.com/terra/transactions/${txHash}',
+        account_page: 'https://atomscan.com/terra/accounts/${accountAddress}',
       },
       {
-        kind: 'seiscan',
-        url: 'https://www.seiscan.app/pacific-1',
-        tx_page: 'https://www.seiscan.app/pacific-1/txs/${txHash}',
+        kind: 'finder',
+        url: 'https://finder.terra.money/classic',
+        tx_page: 'https://finder.terra.money/classic/tx/${txHash}',
         account_page:
-          'https://www.seiscan.app/pacific-1/accounts/${accountAddress}',
+          'https://finder.terra.money/classic/address/${accountAddress}',
+      },
+      {
+        kind: 'finder',
+        url: 'https://finder.terrarebels.net/classic',
+        tx_page: 'https://finder.terrarebels.net/classic/tx/${txHash}',
+        account_page:
+          'https://finder.terrarebels.net/classic/address/${accountAddress}',
       },
     ],
-  },
-  {
-    $schema: '../chain.schema.json',
-    chain_name: 'neutron',
-    status: 'live',
-    network_type: 'mainnet',
-    pretty_name: 'Neutron',
-    chain_id: 'neutron-1',
-    bech32_prefix: 'neutron',
-    daemon_name: 'neutrond',
-    node_home: '$HOME/.neutrond',
-    key_algos: ['secp256k1'],
-    slip44: 118,
-    fees: {
-      fee_tokens: [
-        {
-          denom: 'untrn',
-          low_gas_price: 0.01,
-          average_gas_price: 0.025,
-          high_gas_price: 0.05,
-        },
-      ],
-    },
-    staking: {
-      staking_tokens: [
-        {
-          denom: 'untrn',
-        },
-      ],
-    },
-    codebase: {
-      git_repo: 'https://github.com/neutron-org/neutron',
-      recommended_version: 'v1.0.4',
-      compatible_versions: ['v1.0.3', 'v1.0.4'],
-      cosmos_sdk_version: '0.45',
-      consensus: {
-        type: 'tendermint',
-        version: '0.34',
-      },
-      cosmwasm_version: '0.31',
-      cosmwasm_enabled: true,
-      ibc_go_version: '4.3.0',
-      genesis: {
-        genesis_url:
-          'https://raw.githubusercontent.com/neutron-org/mainnet-assets/main/neutron-1-genesis.json',
-      },
-      versions: [
-        {
-          name: 'v1.0.1',
-          recommended_version: 'v1.0.4',
-          compatible_versions: ['v1.0.3', 'v1.0.4'],
-          cosmos_sdk_version: '0.45',
-          consensus: {
-            type: 'tendermint',
-            version: '0.34',
-          },
-          cosmwasm_version: '0.31',
-          cosmwasm_enabled: true,
-          ibc_go_version: '4.3.0',
-        },
-      ],
-    },
-    logo_URIs: {
-      png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/neutron-black-logo.png',
-      svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/neutron-black-logo.svg',
-    },
-    peers: {
-      seeds: [
-        {
-          id: '24f609fb5946ca3a979f40b7f54132c00104433e',
-          address: 'p2p-erheim.neutron-1.neutron.org:26656',
-          provider: 'Neutron',
-        },
-        {
-          id: 'b1c6fa570a184c56d0d736d260b8065d887e717c',
-          address: 'p2p-kralum.neutron-1.neutron.org:26656',
-          provider: 'Neutron',
-        },
-        {
-          id: '20e1000e88125698264454a884812746c2eb4807',
-          address: 'seeds.lavenderfive.com:19156',
-          provider: 'Lavender.Five Nodes 🐝',
-        },
-        {
-          id: 'f4422e68f9a678838522d75fa8221985c723294d',
-          address: 'seeds.whispernode.com:19156',
-          provider: 'WhisperNode🤐',
-        },
-        {
-          id: 'e1b058e5cfa2b836ddaa496b10911da62dcf182e',
-          address: 'neutron-seed-de.allnodes.me:26656',
-          provider: 'Allnodes.com ⚡️ Nodes & Staking',
-        },
-        {
-          id: 'e726816f42831689eab9378d5d577f1d06d25716',
-          address: 'neutron-seed-us.allnodes.me:26656',
-          provider: 'Allnodes.com ⚡️ Nodes & Staking',
-        },
-      ],
-      persistent_peers: [
-        {
-          id: 'e5d2743d9a3de514e4f7b9461bf3f0c1500c58d9',
-          address: 'neutron.peer.stakewith.us:39956',
-          provider: 'StakeWithUs',
-        },
-      ],
-    },
-    apis: {
-      rpc: [
-        {
-          address: 'https://rpc-kralum.neutron-1.neutron.org',
-          provider: 'Neutron',
-        },
-        {
-          address: 'https://rpc.novel.remedy.tm.p2p.org',
-          provider: 'P2P',
-        },
-        {
-          address: 'https://neutron-rpc.lavenderfive.com',
-          provider: 'Lavender.Five Nodes 🐝',
-        },
-        {
-          address: 'https://rpc-neutron.whispernode.com',
-          provider: 'WhisperNode🤐',
-        },
-        {
-          address: 'https://rpc-neutron.cosmos-spaces.cloud',
-          provider: 'Cosmos Spaces',
-        },
-        {
-          address: 'http://posthuman-neutron-rpc.ingress.europlots.com',
-          provider: 'POSTHUMAN ꝏ DVS',
-        },
-        {
-          address: 'http://rpc.neutron.nodestake.top',
-          provider: 'NodeStake',
-        },
-        {
-          address: 'https://neutron-rpc.publicnode.com',
-          provider: 'Allnodes.com ⚡️ Nodes & Staking',
-        },
-        {
-          address: 'https://community.nuxian-node.ch:6797/neutron/trpc',
-          provider: 'PRO Delegators',
-        },
-      ],
-      rest: [
-        {
-          address: 'https://rest-kralum.neutron-1.neutron.org',
-          provider: 'Neutron',
-        },
-        {
-          address: 'https://api.novel.remedy.tm.p2p.org',
-          provider: 'P2P',
-        },
-        {
-          address: 'https://neutron-api.lavenderfive.com',
-          provider: 'Lavender.Five Nodes 🐝',
-        },
-        {
-          address: 'https://lcd-neutron.whispernode.com',
-          provider: 'WhisperNode🤐',
-        },
-        {
-          address: 'https://api-neutron.cosmos-spaces.cloud',
-          provider: 'Cosmos Spaces',
-        },
-        {
-          address: 'http://api.neutron.nodestake.top',
-          provider: 'NodeStake',
-        },
-        {
-          address: 'https://neutron-rest.publicnode.com',
-          provider: 'Allnodes.com ⚡️ Nodes & Staking',
-        },
-        {
-          address: 'https://community.nuxian-node.ch:6797/neutron/crpc',
-          provider: 'PRO Delegators',
-        },
-      ],
-      grpc: [
-        {
-          address: 'grpc-kralum.neutron-1.neutron.org:80',
-          provider: 'Neutron',
-        },
-        {
-          address: 'https://grpc.novel.remedy.tm.p2p.org',
-          provider: 'P2P',
-        },
-        {
-          address: 'https://grpc-web.novel.remedy.tm.p2p.org',
-          provider: 'P2P',
-        },
-        {
-          address: 'neutron-grpc.lavenderfive.com:443',
-          provider: 'Lavender.Five Nodes 🐝',
-        },
-        {
-          address: 'grpc-neutron.whispernode.com:443',
-          provider: 'WhisperNode🤐',
-        },
-        {
-          address: 'grpc-neutron.cosmos-spaces.cloud:3090',
-          provider: 'Cosmos Spaces',
-        },
-        {
-          address: 'grpc.neutron.nodestake.top:9090',
-          provider: 'NodeStake',
-        },
-        {
-          address: 'neutron-grpc.publicnode.com:443',
-          provider: 'Allnodes.com ⚡️ Nodes & Staking',
-        },
-      ],
-    },
-    explorers: [
+    images: [
       {
-        kind: 'Mintscan',
-        url: 'https://www.mintscan.io/neutron',
-        tx_page: 'https://www.mintscan.io/neutron/transactions/${txHash}',
-        account_page:
-          'https://www.mintscan.io/neutron/accounts/${accountAddress}',
+        png: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/luna.png',
+        svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/terra/images/luna.svg',
       },
     ],
   },

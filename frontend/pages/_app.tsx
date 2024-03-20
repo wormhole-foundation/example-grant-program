@@ -11,7 +11,6 @@ import { CosmosWalletProvider } from '@components/wallets/Cosmos'
 import { EcosystemProviders } from '@components/Ecosystem'
 
 import '../styles/globals.css'
-import { SeiProvider } from '@components/wallets/Sei'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@components/Layout'
 import { Disclaimer } from '@components/modal/Disclaimer'
@@ -30,7 +29,7 @@ function useRedirect(isVersionChecked: boolean) {
 
   const router = useRouter()
 
-  // temp disable to get the nav working
+  // temp disable to get the nav working - TODO Review this before live
 
   // We will only redirect on the first load
   // useLayoutEffect(() => {
@@ -71,7 +70,9 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
     setIsVersionChecked(true)
   }, [router])
 
-  useRedirect(isVersionChecked)
+  // TODO Review this, we should check if the user
+  // loads the page, we should redirect to welcome pages again
+  // useRedirect(isVersionChecked)
 
   return (
     <>
@@ -81,31 +82,29 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
             <SuiWalletProvider>
               <EVMWalletProvider>
                 <CosmosWalletProvider>
-                  <SeiProvider>
-                    {/* WARN: EcosystemProviders might use wallet provider addresses and hence
+                  {/* WARN: EcosystemProviders might use wallet provider addresses and hence
                  They should be inside all those providers. */}
-                    <EcosystemProviders>
-                      <Layout>
-                        <DefaultSeo {...SEO} />
-                        <Component {...pageProps} />
-                      </Layout>
-                      <Toaster
-                        position="bottom-left"
-                        toastOptions={{
-                          style: {
-                            wordBreak: 'break-word',
-                          },
-                        }}
-                        reverseOrder={false}
-                      />
-                      <Disclaimer
-                        showModal={!disclaimerWasRead}
-                        onAgree={() => {
-                          setDisclaimerWasRead(true)
-                        }}
-                      />
-                    </EcosystemProviders>
-                  </SeiProvider>
+                  <EcosystemProviders>
+                    <Layout>
+                     <DefaultSeo {...SEO} />
+                      <Component {...pageProps} />
+                    </Layout>
+                    <Toaster
+                      position="bottom-left"
+                      toastOptions={{
+                        style: {
+                          wordBreak: 'break-word',
+                        },
+                      }}
+                      reverseOrder={false}
+                    />
+                    <Disclaimer
+                      showModal={!disclaimerWasRead}
+                      onAgree={() => {
+                        setDisclaimerWasRead(true)
+                      }}
+                    />
+                  </EcosystemProviders>
                 </CosmosWalletProvider>
               </EVMWalletProvider>
             </SuiWalletProvider>

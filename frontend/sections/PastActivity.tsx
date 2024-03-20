@@ -3,7 +3,7 @@ import { CheckBox } from '@components/CheckBox'
 import { Ecosystem } from '@components/Ecosystem'
 import { useActivity } from '@components/Ecosystem/ActivityProvider'
 import { BackButton, ProceedButton } from '@components/buttons'
-import { useCallback, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useState } from 'react'
 import { StepProps } from './common'
 import { BoxTitle } from '@components/BoxTitle'
 
@@ -43,15 +43,18 @@ export const PastActivity = ({ onBack, onProceed }: StepProps) => {
           <p className="mb-6 font-light">I am active on…</p>
           <div className="mb-6 grid max-w-[420px] grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {Object.values(Ecosystem).map((ecosystem) => {
-              if (ecosystem === Ecosystem.DISCORD) return <></>
-              else
+              if (ecosystem === Ecosystem.DISCORD) {
+                return <Fragment key={ecosystem}></Fragment>
+              } else {
                 return (
                   <CheckBox
+                    key={ecosystem}
                     label={ecosystem}
                     isActive={activity[ecosystem] === true}
                     onChange={onChangeForEcosystem(ecosystem)}
                   />
                 )
+              }
             })}
           </div>
           <p className="mb-6 font-light">I am an active member of…</p>
