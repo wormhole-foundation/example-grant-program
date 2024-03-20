@@ -13,7 +13,7 @@ export function Disclaimer({ onAgree, showModal }: DisclaimerProps) {
   return showModal ? (
     <ModalWrapper>
       <div className="relative max-h-[80vh] w-full max-w-[588px] border border-light-35 bg-darkGray1">
-        <h3 className=" border-b border-light-35 p-10 font-header text-[36px] font-light">
+        <h3 className="disclaimer-title">
           {'Supplemental Token Airdrop Terms'}
         </h3>
         <div className="scrollbar flex max-h-[300px] flex-col gap-3 overflow-auto border-b border-light-35 px-10 py-5 font-body text-base font-light leading-5 tracking-widest">

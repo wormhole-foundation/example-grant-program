@@ -15,11 +15,7 @@ import { Layout } from '@components/Layout'
 import { Disclaimer } from '@components/modal/Disclaimer'
 import Script from 'next/script'
 
-import {
-  DisclaimerCheckStore,
-  PathnameStore,
-  resetOnVersionMismatch,
-} from 'utils/store'
+import { PathnameStore, resetOnVersionMismatch } from 'utils/store'
 
 function useRedirect(isVersionChecked: boolean) {
   // We are fetching it here and not in useEffect
@@ -71,13 +67,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
     setIsVersionChecked(true)
   }, [router])
 
-  useLayoutEffect(() => {
-    if (isVersionChecked) {
-      const wasRead = DisclaimerCheckStore.get()
-      if (wasRead === 'true') setDisclaimerWasRead(true)
-    }
-  }, [isVersionChecked])
-
   useRedirect(isVersionChecked)
 
   return (
@@ -102,7 +91,7 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
               <EVMWalletProvider>
                 <CosmosWalletProvider>
                   {/* WARN: EcosystemProviders might use wallet provider addresses and hence
-                They should be inside all those providers. */}
+                 They should be inside all those providers. */}
                   <EcosystemProviders>
                     <Layout>
                       <NextSeo
@@ -123,7 +112,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
                     <Disclaimer
                       showModal={!disclaimerWasRead}
                       onAgree={() => {
-                        DisclaimerCheckStore.set('true')
                         setDisclaimerWasRead(true)
                       }}
                     />
