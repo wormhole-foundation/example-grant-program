@@ -96,43 +96,43 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   `}
       </Script>
       {isVersionChecked ? (
-          <SolanaWalletProvider>
-            <AptosWalletProvider>
-              <SuiWalletProvider>
-                <EVMWalletProvider>
-                  <CosmosWalletProvider>
-                    {/* WARN: EcosystemProviders might use wallet provider addresses and hence
+        <SolanaWalletProvider>
+          <AptosWalletProvider>
+            <SuiWalletProvider>
+              <EVMWalletProvider>
+                <CosmosWalletProvider>
+                  {/* WARN: EcosystemProviders might use wallet provider addresses and hence
                 They should be inside all those providers. */}
-                    <EcosystemProviders>
-                      <Layout>
-                        <NextSeo
-                          title="Pyth Network Retrospective Airdrop"
-                          description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
-                        />
-                        <Component {...pageProps} />
-                      </Layout>
-                      <Toaster
-                        position="bottom-left"
-                        toastOptions={{
-                          style: {
-                            wordBreak: 'break-word',
-                          },
-                        }}
-                        reverseOrder={false}
+                  <EcosystemProviders>
+                    <Layout>
+                      <NextSeo
+                        title="Pyth Network Retrospective Airdrop"
+                        description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
                       />
-                      <Disclaimer
-                        showModal={!disclaimerWasRead}
-                        onAgree={() => {
-                          DisclaimerCheckStore.set('true')
-                          setDisclaimerWasRead(true)
-                        }}
-                      />
-                    </EcosystemProviders>
-                  </CosmosWalletProvider>
-                </EVMWalletProvider>
-              </SuiWalletProvider>
-            </AptosWalletProvider>
-          </SolanaWalletProvider>
+                      <Component {...pageProps} />
+                    </Layout>
+                    <Toaster
+                      position="bottom-left"
+                      toastOptions={{
+                        style: {
+                          wordBreak: 'break-word',
+                        },
+                      }}
+                      reverseOrder={false}
+                    />
+                    <Disclaimer
+                      showModal={!disclaimerWasRead}
+                      onAgree={() => {
+                        DisclaimerCheckStore.set('true')
+                        setDisclaimerWasRead(true)
+                      }}
+                    />
+                  </EcosystemProviders>
+                </CosmosWalletProvider>
+              </EVMWalletProvider>
+            </SuiWalletProvider>
+          </AptosWalletProvider>
+        </SolanaWalletProvider>
       ) : (
         <></>
       )}
