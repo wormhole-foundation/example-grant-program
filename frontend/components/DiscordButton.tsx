@@ -19,7 +19,7 @@ const newTab = (url: string, title: string) => {
 
 export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
   // TODO update logic to get discord data from lambda function execution
-  const { data = {}, status = '' } = {} as any;
+  const { data = {}, status = '' } = {} as any
 
   const { logo, text } = useMemo(() => {
     if (status === 'authenticated')
@@ -45,9 +45,7 @@ export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
 
   return (
     <button
-      className={
-        'btn before:btn-bg  btn--dark before:bg-dark hover:text-dark hover:before:bg-light disabled:text-light disabled:before:bg-dark'
-      }
+      className={'wbtn wbtn-secondary'}
       onClick={() => {
         if (status === 'unauthenticated')
           newTab('/discord-login', 'Pyth | Discord')

@@ -8,7 +8,8 @@
     "test:ci": "./scripts/setup.sh --test --no-postgres",
     "serve": "serve out",
     "start": "next start",
-    "datadog": "ts-node ./scripts/datadog.ts"
+    "datadog": "ts-node ./scripts/datadog.ts",
+    "prettier": "prettier . --write"
   },
   "dependencies": {
     "@aptos-labs/wallet-adapter-react": "^1.2.2",
@@ -67,7 +68,7 @@
     "node-pg-migrate": "^6.2.2",
     "papaparse": "^5.4.1",
     "postcss": "^8.4.5",
-    "prettier": "^2.7.1",
+    "prettier": "2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.1",
     "tailwindcss": "^3.0.7",
     "ts-jest": "^29.1.1",

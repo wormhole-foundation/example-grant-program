@@ -86,7 +86,7 @@
 }
 
 .claim_li {
-  @apply mb-[1px] block cursor-pointer py-4 px-4 font-header text-base18 font-light transition-colors hover:bg-darkGray5 hover:text-light sm:px-6;
+  @apply mb-[1px] block cursor-pointer py-4 px-4 font-header text-base18 font-light transition-colors hover:bg-opacity-60 sm:px-6;
 }
 
 .claim_li span {
@@ -98,7 +98,7 @@
 }
 
 .btn-square {
-  @apply before:btn-bg btn--dark relative flex h-[42px] w-[42px] items-center justify-center  transition-all before:bg-dark hover:text-dark hover:before:bg-light;
+  @apply relative flex h-[42px] w-[42px] items-center justify-center  border border-light-25 bg-black bg-opacity-25 transition-all hover:bg-light hover:text-black;
 }
 
 .btn--dark {
@@ -110,7 +110,7 @@
 }
 
 .claim-ul li {
-  @apply mb-4 flex gap-2.5 before:h-5 before:w-5 before:flex-shrink-0 before:content-li;
+  @apply mb-4  list-inside list-disc;
 }
 
 .claim-ol {
@@ -120,6 +120,14 @@
 }
 .claim-ol li {
   @apply mb-4 before:h-5 before:w-5;
+}
+
+.disclaimer-title {
+  @apply border-b border-light-35 p-10 font-header text-[36px] font-light;
+  text-align: center;
+  line-height: normal;
+  padding: 1rem 2.5rem;
+  font-size: 2em;
 }
 
 .disabled td:first-of-type {
@@ -134,10 +142,10 @@ html::-webkit-scrollbar {
   width: 3px;
 }
 html::-webkit-scrollbar-track {
-  background-color: #110f23;
+  background-color: #000;
 }
 html::-webkit-scrollbar-thumb {
-  background-color: #e6dafe;
+  background-color: #fff;
   border-radius: 3px;
 }
 
@@ -148,6 +156,84 @@ html::-webkit-scrollbar-thumb {
   width: 3px;
 }
 .scrollbar::-webkit-scrollbar-thumb {
-  background-color: #e6dafe;
+  background-color: #fff;
   border-radius: 3px;
+}
+
+body {
+  background-image: url('../images/bg.webp'), url('../images/bg-svg.svg');
+  background-position: center bottom, center bottom;
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, contain;
+  min-height: 100vh;
+}
+
+.wbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background-color: transparent;
+  outline: 0;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  text-transform: none;
+  transition-delay: 0.1s;
+  border-radius: 0;
+  padding: 0 23px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  line-height: 1;
+  position: relative;
+  overflow: hidden;
+  padding-left: 23px;
+  padding-right: 23px;
+  height: 40px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  backdrop-filter: blur(4.5px);
+  background-color: rgba(255, 255, 255, 0.15);
+  position: relative;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+}
+
+.wbtn:before,
+.wbtn:after {
+  content: '';
+  position: absolute;
+  height: 50%;
+  width: 0;
+  background-color: #fff;
+  transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.wbtn:before {
+  left: 0;
+  top: 0;
+}
+
+.wbtn:after {
+  right: 0;
+  bottom: 0;
+}
+
+.wbtn:hover {
+  border-color: #fff;
+  background-color: transparent;
+  color: #000;
+}
+.wbtn:hover:before,
+.wbtn:hover:after {
+  width: 100%;
+}
+
+.wbtn-secondary {
+  background: rgba(0, 0, 0, 0.35);
 }

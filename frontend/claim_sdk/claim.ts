@@ -12,7 +12,8 @@ export type Ecosystem =
   | 'sui'
   | 'algorand'
   | 'aptos'
-  | 'cosmwasm'
+  | 'terra'
+  | 'osmosis'
   | 'injective'
 export const Ecosystems: Ecosystem[] = [
   'discord',
@@ -21,7 +22,8 @@ export const Ecosystems: Ecosystem[] = [
   'sui',
   'algorand',
   'aptos',
-  'cosmwasm',
+  'terra',
+  'osmosis',
   'injective',
 ]
 
@@ -54,7 +56,8 @@ export class ClaimInfo {
         }
         break
       }
-      case 'cosmwasm': {
+      case 'osmosis':
+      case 'terra': {
         identityStruct = {
           cosmwasm: { address: this.identity },
         }

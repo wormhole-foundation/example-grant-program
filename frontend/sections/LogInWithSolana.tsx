@@ -19,6 +19,7 @@ import Solflare from '@images/solflare.inline.svg'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { truncateAddress } from 'utils/truncateAddress'
 import { StepProps } from './common'
+import { BoxTitle } from '@components/BoxTitle'
 
 export const LogInWithSolana = ({ onBack, onProceed }: StepProps) => {
   const { publicKey, wallet, disconnect, connecting, connected, connect } =
@@ -35,12 +36,12 @@ export const LogInWithSolana = ({ onBack, onProceed }: StepProps) => {
 
   return (
     <Box>
-      <div className="flex items-center justify-between border-b border-light-35  bg-[#242339] py-8 px-4 sm:px-10">
-        <h4 className="font-header text-[28px] font-light leading-[1.2]">
-          Log in with Solana
-        </h4>
-        <BackButton onBack={onBack} />
-      </div>
+      <BoxTitle>
+        <div className="flex items-center justify-between  ">
+          <span>Log in with Solana</span>
+          <BackButton onBack={onBack} />
+        </div>
+      </BoxTitle>
       <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
         <p className="mb-6">
           PYTH tokens are native to Solana. You need a Solana wallet to proceed

@@ -9,7 +9,6 @@ import {
 
 import { Ecosystem } from '@components/Ecosystem'
 import { useCallback } from 'react'
-import { useSeiWalletContext } from '@components/wallets/Sei'
 import { getInjectiveAddress } from '../utils/getInjectiveAddress'
 
 // It will return a function that can be used to get the identity of a given ecosystem
@@ -19,10 +18,7 @@ export function useGetEcosystemIdentity() {
   const aptosAddress = useAptosAddress()
   const evmAddress = useEVMAddress()
   const osmosisAddress = useCosmosAddress('osmosis')
-  const neutronAddress = useCosmosAddress('neutron')
-
-  const { connectedSeiWallet } = useSeiWalletContext()
-  const seiAddress = useCosmosAddress('sei', connectedSeiWallet ?? undefined)
+  const terraAddress = useCosmosAddress('terra')
   const solanaAddress = useSolanaAddress()
   const suiAddress = useSuiAddress()
   const algorandAddress = useAlgorandAddress()
@@ -42,14 +38,11 @@ export function useGetEcosystemIdentity() {
         case Ecosystem.INJECTIVE:
           return evmAddress ? getInjectiveAddress(evmAddress) : undefined
 
-        case Ecosystem.NEUTRON:
-          return neutronAddress
-
         case Ecosystem.OSMOSIS:
           return osmosisAddress
 
-        case Ecosystem.SEI:
-          return seiAddress
+        case Ecosystem.TERRA:
+          return terraAddress
 
         case Ecosystem.SOLANA:
           return solanaAddress
@@ -68,9 +61,8 @@ export function useGetEcosystemIdentity() {
       aptosAddress,
       data?.user?.hashedUserId,
       evmAddress,
-      neutronAddress,
       osmosisAddress,
-      seiAddress,
+      terraAddress,
       solanaAddress,
       suiAddress,
       algorandAddress,

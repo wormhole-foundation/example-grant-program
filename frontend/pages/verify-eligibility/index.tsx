@@ -2,6 +2,7 @@ import { Box } from '@components/Box'
 import { BackButton, ProceedButton } from '@components/buttons'
 import { useRouter } from 'next/navigation'
 import { REVIEW_ELIGIBILITY_METADATA } from '../review-eligibility'
+import { BoxTitle } from '@components/BoxTitle'
 
 export const VERIFY_ELIGIBILITY_METADATA = {
   url: '/verify-eligibility',
@@ -13,9 +14,7 @@ export default function VerifyEligibilityPage() {
 
   return (
     <Box>
-      <h4 className="border-b border-light-35 bg-[#242339] py-8 px-4 font-header  text-[28px] font-light leading-[1.2] sm:px-10">
-        Verify Eligibility
-      </h4>
+      <BoxTitle> Verify Eligibility</BoxTitle>
       <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
         <p className="mb-6">
           Please connect your wallets and Discord account according to the boxes

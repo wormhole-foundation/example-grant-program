@@ -16,7 +16,6 @@ import { Ecosystem } from '@components/Ecosystem'
 import { fetchDiscordSignedMessage } from 'utils/api'
 import { useTokenDispenserProvider } from './useTokenDispenserProvider'
 import { ChainName } from '@components/wallets/Cosmos'
-import { useSeiWalletContext } from '@components/wallets/Sei'
 import { useWallet as useAlgorandWallet } from '@components/Ecosystem/AlgorandProvider'
 
 // SignMessageFn signs the message and returns it.
@@ -211,12 +210,7 @@ export function useSignMessage(ecosystem: Ecosystem): SignMessageFn {
   const aptosSignMessageFn = useAptosSignMessage()
   const evmSignMessageFn = useEVMSignMessage()
   const osmosisSignMessageFn = useCosmosSignMessage('osmosis')
-  const neutronSignMessageFn = useCosmosSignMessage('neutron')
-  const { connectedSeiWallet } = useSeiWalletContext()
-  const seiSignMessageFn = useCosmosSignMessage(
-    'sei',
-    connectedSeiWallet ?? undefined
-  )
+  const terraSignMessageFn = useCosmosSignMessage('terra')
   const suiSignMessageFn = useSuiSignMessage()
   const solanaSignMessageFn = useSolanaSignMessage()
   const discordSignMessageFn = useDiscordSignMessage()
@@ -229,12 +223,10 @@ export function useSignMessage(ecosystem: Ecosystem): SignMessageFn {
       return evmSignMessageFn
     case Ecosystem.INJECTIVE:
       return evmSignMessageFn
-    case Ecosystem.NEUTRON:
-      return neutronSignMessageFn
+    case Ecosystem.TERRA:
+      return terraSignMessageFn
     case Ecosystem.OSMOSIS:
       return osmosisSignMessageFn
-    case Ecosystem.SEI:
-      return seiSignMessageFn
     case Ecosystem.SOLANA:
       return solanaSignMessageFn
     case Ecosystem.SUI:

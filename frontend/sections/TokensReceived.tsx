@@ -8,6 +8,7 @@ import Telegram from '@images/telegram.inline.svg'
 import Twitter from '@images/twitter.inline.svg'
 import Link from 'next/link'
 import { resetLocalState } from 'utils/store'
+import { BoxTitle } from '@components/BoxTitle'
 
 export type TokensReceivedProps = {
   totalCoinsClaimed: string | null
@@ -16,20 +17,20 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
   return (
     <>
       <Box>
-        <div className="flex items-center justify-between border-b border-light-35 bg-[#242339] py-8 px-4 sm:px-10">
-          <h4 className="font-header text-[24px] font-light leading-[1.2] sm:text-[28px] ">
-            🔮 Congratulations!
-          </h4>
-          <Button
-            onClick={() => {
-              resetLocalState()
-              location.replace('/')
-            }}
-            type={'secondary'}
-          >
-            Claim Again
-          </Button>
-        </div>
+        <BoxTitle>
+          <div className="flex items-center justify-between">
+            <h4 className="sm:text-[28px] ">Congratulations!</h4>
+            <Button
+              onClick={() => {
+                resetLocalState()
+                location.replace('/')
+              }}
+              type={'secondary'}
+            >
+              Claim Again
+            </Button>
+          </div>
+        </BoxTitle>
         <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
           <h3 className="mb-8 flex items-center gap-2 font-header text-[36px] font-light">
             You Received{' '}
