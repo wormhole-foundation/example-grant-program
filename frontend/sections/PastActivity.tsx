@@ -44,8 +44,9 @@ export const PastActivity = ({ onBack, onProceed }: StepProps) => {
           <p className="mb-6 font-light">I am active on…</p>
           <div className="mb-6 grid max-w-[420px] grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {Object.values(Ecosystem).map((ecosystem) => {
-              if (ecosystem === Ecosystem.DISCORD) return <Fragment key={ecosystem}></Fragment>
-              else
+              if (ecosystem === Ecosystem.DISCORD) {
+                return <Fragment key={ecosystem}></Fragment>
+              } else {
                 return (
                   <CheckBox
                     key={ecosystem}
@@ -54,6 +55,7 @@ export const PastActivity = ({ onBack, onProceed }: StepProps) => {
                     onChange={onChangeForEcosystem(ecosystem)}
                   />
                 )
+              }
             })}
           </div>
           <p className="mb-6 font-light">I am an active member of…</p>

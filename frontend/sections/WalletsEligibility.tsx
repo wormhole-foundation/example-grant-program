@@ -181,7 +181,7 @@ function TableRow({ ecosystem }: TableRowProps) {
     eligibility?.isClaimAlreadySubmitted,
     identity,
     isActive,
-    ecosystem
+    ecosystem,
   ])
 
   return (

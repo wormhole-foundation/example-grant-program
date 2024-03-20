@@ -24,12 +24,19 @@ function parseProof(proof: string) {
   return chunks
 }
 
-const getAmountAndProofRoute = (ecosystem: Ecosystem, identity: string): string[] => {
+const getAmountAndProofRoute = (
+  ecosystem: Ecosystem,
+  identity: string
+): string[] => {
   if (ecosystem === 'evm') {
     return [
-      `${MERKLE_PROOFS}/${identity.toLowerCase()}_${ECOSYSTEM_IDS[ecosystem]}.json`,
-      `${MERKLE_PROOFS}/${identity.toUpperCase()}_${ECOSYSTEM_IDS[ecosystem]}.json`,
-      `${MERKLE_PROOFS}/${identity}_${ECOSYSTEM_IDS[ecosystem]}.json`
+      `${MERKLE_PROOFS}/${identity.toLowerCase()}_${
+        ECOSYSTEM_IDS[ecosystem]
+      }.json`,
+      `${MERKLE_PROOFS}/${identity.toUpperCase()}_${
+        ECOSYSTEM_IDS[ecosystem]
+      }.json`,
+      `${MERKLE_PROOFS}/${identity}_${ECOSYSTEM_IDS[ecosystem]}.json`,
     ]
   } else {
     return [`${MERKLE_PROOFS}/${identity}_${ECOSYSTEM_IDS[ecosystem]}.json`]
@@ -41,11 +48,7 @@ export function handleAmountAndProofResponse(
   ecosystem: Ecosystem,
   identity: string,
   status: number,
-  {
-    address,
-    amount,
-    hashes,
-  }: any = {}
+  { address, amount, hashes }: any = {}
 ): { claimInfo: ClaimInfo; proofOfInclusion: Uint8Array[] } | undefined {
   if (status == 404) return undefined
   if (status == 200) {
@@ -60,7 +63,10 @@ export function handleAmountAndProofResponse(
 
 // If the given identity is not eligible the value will be undefined
 // Else the value contains the eligibility information
-export type Eligibility = { claimInfo: ClaimInfo; proofOfInclusion: Uint8Array[] }
+export type Eligibility = {
+  claimInfo: ClaimInfo
+  proofOfInclusion: Uint8Array[]
+}
 
 export async function fetchAmountAndProof(
   ecosystem: Ecosystem,
@@ -77,7 +83,7 @@ export async function fetchAmountAndProof(
         return {
           claimInfo: new ClaimInfo(ecosystem, identity, new BN(data.amount)),
           proofOfInclusion: parseProof(data.hashes),
-        } 
+        }
       }
     }
   }

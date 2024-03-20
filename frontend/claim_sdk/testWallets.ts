@@ -82,7 +82,6 @@ export async function loadTestWallets(): Promise<
     aptos: [],
     terra: [],
     osmosis: [],
-    algorand: [],
     injective: [],
   }
   result['discord'] = [
@@ -92,10 +91,12 @@ export async function loadTestWallets(): Promise<
   result['evm'] = [TestEvmWallet.fromKeyfile(evmPrivateKeyPath)]
   result['sui'] = [TestSuiWallet.fromKeyfile(suiPrivateKeyPath)]
   result['aptos'] = [TestAptosWallet.fromKeyfile(aptosPrivateKeyPath)]
-  result['osmosis'] = [await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'osmo')],
+  // prettier-ignore
+  result['osmosis'] = [await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'osmo')]
+  // prettier-ignore
   result['terra'] = [await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'terra', [
-      stringToPath("m/44'/330'/0'/0/0"),
-    ]),
+    stringToPath("m/44'/330'/0'/0/0"),
+  ]),
   ]
   result['injective'] = [TestEvmWallet.fromKeyfile(cosmosPrivateKeyPath, true)]
 

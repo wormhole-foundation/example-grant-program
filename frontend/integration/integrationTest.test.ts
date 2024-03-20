@@ -299,10 +299,7 @@ describe('integration test', () => {
     }, 40000)
 
     it('submits multiple claims at once', async () => {
-      const wallets: TestWallet[] = [
-        testWallets.terra[1],
-        testWallets.terra[2],
-      ]
+      const wallets: TestWallet[] = [testWallets.terra[1], testWallets.terra[2]]
 
       const claims = await Promise.all(
         wallets.map(async (wallet) => {

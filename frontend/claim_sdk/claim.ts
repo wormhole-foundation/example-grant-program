@@ -15,7 +15,6 @@ export type Ecosystem =
   | 'terra'
   | 'osmosis'
   | 'injective'
-  | 'algorand'
 export const Ecosystems: Ecosystem[] = [
   'discord',
   'solana',
@@ -25,7 +24,6 @@ export const Ecosystems: Ecosystem[] = [
   'terra',
   'osmosis',
   'injective',
-  'algorand'
 ]
 
 export class ClaimInfo {

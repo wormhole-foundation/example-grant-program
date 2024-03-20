@@ -67,7 +67,7 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
     setIsVersionChecked(true)
   }, [router])
 
-  // TODO Review this, we should check if the user 
+  // TODO Review this, we should check if the user
   // loads the page, we should redirect to welcome pages again
   // useRedirect(isVersionChecked)
 
