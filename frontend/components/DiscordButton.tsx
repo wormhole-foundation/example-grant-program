@@ -19,7 +19,7 @@ const newTab = (url: string, title: string) => {
 
 export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
   // TODO update logic to get discord data from lambda function execution
-  const { data = {}, status = '' } = {} as any;
+  const { data = {}, status = '' } = {} as any
 
   const { logo, text } = useMemo(() => {
     if (status === 'authenticated')

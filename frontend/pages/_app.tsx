@@ -10,16 +10,12 @@ import { CosmosWalletProvider } from '@components/wallets/Cosmos'
 import { EcosystemProviders } from '@components/Ecosystem'
 
 import '../styles/globals.css'
-import { SeiProvider } from '@components/wallets/Sei'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@components/Layout'
 import { Disclaimer } from '@components/modal/Disclaimer'
 import Script from 'next/script'
 
-import {
-  PathnameStore,
-  resetOnVersionMismatch,
-} from 'utils/store'
+import { PathnameStore, resetOnVersionMismatch } from 'utils/store'
 
 function useRedirect(isVersionChecked: boolean) {
   // We are fetching it here and not in useEffect
@@ -89,44 +85,42 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   `}
       </Script>
       {isVersionChecked ? (
-          <SolanaWalletProvider>
-            <AptosWalletProvider>
-              <SuiWalletProvider>
-                <EVMWalletProvider>
-                  <CosmosWalletProvider>
-                    <SeiProvider>
-                      {/* WARN: EcosystemProviders might use wallet provider addresses and hence
+        <SolanaWalletProvider>
+          <AptosWalletProvider>
+            <SuiWalletProvider>
+              <EVMWalletProvider>
+                <CosmosWalletProvider>
+                  {/* WARN: EcosystemProviders might use wallet provider addresses and hence
                  They should be inside all those providers. */}
-                      <EcosystemProviders>
-                        <Layout>
-                          <NextSeo
-                            title="Pyth Network Retrospective Airdrop"
-                            description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
-                          />
-                          <Component {...pageProps} />
-                        </Layout>
-                        <Toaster
-                          position="bottom-left"
-                          toastOptions={{
-                            style: {
-                              wordBreak: 'break-word',
-                            },
-                          }}
-                          reverseOrder={false}
-                        />
-                        <Disclaimer
-                          showModal={!disclaimerWasRead}
-                          onAgree={() => {
-                            setDisclaimerWasRead(true)
-                          }}
-                        />
-                      </EcosystemProviders>
-                    </SeiProvider>
-                  </CosmosWalletProvider>
-                </EVMWalletProvider>
-              </SuiWalletProvider>
-            </AptosWalletProvider>
-          </SolanaWalletProvider>
+                  <EcosystemProviders>
+                    <Layout>
+                      <NextSeo
+                        title="Pyth Network Retrospective Airdrop"
+                        description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
+                      />
+                      <Component {...pageProps} />
+                    </Layout>
+                    <Toaster
+                      position="bottom-left"
+                      toastOptions={{
+                        style: {
+                          wordBreak: 'break-word',
+                        },
+                      }}
+                      reverseOrder={false}
+                    />
+                    <Disclaimer
+                      showModal={!disclaimerWasRead}
+                      onAgree={() => {
+                        setDisclaimerWasRead(true)
+                      }}
+                    />
+                  </EcosystemProviders>
+                </CosmosWalletProvider>
+              </EVMWalletProvider>
+            </SuiWalletProvider>
+          </AptosWalletProvider>
+        </SolanaWalletProvider>
       ) : (
         <></>
       )}
