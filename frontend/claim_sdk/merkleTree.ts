@@ -4,6 +4,7 @@ const LEAF_PREFIX = Buffer.from('00', 'hex')
 const NODE_PREFIX = Buffer.from('01', 'hex')
 const NULL_PREFIX = Buffer.from('02', 'hex')
 
+// The size of the hash output in bytes
 export const HASH_SIZE = 20
 
 export class MerkleTree {

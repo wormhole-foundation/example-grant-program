@@ -376,7 +376,8 @@ export class TokenDispenserProvider {
             },
           }
         }
-        case 'cosmwasm': {
+        case 'osmosis':
+        case 'terra': {
           return {
             cosmwasm: {
               pubkey: Array.from(signedMessage.publicKey),
@@ -426,7 +427,8 @@ export class TokenDispenserProvider {
             recoveryId: signedMessage.recoveryId!,
           })
         }
-        case 'cosmwasm': {
+        case 'osmosis':
+        case 'terra': {
           return undefined
         }
         case 'discord':
