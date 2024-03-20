@@ -12,11 +12,11 @@ export function Disclaimer({ onAgree, showModal }: DisclaimerProps) {
   const [agreed, setAgreed] = useState(false)
   return showModal ? (
     <ModalWrapper>
-      <div className="relative max-h-[80vh] w-full max-w-[588px] border border-light-35 bg-darkGray1">
+      <div className="relative max-h-[80vh] w-full max-w-[588px] border border-light-25 bg-black bg-opacity-50">
         <h3 className="disclaimer-title">
           {'Supplemental Token Airdrop Terms'}
         </h3>
-        <div className="scrollbar flex max-h-[300px] flex-col gap-3 overflow-auto border-b border-light-35 px-10 py-5 font-body text-base font-light leading-5 tracking-widest">
+        <div className="scrollbar flex max-h-[300px] flex-col gap-3 overflow-auto border-b border-light-25 px-10 py-5 font-body text-base font-light leading-5 tracking-widest">
           <p>
             {`Welcome to the Supplemental Token Airdrop Terms (these “Airdrop Terms”) for the W token airdrop (the “Airdrop”) by Crossware Limited (“Organization”, “we” or “us”). These Airdrop Terms are supplemental to, and incorporate by reference, our general `}
             <Link href="https://wormhole.com/terms" target="_blank">

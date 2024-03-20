@@ -13,6 +13,7 @@ import { SignAndClaimRowLayout } from '@components/table/SignAndClaimRowLayout'
 import { Box } from '@components/Box'
 import Tooltip from '@components/Tooltip'
 import { TotalAllocationRow } from '@components/table/TotalAllocationRow'
+import { BoxTitle } from '@components/BoxTitle'
 
 export const ClaimStatus = ({
   onProceed,
@@ -47,19 +48,20 @@ export const ClaimStatus = ({
 
   return (
     <Box>
-      <div className="flex items-center justify-between border-b border-light-35 bg-[#242339] py-4 px-4 sm:py-8 sm:px-10">
-        <h4 className="font-header text-[20px] font-light leading-[1.2] sm:text-[28px]">
-          Sign Your Wallets and Claim
-        </h4>
-        <div className="flex gap-4">
-          <ProceedButton
-            onProceed={onProceed}
-            disabled={isProceedDisabled}
-            tooltipContent={proceedTooltipContent}
-          />
+      <BoxTitle>
+        <div className="flex items-center justify-between ">
+          <h4 className=" text-[20px] sm:text-[28px]">
+            Sign Your Wallets and Claim
+          </h4>
+          <div className="flex gap-4">
+            <ProceedButton
+              onProceed={onProceed}
+              disabled={isProceedDisabled}
+              tooltipContent={proceedTooltipContent}
+            />
+          </div>
         </div>
-      </div>
-
+      </BoxTitle>
       <table className="">
         <tbody>
           {Object.values(Ecosystem).map((ecosystem) => (

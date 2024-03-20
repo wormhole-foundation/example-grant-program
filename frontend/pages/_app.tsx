@@ -3,7 +3,8 @@ import { SolanaWalletProvider } from '@components/wallets/Solana'
 import type { AppProps } from 'next/app'
 import { FC, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { WalletKitProvider as SuiWalletProvider } from '@mysten/wallet-kit'
-import { NextSeo } from 'next-seo'
+import { DefaultSeo } from 'next-seo'
+import SEO from '../next-seo.config'
 import { Toaster } from 'react-hot-toast'
 import { EVMWalletProvider } from '@components/wallets/EVM'
 import { CosmosWalletProvider } from '@components/wallets/Cosmos'
@@ -13,7 +14,6 @@ import '../styles/globals.css'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@components/Layout'
 import { Disclaimer } from '@components/modal/Disclaimer'
-import Script from 'next/script'
 
 import { PathnameStore, resetOnVersionMismatch } from 'utils/store'
 
@@ -28,19 +28,22 @@ function useRedirect(isVersionChecked: boolean) {
   const params = useSearchParams()
 
   const router = useRouter()
-  // We will only redirect on the first load
-  useLayoutEffect(() => {
-    if (!isVersionChecked) return
-    // These pathnames are being loaded when we have to oauth with Discord
-    // We shouldn't be redirecting the user from these pages
-    if (pathname === '/discord-login' || pathname === '/discord-logout') return
 
-    //RULES:
-    // 1. no last state -> redirect to welcome page
-    // 2. there is a last state -> redirect to that page
-    if (lastStep === null) router.replace('/')
-    if (lastStep) router.replace(lastStep)
-  }, [isVersionChecked, lastStep, router, pathname])
+  // temp disable to get the nav working - TODO Review this before live
+
+  // We will only redirect on the first load
+  // useLayoutEffect(() => {
+  //   if (!isVersionChecked) return
+  //   // These pathnames are being loaded when we have to oauth with Discord
+  //   // We shouldn't be redirecting the user from these pages
+  //   if (pathname === '/discord-login' || pathname === '/discord-logout') return
+
+  //   //RULES:
+  //   // 1. no last state -> redirect to welcome page
+  //   // 2. there is a last state -> redirect to that page
+  //   if (lastStep === null) router.replace('/')
+  //   if (lastStep) router.replace(lastStep)
+  // }, [isVersionChecked, lastStep, router, pathname])
 
   useEffect(() => {
     if (!isVersionChecked) return
@@ -73,19 +76,6 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
 
   return (
     <>
-      <Script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-C2TFD85LKJ"
-      />
-      <Script id="google-tag">
-        {`
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-C2TFD85LKJ');
-  `}
-      </Script>
       {isVersionChecked ? (
         <SolanaWalletProvider>
           <AptosWalletProvider>
@@ -96,10 +86,7 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
                  They should be inside all those providers. */}
                   <EcosystemProviders>
                     <Layout>
-                      <NextSeo
-                        title="Pyth Network Retrospective Airdrop"
-                        description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
-                      />
+                      <DefaultSeo {...SEO} />
                       <Component {...pageProps} />
                     </Layout>
                     <Toaster

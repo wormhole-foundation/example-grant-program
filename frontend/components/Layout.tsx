@@ -2,9 +2,6 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { ReactNode } from 'react'
 
-import bg from '../images/bg.svg'
-import sphere from '../images/sphere.png'
-
 import { useRouter } from 'next/router'
 import { WELCOME_METADATA } from 'pages'
 import { NEXT_STEPS } from 'pages/next-steps'
@@ -14,8 +11,6 @@ import { LOGIN_SOLANA_METADATA } from 'pages/login-solana'
 import { CLAIM_TOKENS_METADATA } from 'pages/claim-tokens'
 import { classNames } from 'utils/classNames'
 
-import statue from '@images/bg-statue.png'
-import statueWithCoins from '@images/bg-statue-with-coins.png'
 import Link from 'next/link'
 
 type LayoutProps = {
@@ -41,27 +36,31 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <>
       <header className="absolute left-0 top-0 z-40 w-full px-1 transition-all lg:px-10">
-        <div className="before:gradient-border relative flex items-center justify-between px-4 py-3 lg:py-6 lg:px-10">
-          <Image
-            src="/pyth-logo-white.svg"
-            className="h-30 mr-3"
-            alt="pyth logo"
-            layout="intrinsic"
-            width={26}
-            height={33}
-          />
-
-          <span className="text-right">
-            Please verify that the site URL is:{' '}
-            <strong>https://airdrop.pyth.network/</strong>
-          </span>
+        <div className=" relative flex items-center justify-between  gap-2 px-4 py-3 lg:py-6 lg:px-10">
+          <Link
+            href="/"
+            className="flex h-12 items-center justify-center border-light border-opacity-60 outline-none sm:border sm:px-4 md:px-[29px]"
+          >
+            <Image
+              src="/wormhole-white.svg"
+              alt="wormhole logo"
+              width={130}
+              height={24}
+            />
+          </Link>
+          <div className="flex h-12 flex-1 items-center justify-end border-light border-opacity-60 sm:border sm:px-4 md:px-[29px] ">
+            <span className="text-right">
+              Please verify that the site URL is:{' '}
+              <strong> https://airdrop.wormhole.com</strong>
+            </span>
+          </div>
         </div>
       </header>
       <div className="relative px-4 pt-20 pb-32 sm:pt-28 lg:pt-40">
-        <div className="mx-auto max-w-[997px] justify-between gap-2.5 lg:flex">
+        <div className="mx-auto max-w-[997px] items-start justify-between gap-2.5 lg:flex">
           <ul
             className={classNames(
-              'mb-2.5 lg:mb-0 lg:max-w-[292px]',
+              'mb-2.5 divide-y divide-light  divide-opacity-25 border border-light border-opacity-25 lg:mb-0 lg:max-w-[292px]',
               disableSideNav ? 'pointer-events-none' : ''
             )}
           >
@@ -74,8 +73,8 @@ export const Layout = ({ children }: LayoutProps) => {
                   key={url}
                   className={`claim_li ${
                     isActive
-                      ? 'bg-darkGray5 text-light'
-                      : 'bg-dark text-light-50'
+                      ? ' bg-black bg-opacity-60'
+                      : ' bg-black   bg-opacity-30'
                   }`}
                   role="button"
                   onClick={() => router.push(url)}
@@ -92,7 +91,7 @@ export const Layout = ({ children }: LayoutProps) => {
               <p className="font-body text-[15px] ">
                 Useful links:{' '}
                 <Link
-                  href="https://pyth.network/airdrop/faq"
+                  href="https://wormhole.com/airdrop/faq"
                   className="ml-5 inline-block underline"
                 >
                   FAQ
@@ -102,45 +101,6 @@ export const Layout = ({ children }: LayoutProps) => {
           </div>
         </div>
       </div>
-      <span
-        className="pointer-events-none fixed top-0 bottom-0 left-0 right-0 z-[-1]"
-        style={{
-          background:
-            'radial-gradient(circle, rgba(70,43,120,1) 0%, rgba(8,6,17,1) 100%)',
-        }}
-      >
-        <Image
-          src={bg}
-          alt=""
-          layout="fill"
-          objectFit="cover"
-          objectPosition="left bottom"
-        />
-        <Image
-          src={sphere}
-          alt=""
-          objectFit="cover"
-          objectPosition="left bottom"
-          style={{
-            width: '50%',
-            position: 'absolute',
-            bottom: '-4%',
-            left: '-5%',
-            opacity: 0.6,
-          }}
-        />
-        <span className="absolute -left-[430px] -bottom-24 max-h-[100vh] max-w-[1200px]">
-          <Image src={statue} alt="" priority />
-        </span>
-        <span
-          className={classNames(
-            'absolute -left-[430px] -bottom-24 max-h-[100vh] max-w-[1200px] opacity-0 transition duration-1000 ease-out',
-            pathname === NEXT_STEPS.url ? 'opacity-100' : ''
-          )}
-        >
-          <Image src={statueWithCoins} alt="" priority />
-        </span>
-      </span>
     </>
   )
 }
