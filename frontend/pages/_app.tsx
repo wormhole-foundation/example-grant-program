@@ -86,7 +86,7 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
                  They should be inside all those providers. */}
                   <EcosystemProviders>
                     <Layout>
-                     <DefaultSeo {...SEO} />
+                      <DefaultSeo {...SEO} />
                       <Component {...pageProps} />
                     </Layout>
                     <Toaster
