@@ -7,6 +7,7 @@ export const ECOSYSTEM_IDS: Record<Ecosystem, number> = {
   solana: 1,
   evm: 2,
   terra: 3,
+  algorand: 8,
   injective: 19,
   osmosis: 20,
   sui: 21,
