@@ -180,9 +180,10 @@ describe('integration test', () => {
     })
 
     it('submits an evm claim', async () => {
-      const { claimInfo, proofOfInclusion } = getInMemoryDb()
-        .get('evm')
-        .get(testWallets.evm[0].address())
+      const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
+        'evm',
+        testWallets.evm[0].address()
+      ))!
 
       const signedMessage = await testWallets.evm[0].signMessage(
         tokenDispenserProvider.generateAuthorizationPayload()
@@ -299,15 +300,15 @@ describe('integration test', () => {
     }, 40000)
 
     it('submits multiple claims at once', async () => {
-      const wallets: TestWallet[] = [
-        testWallets.terra[0],
-        testWallets.osmosis[0],
-      ]
+      const wallets = {
+        'terra': testWallets.terra[0],
+        'osmosis': testWallets.osmosis[0],
+      }
 
       const claims = await Promise.all(
-        wallets.map(async (wallet) => {
+        Object.entries(wallets).map(async ([ecosystem, wallet]) => {
           const { claimInfo, proofOfInclusion } =
-            (await mockFetchAmountAndProof('terra', wallet.address()))!
+            (await mockFetchAmountAndProof(ecosystem as Ecosystem, wallet.address()))!
           return {
             claimInfo,
             proofOfInclusion,
