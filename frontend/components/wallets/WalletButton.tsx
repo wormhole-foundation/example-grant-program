@@ -136,7 +136,7 @@ export type SingleWalletViewProps = {
 export function SingleWalletView({ wallet, onSelect }: SingleWalletViewProps) {
   return (
     <button
-      className="wbtn wbtn-secondary  min-w-[117px]  sm:min-w-[207px] "
+      className="wallet-btn min-w-[117px]  sm:min-w-[207px] "
       onClick={() => {
         wallet.onSelect()
         onSelect()
