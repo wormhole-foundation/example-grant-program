@@ -5,6 +5,7 @@ export default {
   aws: {
     region: process.env.AWS_REGION ?? 'us-east-2'
   },
+  tokenDispenserProgramId: process.env.TOKEN_DISPENSER_PROGRAM_ID,
   keys: {
     dispenserGuard: {
       key: process.env.DISPENSER_WALLET_KEY,
