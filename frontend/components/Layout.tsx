@@ -12,6 +12,9 @@ import { CLAIM_TOKENS_METADATA } from 'pages/claim-tokens'
 import { classNames } from 'utils/classNames'
 import SocialIcons from '@components/SocialIcons'
 
+import W from '@images/w.inline.svg'
+import Wormhole from '@images/wormhole.inline.svg'
+
 import Link from 'next/link'
 
 type LayoutProps = {
@@ -44,14 +47,10 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
         <div className=" relative flex items-center justify-between  gap-2 px-4 py-3 lg:py-6 lg:px-10">
           <Link
             href="/"
-            className="flex h-12 items-center justify-center border-light border-opacity-60 outline-none sm:border sm:px-4 md:px-[29px]"
+            className="flex items-center justify-center  border-light border-opacity-60 outline-none sm:h-12 sm:border sm:px-4 md:px-[29px]"
           >
-            <Image
-              src="/wormhole-white.svg"
-              alt="wormhole logo"
-              width={130}
-              height={24}
-            />
+            <W className="block sm:hidden" />
+            <Wormhole className="hidden  sm:block" />
           </Link>
           <div className="flex h-12 flex-1 items-center justify-end border-light border-opacity-60 sm:border sm:px-4 md:px-[29px] ">
             <span className="text-right">
@@ -108,7 +107,7 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
       </div>
       <footer className="footer">
         <span>{year} Ⓒ Wormhole. All Rights Reserved.</span>
-        <span className="mb-2 flex-1 space-x-10 border-white border-opacity-50 py-2 text-center opacity-75 lg:mb-0 lg:ml-10 lg:border-l lg:py-0 lg:pl-10 lg:text-left">
+        <span className="mb-2 flex-1 space-y-2 border-white border-opacity-50 py-2 text-center opacity-75 md:space-y-0 md:space-x-10 lg:mb-0 lg:ml-10 lg:border-l lg:py-0 lg:pl-10 lg:text-left">
           <a
             target="_blank"
             rel="noreferrer"

@@ -224,15 +224,16 @@ body {
   bottom: 0;
 }
 
-.wbtn:hover {
+.wbtn:not(:disabled):hover {
   border-color: #fff;
   background-color: transparent;
   color: #000;
 }
-.wbtn:hover:before,
-.wbtn:hover:after {
+.wbtn:not(:disabled):hover:before,
+.wbtn:not(:disabled):hover:after {
   width: 100%;
 }
+
 .wallet-btn:hover,
 .wbtn-secondary {
   background: rgba(0, 0, 0, 0.35);
