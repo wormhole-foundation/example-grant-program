@@ -4,7 +4,9 @@
   "instructions": [
     {
       "name": "initialize",
-      "docs": ["This can only be called once and should be called right after the program is deployed."],
+      "docs": [
+        "This can only be called once and should be called right after the program is deployed."
+      ],
       "accounts": [
         {
           "name": "payer",
@@ -84,7 +86,10 @@
           "name": "claimantFund",
           "isMut": true,
           "isSigner": false,
-          "docs": ["Claimant's associated token account to receive the tokens", "Should be initialized outside of this program."]
+          "docs": [
+            "Claimant's associated token account to receive the tokens",
+            "Should be initialized outside of this program."
+          ]
         },
         {
           "name": "config",
