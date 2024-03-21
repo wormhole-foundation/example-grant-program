@@ -63,9 +63,7 @@ export function EcosystemSignButton({
 
   return (
     <button
-      className={classNames(
-        'btn before:btn-bg btn--dark  before:bg-dark hover:text-dark hover:before:bg-light disabled:text-light disabled:before:bg-dark'
-      )}
+      className={classNames('wbtn wbtn-secondary')}
       onClick={signMessageWrapper}
       disabled={isDisabled || isSigned}
     >
@@ -80,6 +78,7 @@ export function EcosystemSignButton({
           ) : (
             'Sign'
           )}
+          <Signed />
         </span>
       </span>
     </button>
