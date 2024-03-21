@@ -10,13 +10,15 @@ import { VERIFY_ELIGIBILITY_METADATA } from 'pages/verify-eligibility'
 import { LOGIN_SOLANA_METADATA } from 'pages/login-solana'
 import { CLAIM_TOKENS_METADATA } from 'pages/claim-tokens'
 import { classNames } from 'utils/classNames'
+import SocialIcons from '@components/SocialIcons'
 
 import Link from 'next/link'
 
 type LayoutProps = {
   children: ReactNode
+  setDisclaimerWasRead: Function
 }
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
   const pathname = usePathname()
   const router = useRouter()
 
@@ -32,6 +34,9 @@ export const Layout = ({ children }: LayoutProps) => {
     CLAIM_TOKENS_METADATA,
     NEXT_STEPS,
   ]
+
+  const today = new Date()
+  const year = today.getFullYear()
 
   return (
     <>
@@ -56,7 +61,7 @@ export const Layout = ({ children }: LayoutProps) => {
           </div>
         </div>
       </header>
-      <div className="relative px-4 pt-20 pb-32 sm:pt-28 lg:pt-40">
+      <div className="relative min-h-[calc(100vh-80px)] px-4 pt-20 pb-32 sm:pt-28 lg:pt-40">
         <div className="mx-auto max-w-[997px] items-start justify-between gap-2.5 lg:flex">
           <ul
             className={classNames(
@@ -101,6 +106,64 @@ export const Layout = ({ children }: LayoutProps) => {
           </div>
         </div>
       </div>
+      <footer className="footer">
+        <span>{year} Ⓒ Wormhole. All Rights Reserved.</span>
+        <span className="mb-2 flex-1 space-x-10 border-white border-opacity-50 py-2 text-center opacity-75 lg:mb-0 lg:ml-10 lg:border-l lg:py-0 lg:pl-10 lg:text-left">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://wormhole.com/terms"
+            className="hover:underline hover:opacity-100"
+          >
+            Terms of Use
+          </a>
+          <button
+            className="opacity-75 hover:underline hover:opacity-100"
+            onClick={() => {
+              setDisclaimerWasRead(false)
+            }}
+          >
+            Supplemental Token Airdrop Terms
+          </button>
+        </span>
+        <div className="mb-5 flex items-center gap-6 lg:mb-0">
+          <Link
+            href="https://twitter.com/wormholecrypto"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <SocialIcons icon="twitter" width={21} height={22} />
+          </Link>
+          <Link
+            href="https://t.me/wormholecrypto"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <SocialIcons icon="telegram" width={20} height={18} />
+          </Link>
+          <Link
+            href="https://github.com/wormhole-foundation"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <SocialIcons icon="github" width={21} height={21} />
+          </Link>
+          <Link
+            href="https://docs.wormhole.com"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <SocialIcons icon="book" width={25} height={19} />
+          </Link>
+          <Link
+            href="https://www.youtube.com/@wormholecrypto"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <SocialIcons icon="youtube" width={21} height={15} />
+          </Link>
+        </div>
+      </footer>
     </>
   )
 }

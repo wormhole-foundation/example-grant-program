@@ -244,3 +244,7 @@ body {
 .wallet-btn:hover {
   background-color: rgba(255, 255, 255, 0.15);
 }
+
+.footer {
+  @apply flex flex-col-reverse items-center justify-between border-t border-white border-opacity-25 bg-white bg-opacity-5 px-10 py-7 font-mono text-xs  font-light backdrop-blur-sm lg:flex-row;
+}
