@@ -5,7 +5,7 @@ import {
   Secp256k1Program,
   VersionedTransaction
 } from '@solana/web3.js'
-import { getSecret } from './index'
+import { getSecret } from './secrets'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
 

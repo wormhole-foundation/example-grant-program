@@ -1,6 +1,6 @@
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { getSecret } from '../utils'
+import { getSecret } from '../utils/secrets'
 import {
   checkTransactions,
   deserializeTransactions
