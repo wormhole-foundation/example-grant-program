@@ -87,9 +87,7 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
                     {/* WARN: EcosystemProviders might use wallet provider addresses and hence
                  They should be inside all those providers. */}
                     <EcosystemProviders>
-                      <Layout
-                        setDisclaimerWasRead={setDisclaimerWasRead}
-                      >
+                      <Layout setDisclaimerWasRead={setDisclaimerWasRead}>
                         <DefaultSeo {...SEO} />
                         <Component {...pageProps} />
                       </Layout>
