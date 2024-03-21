@@ -1,32 +1,27 @@
 import { Keypair, PublicKey } from '@solana/web3.js'
 import { getDispenserKey } from '../utils/secrets'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { isAccessTokenValid, signDiscordDigest } from '../utils/discord'
+import { getDiscordUser, signDiscordDigest } from '../utils/discord'
+import { HandlerError } from '../utils/errors'
 
-export interface DiscordSignedDigestRequest {
+export interface DiscordSignedDigestParams {
   publicKey: string
-  discordId?: string
 }
 
 export const signDiscordMessage = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
-    // TODO: no need to receive disordId really, as we should can just get it using the auth token.
-    // TODO: publicKey was expected as query param in pyth version
-    const { publicKey, discordId } = JSON.parse(
-      event.body ?? '{}'
-    ) as DiscordSignedDigestRequest
+    const publicKey = (event.queryStringParameters ?? {})['publicKey']
     validatePublicKey(publicKey)
 
     const accessToken = event.headers['x-auth-token']
-
-    await validateAccessTokenAndDiscordId(accessToken, discordId!)
+    const discordId = await getDiscordId(accessToken)
 
     const claimant = new PublicKey(publicKey!)
     const dispenserGuard = await loadDispenserGuard()
 
-    const signedDigest = signDiscordDigest(discordId!, claimant, dispenserGuard)
+    const signedDigest = signDiscordDigest(discordId, claimant, dispenserGuard)
 
     return {
       statusCode: 200,
@@ -36,8 +31,15 @@ export const signDiscordMessage = async (
         fullMessage: Buffer.from(signedDigest.fullMessage).toString('hex')
       })
     }
-  } catch (err) {
+  } catch (err: HandlerError | unknown) {
     console.error('Error generating signed discord digest', err)
+    if (err instanceof HandlerError) {
+      return {
+        statusCode: err.statusCode,
+        body: JSON.stringify(err.body)
+      }
+    }
+
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Internal server error' })
@@ -58,55 +60,35 @@ async function loadDispenserGuard() {
 
 function validatePublicKey(publicKey?: string) {
   if (!publicKey) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        error: "Must provide the 'publicKey' query parameter"
-      })
-    }
+    throw new HandlerError(400, {
+      error: "Must provide the 'publicKey' query parameter"
+    })
   }
 
   if (typeof publicKey !== 'string') {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: "Invalid 'publicKey' query parameter" })
-    }
+    throw new HandlerError(400, {
+      error: "Invalid 'publicKey' query parameter"
+    })
   }
 
   try {
     new PublicKey(publicKey)
   } catch {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: "Invalid 'publicKey' query parameter" })
-    }
+    throw new HandlerError(400, {
+      error: "Invalid 'publicKey' query parameter"
+    })
   }
 }
 
-async function validateAccessTokenAndDiscordId(
-  accessToken?: string,
-  discordId?: string
-) {
+async function getDiscordId(accessToken?: string) {
   if (!accessToken) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Must provide discord auth token' })
-    }
-  }
-
-  if (!discordId) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Must provide discord id' })
-    }
+    throw new HandlerError(400, { error: 'Must provide discord auth token' })
   }
 
   try {
-    await isAccessTokenValid(discordId, accessToken!)
+    const user = await getDiscordUser(accessToken)
+    return user.id
   } catch (err) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ error: 'Invalid discord access token' })
-    }
+    throw new HandlerError(403, { error: 'Invalid discord access token' })
   }
 }

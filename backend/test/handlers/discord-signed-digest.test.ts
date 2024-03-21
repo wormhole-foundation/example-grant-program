@@ -5,13 +5,13 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 
 import config from '../../src/config'
 import {
-  DiscordSignedDigestRequest,
+  DiscordSignedDigestParams,
   signDiscordMessage
 } from '../../src/handlers/discord-signed-digest'
 import { Keypair } from '@solana/web3.js'
 
 let server = setupServer()
-let input: DiscordSignedDigestRequest
+let input: DiscordSignedDigestParams
 let response: APIGatewayProxyResult
 
 describe('DiscordSignedDigest', () => {
@@ -31,6 +31,23 @@ describe('DiscordSignedDigest', () => {
     await whenSignDiscordMessageCalled(input)
 
     thenResponseIsSuccessful()
+  })
+
+  test('should return 400 when pubKey is not sent', async () => {
+    givenRequest('') // will endup sending no pubKey
+
+    await whenSignDiscordMessageCalled(input)
+
+    expect(response.statusCode).toBe(400)
+  })
+
+
+  test('should return 400 when pubKey is invalid', async () => {
+    givenRequest('invalidPubKey') // will endup sending no pubKey
+
+    await whenSignDiscordMessageCalled(input)
+
+    expect(response.statusCode).toBe(400)
   })
 })
 
@@ -55,17 +72,18 @@ const givenDownstreamServicesWork = () => {
   server.listen()
 }
 
-const givenRequest = () => {
+const givenRequest = (pubKey?: string) => {
   input = {
-    publicKey: new Keypair().publicKey.toString()
-  }
+    publicKey:
+      pubKey === '' ? undefined : pubKey ?? new Keypair().publicKey.toString()
+  } as DiscordSignedDigestParams
 }
 
 const whenSignDiscordMessageCalled = async (
-  body: DiscordSignedDigestRequest
+  queryParams: DiscordSignedDigestParams
 ) => {
   response = await signDiscordMessage({
-    body: JSON.stringify(body),
+    queryStringParameters: queryParams,
     headers: { 'x-auth-token': 'token' }
   } as any as APIGatewayProxyEvent)
 }
