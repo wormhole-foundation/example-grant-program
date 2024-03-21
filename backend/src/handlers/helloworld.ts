@@ -1,4 +1,4 @@
-import { getSecret } from "../utils";
+import { getSecret } from "../utils/secrets";
 
 export const handler = async () => {
   if (!process.env.SECRET_NAME) {

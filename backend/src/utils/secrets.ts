@@ -1,7 +1,8 @@
 // Note: layers code that is shared across lambda functions
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+import config from "../config";
 
-const client = new SecretsManagerClient({ region: "us-east-2" }); // Ensure this matches the region of your secret
+const client = new SecretsManagerClient({ region: config.aws.region });
 
 export async function getSecret(secretName: string) {
   try {

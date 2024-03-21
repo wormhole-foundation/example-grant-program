@@ -3,16 +3,20 @@ import { SignedMessage } from "../types";
 import nacl from "tweetnacl";
 import IDL from "../token_dispenser.json";
 import * as anchor from "@coral-xyz/anchor";
-
-const DISCORD_AUTH_ME_URL = "https://discord.com/api/users/@me";
+import config from "../config";
 
 export async function isAccessTokenValid(discordId: string, token: string): Promise<boolean> {
   try {
-    const response = await fetch(DISCORD_AUTH_ME_URL, {
+    const url = config.discord.baseUrl() + "/api/users/@me";
+    const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    if (!response.ok) {
+      throw new Error("Discord access token is invalid");
+    }
 
     const userData = await response.json();
     return userData.id === discordId;

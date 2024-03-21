@@ -1,18 +1,18 @@
 import { Keypair, PublicKey } from "@solana/web3.js";
-import { getSecret } from "../utils";
+import { getSecret } from "../utils/secrets";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { isAccessTokenValid, signDiscordDigest } from "../utils/discord";
 
-interface DiscordSignedDigestRequest {
+export interface DiscordSignedDigestRequest {
   publicKey: string;
   discordId: string;
 }
 
 export const signDiscordMessage = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    const requestBody = JSON.parse(event.body!) as DiscordSignedDigestRequest;
-    const { publicKey, discordId } = requestBody;
-
+    // TODO: no need to receive disordId really, as we should can just get it using the auth token.
+    // TODO: publicKey was expected as query param in pyth version
+    const { publicKey, discordId } = JSON.parse(event.body!) as DiscordSignedDigestRequest;
     const accessToken = event.headers["x-auth-token"];
 
     validatePublicKey(publicKey);
@@ -47,7 +47,7 @@ async function loadDispenserGuard() {
   const secretData = await getSecret(process.env.DISPENSER_KEY_SECRET_NAME ?? "xli-test-secret-dispenser-guard");
   const dispenserGuardKey = secretData.target;
 
-  const dispenserGuard = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(dispenserGuardKey)));
+  const dispenserGuard = Keypair.fromSecretKey(Uint8Array.from(dispenserGuardKey));
 
   return dispenserGuard;
 }
