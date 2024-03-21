@@ -9,7 +9,7 @@ import {
 } from '@coral-xyz/anchor'
 import { ConfirmedSignatureInfo, TransactionSignature } from '@solana/web3.js'
 import { TokenDispenser } from './idl/token_dispenser'
-import { base32encode } from 'claim_sdk'
+import { base32encode } from './index'
 
 export class TokenDispenserEventSubscriber {
   eventParser: anchor.EventParser

@@ -7,6 +7,7 @@ import {
   evmBuildSignedMessage,
   aptosBuildSignedMessage,
   suiBuildSignedMessage,
+  algorandBuildSignedMessage,
 } from './ecosystems/signatures'
 import { ethers } from 'ethers'
 import fs from 'fs'
@@ -22,6 +23,8 @@ import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
 import { hashDiscordUserId } from '../utils/hashDiscord'
 import { getInjectiveAddress } from '../utils/getInjectiveAddress'
 import { algorandGetFullMessage } from './ecosystems/algorand'
+import { getAlgorandAddress } from '../utils/getAlgorandAddress'
+import nacl from 'tweetnacl'
 
 dotenv.config() // Load environment variables from .env file
 
@@ -298,21 +301,26 @@ export class TestSuiWallet implements TestWallet {
 
 export class TestAlgorandWallet implements TestWallet {
   constructor(readonly wallet: Keypair) {}
-  static fromKeyfile(keyFile: string): TestSolanaWallet {
+  static fromKeyfile(keyFile: string): TestAlgorandWallet {
     const keypair = Keypair.fromSecretKey(
       new Uint8Array(JSON.parse(fs.readFileSync(keyFile, 'utf-8')))
     )
     return new TestAlgorandWallet(keypair)
   }
 
+
   async signMessage(payload: string): Promise<SignedMessage> {
-    return hardDriveSignMessage(
-      Buffer.from(algorandGetFullMessage(payload), 'utf-8'),
-      this.wallet
+    const fullMessage = algorandGetFullMessage(payload);
+    const messageBytes = Buffer.from(fullMessage, 'utf-8');
+    const sig = nacl.sign.detached(messageBytes, this.wallet.secretKey);
+    return algorandBuildSignedMessage(
+      this.address(),
+      Buffer.from(sig).toString('hex'),
+      fullMessage
     )
   }
 
   public address(): string {
-    return this.wallet.publicKey.toBase58()
+    return getAlgorandAddress(Buffer.from(this.wallet.publicKey.toBytes()))
   }
 }
