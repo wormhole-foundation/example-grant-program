@@ -10,6 +10,7 @@ import {
 import { Ecosystem } from '@components/Ecosystem'
 import { useCallback } from 'react'
 import { getInjectiveAddress } from '../utils/getInjectiveAddress'
+import useDiscordAuth from './useDiscordAuth'
 
 // It will return a function that can be used to get the identity of a given ecosystem
 // The function will return the identity if the ecosystem is connected
@@ -25,6 +26,7 @@ export function useGetEcosystemIdentity() {
   // TODO update logic to get discord data from lambda function execution
   // const { data } = useSession()
   const data = {} as any
+  const { profile } = useDiscordAuth()
 
   return useCallback(
     (ecosystem: Ecosystem) => {
@@ -51,7 +53,7 @@ export function useGetEcosystemIdentity() {
           return suiAddress
 
         case Ecosystem.DISCORD:
-          return data?.user?.hashedUserId
+          return profile?.id
 
         case Ecosystem.ALGORAND:
           return algorandAddress
@@ -59,7 +61,7 @@ export function useGetEcosystemIdentity() {
     },
     [
       aptosAddress,
-      data?.user?.hashedUserId,
+      profile,
       evmAddress,
       osmosisAddress,
       terraAddress,

@@ -1,56 +1,42 @@
 import { useMemo } from 'react'
-
 import Discord from '@images/discord.inline.svg'
-
 import Image from 'next/image'
+import useDiscordAuth from 'hooks/useDiscordAuth'
 
 type DiscordButtonProps = {
   disableOnAuth?: boolean
 }
 
-// NextAuth doesn't have the feature to authenticate in a new window.
-// We are opening a popup ourselves with specific pages. These pages
-// do the signIn and signOut action on load.
-// Please see the page - /discord-login and /discord-logout for more.
-const newTab = (url: string, title: string) => {
-  const newWindow = window.open(url, title)
-  newWindow?.focus()
-}
-
 export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
-  // TODO update logic to get discord data from lambda function execution
-  const { data = {}, status = '' } = {} as any
+  const { authenticate, clear, isConnecting, isAuthenticated, profile } =
+    useDiscordAuth()
 
   const { logo, text } = useMemo(() => {
-    if (status === 'authenticated')
+    if (isAuthenticated)
       return {
-        logo: data.user?.image ? (
-          <Image
-            src={data.user?.image}
-            alt="user image"
-            width={20}
-            height={20}
-          />
+        logo: profile?.image ? (
+          <Image src={profile?.image} alt="user image" width={20} height={20} />
         ) : (
           <Discord />
         ),
-        text: data.user?.name ?? 'Signed In',
+        text: profile?.name ?? 'Signed In',
       }
 
     return {
       logo: <Discord />,
-      text: 'sign in',
+      text: isConnecting ? 'Connecting ...' : 'sign in',
     }
-  }, [status, data?.user])
+  }, [isConnecting, isAuthenticated, profile])
 
   return (
     <button
-      className={'wbtn wbtn-secondary'}
+      className={'wbtn wbtn-secondary min-w-[117px] sm:min-w-[207px]'}
       onClick={() => {
-        if (status === 'unauthenticated')
-          newTab('/discord-login', 'Pyth | Discord')
-        if (status === 'authenticated')
-          newTab('/discord-logout', 'Pyth | Discord')
+        if (isAuthenticated) {
+          clear()
+        } else {
+          authenticate()
+        }
       }}
       disabled={disableOnAuth}
     >
