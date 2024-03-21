@@ -26,7 +26,7 @@ describe('DiscordSignedDigest', () => {
 
   test('should return signed message', async () => {
     givenDownstreamServicesWork()
-    givenRequest('discordId')
+    givenRequest()
 
     await whenSignDiscordMessageCalled(input)
 
@@ -39,7 +39,7 @@ describe('DiscordSignedDigest', () => {
  */
 const givenDownstreamServicesWork = () => {
   server.use(
-    http.get(`${config.discord.baseUrl()}/api/users/@me`, () => {
+    http.get(`${config.discord.baseUrl}/api/users/@me`, () => {
       return HttpResponse.json({
         id: '80351110224678912',
         username: 'Alice',
@@ -55,10 +55,9 @@ const givenDownstreamServicesWork = () => {
   server.listen()
 }
 
-const givenRequest = (discordId: string) => {
+const givenRequest = () => {
   input = {
-    publicKey: new Keypair().publicKey.toString(),
-    discordId: discordId
+    publicKey: new Keypair().publicKey.toString()
   }
 }
 

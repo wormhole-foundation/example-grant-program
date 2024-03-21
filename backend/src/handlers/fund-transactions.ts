@@ -1,6 +1,6 @@
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { getSecret } from '../utils/secrets'
+import { getFundingKey } from '../utils/secrets'
 import {
   checkTransactions,
   deserializeTransactions
@@ -62,9 +62,7 @@ function validateFundTransactions(transactions: unknown) {
 }
 
 async function loadFunderWallet(): Promise<NodeWallet> {
-  const secretData = await getSecret(
-    process.env.FUNDER_WALLET_KEY_SECRET_NAME ?? 'xli-test-secret-funder-wallet'
-  )
+  const secretData = await getFundingKey()
   const funderWalletKey = secretData.key
 
   const keypair = Keypair.fromSecretKey(new Uint8Array(funderWalletKey))

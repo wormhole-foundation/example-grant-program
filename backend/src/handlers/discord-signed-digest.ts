@@ -1,11 +1,11 @@
 import { Keypair, PublicKey } from '@solana/web3.js'
-import { getSecret } from '../utils/secrets'
+import { getDispenserKey } from '../utils/secrets'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { isAccessTokenValid, signDiscordDigest } from '../utils/discord'
 
 export interface DiscordSignedDigestRequest {
   publicKey: string
-  discordId: string
+  discordId?: string
 }
 
 export const signDiscordMessage = async (
@@ -15,19 +15,18 @@ export const signDiscordMessage = async (
     // TODO: no need to receive disordId really, as we should can just get it using the auth token.
     // TODO: publicKey was expected as query param in pyth version
     const { publicKey, discordId } = JSON.parse(
-      event.body!
+      event.body ?? '{}'
     ) as DiscordSignedDigestRequest
+    validatePublicKey(publicKey)
+
     const accessToken = event.headers['x-auth-token']
 
-    validatePublicKey(publicKey)
-    validateAccessTokenAndDiscordId(accessToken, discordId)
-
-    await isAccessTokenValid(discordId, accessToken!)
+    await validateAccessTokenAndDiscordId(accessToken, discordId!)
 
     const claimant = new PublicKey(publicKey!)
     const dispenserGuard = await loadDispenserGuard()
 
-    const signedDigest = signDiscordDigest(discordId, claimant, dispenserGuard)
+    const signedDigest = signDiscordDigest(discordId!, claimant, dispenserGuard)
 
     return {
       statusCode: 200,
@@ -47,10 +46,7 @@ export const signDiscordMessage = async (
 }
 
 async function loadDispenserGuard() {
-  // TODO: Update secret name based on the secret you created in the AWS Secrets Manager
-  const secretData = await getSecret(
-    process.env.DISPENSER_KEY_SECRET_NAME ?? 'xl-dispenser-guard-key'
-  )
+  const secretData = await getDispenserKey()
   const dispenserGuardKey = secretData.key
 
   const dispenserGuard = Keypair.fromSecretKey(
@@ -87,11 +83,11 @@ function validatePublicKey(publicKey?: string) {
   }
 }
 
-function validateAccessTokenAndDiscordId(
-  AccessToken?: string,
+async function validateAccessTokenAndDiscordId(
+  accessToken?: string,
   discordId?: string
 ) {
-  if (!AccessToken) {
+  if (!accessToken) {
     return {
       statusCode: 400,
       body: JSON.stringify({ error: 'Must provide discord auth token' })
@@ -102,6 +98,15 @@ function validateAccessTokenAndDiscordId(
     return {
       statusCode: 400,
       body: JSON.stringify({ error: 'Must provide discord id' })
+    }
+  }
+
+  try {
+    await isAccessTokenValid(discordId, accessToken!)
+  } catch (err) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: 'Invalid discord access token' })
     }
   }
 }

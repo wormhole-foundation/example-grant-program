@@ -7,6 +7,22 @@ import config from '../config'
 
 const client = new SecretsManagerClient({ region: config.aws.region })
 
+export async function getDispenserKey() {
+  if (config.keys.dispenserGuard.key) {
+    return { key: JSON.parse(config.keys.dispenserGuard.key) }
+  }
+
+  return getSecret(config.keys.dispenserGuard.secretName)
+}
+
+export async function getFundingKey() {
+  if (config.keys.funding.key) {
+    return { key: config.keys.funding.key }
+  }
+
+  return getSecret(config.keys.funding.secretName)
+}
+
 export async function getSecret(secretName: string) {
   try {
     const command = new GetSecretValueCommand({ SecretId: secretName })

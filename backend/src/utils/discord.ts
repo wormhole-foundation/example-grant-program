@@ -10,7 +10,7 @@ export async function isAccessTokenValid(
   token: string
 ): Promise<boolean> {
   try {
-    const url = config.discord.baseUrl() + '/api/users/@me'
+    const url = config.discord.baseUrl + '/api/users/@me'
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`
