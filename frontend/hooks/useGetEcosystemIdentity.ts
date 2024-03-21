@@ -26,7 +26,7 @@ export function useGetEcosystemIdentity() {
   // TODO update logic to get discord data from lambda function execution
   // const { data } = useSession()
   const data = {} as any
-  const { profile } = useDiscordAuth();
+  const { profile } = useDiscordAuth()
 
   return useCallback(
     (ecosystem: Ecosystem) => {

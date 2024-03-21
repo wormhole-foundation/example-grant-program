@@ -8,18 +8,14 @@ type DiscordButtonProps = {
 }
 
 export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
-  const { authenticate, clear, isConnecting, isAuthenticated, profile } = useDiscordAuth();
+  const { authenticate, clear, isConnecting, isAuthenticated, profile } =
+    useDiscordAuth()
 
   const { logo, text } = useMemo(() => {
     if (isAuthenticated)
       return {
         logo: profile?.image ? (
-          <Image
-            src={profile?.image}
-            alt="user image"
-            width={20}
-            height={20}
-          />
+          <Image src={profile?.image} alt="user image" width={20} height={20} />
         ) : (
           <Discord />
         ),
@@ -36,13 +32,12 @@ export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
     <button
       className={'wbtn wbtn-secondary min-w-[117px] sm:min-w-[207px]'}
       onClick={() => {
-          if(isAuthenticated) {
-            clear()
-          } else {
-            authenticate()
-          }
+        if (isAuthenticated) {
+          clear()
+        } else {
+          authenticate()
         }
-      }
+      }}
       disabled={disableOnAuth}
     >
       <span className="relative inline-flex items-center gap-1 whitespace-nowrap  sm:gap-2.5">

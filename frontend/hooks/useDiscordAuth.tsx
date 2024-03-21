@@ -32,7 +32,10 @@ export type DiscordProfile = {
   image: string
 }
 
-function watchStorageForChange(setToken: (token: string) => void, setIsConnecting: (isConnecting: boolean) => void) {
+function watchStorageForChange(
+  setToken: (token: string) => void,
+  setIsConnecting: (isConnecting: boolean) => void
+) {
   function onStorageChange(event: StorageEvent) {
     if (event.key === DISCORD_TOKEN_KEY && event.newValue) {
       setToken(event.newValue)
@@ -125,7 +128,12 @@ export default function useDiscordAuth() {
   const getDiscordUserInfo = useCallback(() => {
     const controller = new AbortController()
     if (token && isAuthenticated) {
-      getDiscordUserInfoAndSetProfile(controller.signal, token, setProfile, setIsConnecting)
+      getDiscordUserInfoAndSetProfile(
+        controller.signal,
+        token,
+        setProfile,
+        setIsConnecting
+      )
     }
     return () => {
       controller.abort()
