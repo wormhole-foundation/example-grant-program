@@ -308,11 +308,10 @@ export class TestAlgorandWallet implements TestWallet {
     return new TestAlgorandWallet(keypair)
   }
 
-
   async signMessage(payload: string): Promise<SignedMessage> {
-    const fullMessage = algorandGetFullMessage(payload);
-    const messageBytes = Buffer.from(fullMessage, 'utf-8');
-    const sig = nacl.sign.detached(messageBytes, this.wallet.secretKey);
+    const fullMessage = algorandGetFullMessage(payload)
+    const messageBytes = Buffer.from(fullMessage, 'utf-8')
+    const sig = nacl.sign.detached(messageBytes, this.wallet.secretKey)
     return algorandBuildSignedMessage(
       this.address(),
       Buffer.from(sig).toString('hex'),

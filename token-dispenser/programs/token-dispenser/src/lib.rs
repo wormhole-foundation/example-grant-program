@@ -459,7 +459,9 @@ impl IdentityCertificate {
                     .get_payload(),
                     claimant,
                 )?;
-                Ok(Identity::Algorand{ pubkey: pubkey.clone() })
+                Ok(Identity::Algorand {
+                    pubkey: pubkey.clone(),
+                })
             }
             IdentityCertificate::Aptos {
                 pubkey,
