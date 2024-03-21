@@ -8,7 +8,7 @@ type DiscordButtonProps = {
 }
 
 export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
-  const { authenticate, clear, isAuthenticated, profile } = useDiscordAuth();
+  const { authenticate, clear, isConnecting, isAuthenticated, profile } = useDiscordAuth();
 
   const { logo, text } = useMemo(() => {
     if (isAuthenticated)
@@ -28,9 +28,9 @@ export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
 
     return {
       logo: <Discord />,
-      text: 'sign in',
+      text: isConnecting ? 'Connecting ...' : 'sign in',
     }
-  }, [isAuthenticated, profile])
+  }, [isConnecting, isAuthenticated, profile])
 
   return (
     <button
