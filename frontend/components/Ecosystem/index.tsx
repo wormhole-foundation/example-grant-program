@@ -12,6 +12,7 @@ export enum Ecosystem {
   OSMOSIS = 'Osmosis',
   TERRA = 'Terra',
   DISCORD = 'Pyth Discord',
+  ALGORAND = 'Algorand',
 }
 
 // We will store data by using wallets' addresses as index

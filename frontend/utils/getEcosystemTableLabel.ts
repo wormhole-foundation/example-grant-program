@@ -19,5 +19,7 @@ export function getEcosystemTableLabel(ecosystem: Ecosystem) {
       return 'Sui activity'
     case Ecosystem.DISCORD:
       return 'Discord activity'
+    case Ecosystem.ALGORAND:
+      return 'Algorand activity'
   }
 }

@@ -436,6 +436,17 @@ export type TokenDispenser = {
                 type: 'string'
               }
             ]
+          },
+          {
+            name: 'Algorand'
+            fields: [
+              {
+                name: 'pubkey'
+                type: {
+                  array: ['u8', 32]
+                }
+              }
+            ]
           }
         ]
       }
@@ -542,6 +553,21 @@ export type TokenDispenser = {
                 name: 'pubkey'
                 type: {
                   array: ['u8', 20]
+                }
+              },
+              {
+                name: 'verification_instruction_index'
+                type: 'u8'
+              }
+            ]
+          },
+          {
+            name: 'Algorand'
+            fields: [
+              {
+                name: 'pubkey'
+                type: {
+                  array: ['u8', 32]
                 }
               },
               {
@@ -1064,6 +1090,17 @@ export const IDL: TokenDispenser = {
               },
             ],
           },
+          {
+            name: 'Algorand',
+            fields: [
+              {
+                name: 'pubkey',
+                type: {
+                  array: ['u8', 32],
+                },
+              },
+            ],
+          },
         ],
       },
     },
@@ -1169,6 +1206,21 @@ export const IDL: TokenDispenser = {
                 name: 'pubkey',
                 type: {
                   array: ['u8', 20],
+                },
+              },
+              {
+                name: 'verification_instruction_index',
+                type: 'u8',
+              },
+            ],
+          },
+          {
+            name: 'Algorand',
+            fields: [
+              {
+                name: 'pubkey',
+                type: {
+                  array: ['u8', 32],
                 },
               },
               {

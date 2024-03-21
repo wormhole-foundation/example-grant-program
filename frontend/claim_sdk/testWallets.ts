@@ -7,6 +7,7 @@ import {
   evmBuildSignedMessage,
   aptosBuildSignedMessage,
   suiBuildSignedMessage,
+  algorandBuildSignedMessage,
 } from './ecosystems/signatures'
 import { ethers } from 'ethers'
 import fs from 'fs'
@@ -21,6 +22,9 @@ import { aptosGetFullMessage } from './ecosystems/aptos'
 import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
 import { hashDiscordUserId } from '../utils/hashDiscord'
 import { getInjectiveAddress } from '../utils/getInjectiveAddress'
+import { algorandGetFullMessage } from './ecosystems/algorand'
+import { getAlgorandAddress } from '../utils/getAlgorandAddress'
+import nacl from 'tweetnacl'
 
 dotenv.config() // Load environment variables from .env file
 
@@ -67,6 +71,10 @@ export async function loadTestWallets(): Promise<
   const cosmosPrivateKeyPath = path.resolve(KEY_DIR, 'cosmos_private_key.json')
   const aptosPrivateKeyPath = path.resolve(KEY_DIR, 'aptos_private_key.json')
   const suiPrivateKeyPath = path.resolve(KEY_DIR, 'sui_private_key.json')
+  const algorandPrivateKeyPath = path.resolve(
+    KEY_DIR,
+    'algorand_private_key.json'
+  )
 
   const dispenserGuardKeyPath = path.resolve(
     KEY_DIR,
@@ -83,6 +91,7 @@ export async function loadTestWallets(): Promise<
     terra: [],
     osmosis: [],
     injective: [],
+    algorand: [],
   }
   result['discord'] = [
     DiscordTestWallet.fromKeyfile(TEST_DISCORD_USERNAME, dispenserGuardKeyPath),
@@ -99,6 +108,7 @@ export async function loadTestWallets(): Promise<
   ]),
   ]
   result['injective'] = [TestEvmWallet.fromKeyfile(cosmosPrivateKeyPath, true)]
+  result['algorand'] = [TestAlgorandWallet.fromKeyfile(algorandPrivateKeyPath)]
 
   return result
 }
@@ -286,5 +296,30 @@ export class TestSuiWallet implements TestWallet {
     ).signature
 
     return suiBuildSignedMessage(response, payload)
+  }
+}
+
+export class TestAlgorandWallet implements TestWallet {
+  constructor(readonly wallet: Keypair) {}
+  static fromKeyfile(keyFile: string): TestAlgorandWallet {
+    const keypair = Keypair.fromSecretKey(
+      new Uint8Array(JSON.parse(fs.readFileSync(keyFile, 'utf-8')))
+    )
+    return new TestAlgorandWallet(keypair)
+  }
+
+  async signMessage(payload: string): Promise<SignedMessage> {
+    const fullMessage = algorandGetFullMessage(payload)
+    const messageBytes = Buffer.from(fullMessage, 'utf-8')
+    const sig = nacl.sign.detached(messageBytes, this.wallet.secretKey)
+    return algorandBuildSignedMessage(
+      this.address(),
+      Buffer.from(sig).toString('hex'),
+      fullMessage
+    )
+  }
+
+  public address(): string {
+    return getAlgorandAddress(Buffer.from(this.wallet.publicKey.toBytes()))
   }
 }

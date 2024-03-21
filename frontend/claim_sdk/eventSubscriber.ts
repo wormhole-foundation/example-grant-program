@@ -9,6 +9,7 @@ import {
 } from '@coral-xyz/anchor'
 import { ConfirmedSignatureInfo, TransactionSignature } from '@solana/web3.js'
 import { TokenDispenser } from './idl/token_dispenser'
+import { base32encode } from './index'
 
 export class TokenDispenserEventSubscriber {
   eventParser: anchor.EventParser
@@ -267,6 +268,12 @@ function formatClaimInfo(
     return {
       ecosystem: 'injective',
       address: claimInfo.identity.injective.address,
+      amount: claimInfo.amount.toString(),
+    }
+  } else if (claimInfo.identity.algorand?.pubkey) {
+    return {
+      ecosystem: 'algorand',
+      address: base32encode(claimInfo.identity.algorand.pubkey),
       amount: claimInfo.amount.toString(),
     }
   } else

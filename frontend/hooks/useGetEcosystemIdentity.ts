@@ -4,6 +4,7 @@ import {
   useEVMAddress,
   useSolanaAddress,
   useSuiAddress,
+  useAlgorandAddress,
 } from './useAddress'
 
 import { Ecosystem } from '@components/Ecosystem'
@@ -20,6 +21,7 @@ export function useGetEcosystemIdentity() {
   const terraAddress = useCosmosAddress('terra')
   const solanaAddress = useSolanaAddress()
   const suiAddress = useSuiAddress()
+  const algorandAddress = useAlgorandAddress()
   // TODO update logic to get discord data from lambda function execution
   // const { data } = useSession()
   const data = {} as any
@@ -50,6 +52,9 @@ export function useGetEcosystemIdentity() {
 
         case Ecosystem.DISCORD:
           return data?.user?.hashedUserId
+
+        case Ecosystem.ALGORAND:
+          return algorandAddress
       }
     },
     [
@@ -60,6 +65,7 @@ export function useGetEcosystemIdentity() {
       terraAddress,
       solanaAddress,
       suiAddress,
+      algorandAddress,
     ]
   )
 }

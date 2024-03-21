@@ -16,6 +16,7 @@ import { Layout } from '@components/Layout'
 import { Disclaimer } from '@components/modal/Disclaimer'
 
 import { PathnameStore, resetOnVersionMismatch } from 'utils/store'
+import { AlgorandWalletProvider } from '../components/Ecosystem/AlgorandProvider'
 
 function useRedirect(isVersionChecked: boolean) {
   // We are fetching it here and not in useEffect
@@ -80,33 +81,35 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
         <SolanaWalletProvider>
           <AptosWalletProvider>
             <SuiWalletProvider>
-              <EVMWalletProvider>
-                <CosmosWalletProvider>
-                  {/* WARN: EcosystemProviders might use wallet provider addresses and hence
+              <AlgorandWalletProvider>
+                <EVMWalletProvider>
+                  <CosmosWalletProvider>
+                    {/* WARN: EcosystemProviders might use wallet provider addresses and hence
                  They should be inside all those providers. */}
-                  <EcosystemProviders>
-                    <Layout>
-                      <DefaultSeo {...SEO} />
-                      <Component {...pageProps} />
-                    </Layout>
-                    <Toaster
-                      position="bottom-left"
-                      toastOptions={{
-                        style: {
-                          wordBreak: 'break-word',
-                        },
-                      }}
-                      reverseOrder={false}
-                    />
-                    <Disclaimer
-                      showModal={!disclaimerWasRead}
-                      onAgree={() => {
-                        setDisclaimerWasRead(true)
-                      }}
-                    />
-                  </EcosystemProviders>
-                </CosmosWalletProvider>
-              </EVMWalletProvider>
+                    <EcosystemProviders>
+                      <Layout>
+                        <DefaultSeo {...SEO} />
+                        <Component {...pageProps} />
+                      </Layout>
+                      <Toaster
+                        position="bottom-left"
+                        toastOptions={{
+                          style: {
+                            wordBreak: 'break-word',
+                          },
+                        }}
+                        reverseOrder={false}
+                      />
+                      <Disclaimer
+                        showModal={!disclaimerWasRead}
+                        onAgree={() => {
+                          setDisclaimerWasRead(true)
+                        }}
+                      />
+                    </EcosystemProviders>
+                  </CosmosWalletProvider>
+                </EVMWalletProvider>
+              </AlgorandWalletProvider>
             </SuiWalletProvider>
           </AptosWalletProvider>
         </SolanaWalletProvider>
