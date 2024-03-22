@@ -7,7 +7,7 @@ import {
   IdlEvents,
   IdlTypes,
 } from '@coral-xyz/anchor'
-import { ConfirmedSignatureInfo, TransactionSignature } from '@solana/web3.js'
+import { ConfirmedSignatureInfo, PublicKey, TransactionSignature } from '@solana/web3.js'
 import { TokenDispenser } from './idl/token_dispenser'
 import { base32encode } from './index'
 
@@ -233,7 +233,7 @@ function formatClaimInfo(
     return {
       ecosystem: 'solana',
       address: new anchor.web3.PublicKey(
-        claimInfo.identity.solana.pubkey
+        claimInfo.identity.solana.pubkey as PublicKey
       ).toBase58(),
       amount: claimInfo.amount.toString(),
     }
@@ -241,39 +241,39 @@ function formatClaimInfo(
     return {
       ecosystem: 'evm',
       address:
-        '0x' + Buffer.from(claimInfo.identity.evm.pubkey).toString('hex'),
+        '0x' + Buffer.from(claimInfo.identity.evm.pubkey as Uint8Array).toString('hex'),
       amount: claimInfo.amount.toString(),
     }
   } else if (claimInfo.identity.aptos) {
     return {
       ecosystem: 'aptos',
       address:
-        '0x' + Buffer.from(claimInfo.identity.aptos.address).toString('hex'),
+        '0x' + Buffer.from(claimInfo.identity.aptos.address as Uint8Array).toString('hex'),
       amount: claimInfo.amount.toString(),
     }
   } else if (claimInfo.identity.sui) {
     return {
       ecosystem: 'sui',
       address:
-        '0x' + Buffer.from(claimInfo.identity.sui.address).toString('hex'),
+        '0x' + Buffer.from(claimInfo.identity.sui.address as Uint8Array).toString('hex'),
       amount: claimInfo.amount.toString(),
     }
   } else if (claimInfo.identity.cosmwasm) {
     return {
       ecosystem: 'cosmwasm',
-      address: claimInfo.identity.cosmwasm.address,
+      address: claimInfo.identity.cosmwasm.address as string,
       amount: claimInfo.amount.toString(),
     }
   } else if (claimInfo.identity.injective) {
     return {
       ecosystem: 'injective',
-      address: claimInfo.identity.injective.address,
+      address: claimInfo.identity.injective.address as string,
       amount: claimInfo.amount.toString(),
     }
   } else if (claimInfo.identity.algorand?.pubkey) {
     return {
       ecosystem: 'algorand',
-      address: base32encode(claimInfo.identity.algorand.pubkey),
+      address: base32encode(claimInfo.identity.algorand.pubkey as Uint8Array),
       amount: claimInfo.amount.toString(),
     }
   } else
