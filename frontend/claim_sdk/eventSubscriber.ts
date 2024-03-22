@@ -3,11 +3,10 @@ import tokenDispenser from './idl/token_dispenser.json'
 import {
   BorshCoder,
   Idl,
-  AnchorProvider,
   IdlEvents,
   IdlTypes,
 } from '@coral-xyz/anchor'
-import { ConfirmedSignatureInfo, PublicKey, TransactionSignature } from '@solana/web3.js'
+import { ConfirmedSignatureInfo } from '@solana/web3.js'
 import { TokenDispenser } from './idl/token_dispenser'
 import { base32encode } from './index'
 
@@ -233,7 +232,7 @@ function formatClaimInfo(
     return {
       ecosystem: 'solana',
       address: new anchor.web3.PublicKey(
-        claimInfo.identity.solana.pubkey as PublicKey
+        claimInfo.identity.solana.pubkey as Uint8Array
       ).toBase58(),
       amount: claimInfo.amount.toString(),
     }
