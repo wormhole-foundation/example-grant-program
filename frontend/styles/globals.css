@@ -167,7 +167,7 @@ body {
   background-size: cover, contain;
   min-height: 100vh;
 }
-
+.wallet-btn,
 .wbtn {
   display: inline-flex;
   align-items: center;
@@ -224,16 +224,28 @@ body {
   bottom: 0;
 }
 
-.wbtn:hover {
+.wbtn:not(:disabled):hover {
   border-color: #fff;
   background-color: transparent;
   color: #000;
 }
-.wbtn:hover:before,
-.wbtn:hover:after {
+.wbtn:not(:disabled):hover:before,
+.wbtn:not(:disabled):hover:after {
   width: 100%;
 }
 
+.wallet-btn:hover,
 .wbtn-secondary {
   background: rgba(0, 0, 0, 0.35);
+}
+
+.wallet-btn {
+  background: rgba(0, 0, 0, 0.35);
+}
+.wallet-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.footer {
+  @apply flex flex-col-reverse items-center justify-between border-t border-white border-opacity-25 bg-white bg-opacity-5 px-10 py-7 font-mono text-xs  font-light backdrop-blur-sm lg:flex-row;
 }
