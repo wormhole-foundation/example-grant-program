@@ -31,7 +31,7 @@ function lambdaProxyWrapper(
       body: JSON.stringify(req.body)
     }
 
-    const response = await handler(event as any as APIGatewayProxyEvent)
+    const response = await handler(event as unknown as APIGatewayProxyEvent)
 
     res.status(response.statusCode)
     res.set(response.headers)

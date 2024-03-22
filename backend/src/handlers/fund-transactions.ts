@@ -6,6 +6,7 @@ import {
   deserializeTransactions
 } from '../utils/fundTransactions'
 import { Keypair } from '@solana/web3.js'
+import { HandlerError } from '../utils/errors'
 
 export type FundTransactionRequest = Uint8Array[]
 
@@ -28,15 +29,22 @@ export const fundTransactions = async (
     const wallet = await loadFunderWallet()
 
     const signedTransactions = await wallet.signAllTransactions(transactions)
-    console.log('Signed transactions', signedTransactions[0].signatures[0])
     return {
       statusCode: 200,
       body: JSON.stringify(
         signedTransactions.map((tx) => Buffer.from(tx.serialize()))
       )
     }
-  } catch (err) {
-    console.error('Error fully signing transactions', err)
+  } catch (err: HandlerError | unknown) {
+    console.error('Error signing transactions', err)
+
+    if (err instanceof HandlerError) {
+      return {
+        statusCode: err.statusCode,
+        body: JSON.stringify(err.body)
+      }
+    }
+
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Internal server error' })
@@ -46,17 +54,11 @@ export const fundTransactions = async (
 
 function validateFundTransactions(transactions: unknown) {
   if (!Array.isArray(transactions) || transactions.length === 0) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Must provide transactions' })
-    }
+    throw new HandlerError(400, { error: 'Must provide transactions' })
   }
 
   if (transactions.length >= 10) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Too many transactions' })
-    }
+    throw new HandlerError(400, { error: 'Too many transactions' })
   }
 }
 
