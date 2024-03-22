@@ -31,7 +31,6 @@ export class TokenDispenserSdk {
     dispenserGuard: PublicKey,
     funder: PublicKey,
     addressLookupTable: PublicKey,
-
     merkleRoot: Buffer,
     maxTransfer: bigint,
   }) {
