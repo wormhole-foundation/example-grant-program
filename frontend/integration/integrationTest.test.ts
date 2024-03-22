@@ -301,14 +301,17 @@ describe('integration test', () => {
 
     it('submits multiple claims at once', async () => {
       const wallets = {
-        'terra': testWallets.terra[0],
-        'osmosis': testWallets.osmosis[0],
+        terra: testWallets.terra[0],
+        osmosis: testWallets.osmosis[0],
       }
 
       const claims = await Promise.all(
         Object.entries(wallets).map(async ([ecosystem, wallet]) => {
           const { claimInfo, proofOfInclusion } =
-            (await mockFetchAmountAndProof(ecosystem as Ecosystem, wallet.address()))!
+            (await mockFetchAmountAndProof(
+              ecosystem as Ecosystem,
+              wallet.address()
+            ))!
           return {
             claimInfo,
             proofOfInclusion,
