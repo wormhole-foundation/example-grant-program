@@ -1,7 +1,7 @@
 import { Program, BN, Address } from '@coral-xyz/anchor'
 
-import { TokenDispenser} from "../../target/types/token_dispenser";
-import IDL from "../../target/idl/token_dispenser.json";
+import { TokenDispenser} from "./idl/token_dispenser";
+import IDL from "./idl/token_dispenser.json";
 import { PublicKey, Connection } from '@solana/web3.js';
 
 import { derivePda } from './utils';
@@ -36,15 +36,16 @@ export class TokenDispenserSdk {
   }) {
     return this.program.methods
       .initialize(
-        args.merkleRoot,
+        Array.from(args.merkleRoot),
         args.dispenserGuard,
         args.funder,
         new BN(args.maxTransfer.toString()),
       )
       .accounts({
+        payer: args.payer,
         mint: args.mint,
         treasury: args.treasury,
-        config: this.configAccountAddress(),
+        config: new PublicKey(this.configAccountAddress()),
         addressLookupTable: args.addressLookupTable,
       })
       .instruction();

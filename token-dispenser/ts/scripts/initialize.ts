@@ -12,8 +12,6 @@ type InitConfig = {
   treasury: string,
   dispenserGuard: string,
   funder: string,
-  addressLookupTable: string,
-
   merkleRoot: Buffer,
   maxTransfer: bigint,
 };
@@ -25,7 +23,6 @@ type InitConfig = {
     treasury: getEnv("TREASURY"),
     dispenserGuard: getEnv("DISPENSER_GUARD"),
     funder: getEnv("FUNDER"),
-    addressLookupTable: getEnv("ADDRESS_LOOKUP_TABLE"),
     merkleRoot: Buffer.from(getEnv("MERKLE_ROOT"), "hex"),
     maxTransfer: BigInt(getEnv("MAX_TRANSFER")),
   };

@@ -32,7 +32,7 @@ export async function ledgerSignAndSend(instructions: TransactionInstruction[], 
 export async function ledgerSignAndSendV0(instructions: TransactionInstruction[], signers: Keypair[]) {
   const deployerSigner = await getSigner();
   const deployerPk = new PublicKey(await deployerSigner.getAddress());
-  const recentBlockhash = (await connection.getRecentBlockhash()).blockHash;
+  const recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
   
   const message = new TransactionMessage({
     payerKey: deployerPk,
@@ -45,7 +45,7 @@ export async function ledgerSignAndSendV0(instructions: TransactionInstruction[]
   transaction.sign(signers);
   
   const signedByPayer = await deployerSigner.signTransaction(
-    transaction, // TODO: how do we serialize V0 txs?
+    Buffer.from(transaction.message.serialize()),
   );
 
   transaction.addSignature(deployerPk, signedByPayer);
