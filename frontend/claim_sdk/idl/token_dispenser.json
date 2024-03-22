@@ -49,7 +49,7 @@
         {
           "name": "merkleRoot",
           "type": {
-            "array": ["u8", 20]
+            "defined": "MerkleRoot<SolanaHasher>"
           }
         },
         {
@@ -153,7 +153,7 @@
           {
             "name": "merkleRoot",
             "type": {
-              "array": ["u8", 20]
+              "defined": "MerkleRoot<SolanaHasher>"
             }
           },
           {
@@ -206,7 +206,9 @@
           },
           {
             "name": "signer",
-            "type": "string"
+            "type": {
+              "defined": "CosmosBech32Address"
+            }
           }
         ]
       }
@@ -350,10 +352,72 @@
           {
             "name": "proofOfInclusion",
             "type": {
-              "vec": {
-                "array": ["u8", 20]
-              }
+              "defined": "MerklePath<SolanaHasher>"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestIdentityCertificate",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Evm",
+            "fields": [
+              {
+                "defined": "Secp256k1TestIdentityCertificate<EvmPrefixedMessage,Keccak256>"
+              }
+            ]
+          },
+          {
+            "name": "Discord",
+            "fields": [
+              {
+                "defined": "Ed25519TestIdentityCertificate<DiscordMessage>"
+              }
+            ]
+          },
+          {
+            "name": "Cosmos",
+            "fields": [
+              {
+                "defined": "Secp256k1TestIdentityCertificate<CosmosMessage,Sha256>"
+              }
+            ]
+          },
+          {
+            "name": "Aptos",
+            "fields": [
+              {
+                "defined": "Ed25519TestIdentityCertificate<AptosMessage>"
+              }
+            ]
+          },
+          {
+            "name": "Sui",
+            "fields": [
+              {
+                "defined": "Ed25519TestIdentityCertificate<SuiMessage>"
+              }
+            ]
+          },
+          {
+            "name": "Solana",
+            "fields": [
+              {
+                "defined": "SolanaTestIdentityCertificate"
+              }
+            ]
+          },
+          {
+            "name": "Injective",
+            "fields": [
+              {
+                "defined": "Secp256k1TestIdentityCertificate<EvmPrefixedMessage,Keccak256>"
+              }
+            ]
           }
         ]
       }
@@ -381,7 +445,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 32]
+                  "defined": "Ed25519Pubkey"
                 }
               }
             ]
@@ -392,7 +456,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 20]
+                  "defined": "EvmPubkey"
                 }
               }
             ]
@@ -403,7 +467,7 @@
               {
                 "name": "address",
                 "type": {
-                  "array": ["u8", 32]
+                  "defined": "SuiAddress"
                 }
               }
             ]
@@ -414,7 +478,7 @@
               {
                 "name": "address",
                 "type": {
-                  "array": ["u8", 32]
+                  "defined": "AptosAddress"
                 }
               }
             ]
@@ -424,7 +488,9 @@
             "fields": [
               {
                 "name": "address",
-                "type": "string"
+                "type": {
+                  "defined": "CosmosBech32Address"
+                }
               }
             ]
           },
@@ -433,7 +499,9 @@
             "fields": [
               {
                 "name": "address",
-                "type": "string"
+                "type": {
+                  "defined": "CosmosBech32Address"
+                }
               }
             ]
           },
@@ -443,7 +511,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 32]
+                  "defined": "Ed25519Pubkey"
                 }
               }
             ]
@@ -475,7 +543,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 20]
+                  "defined": "EvmPubkey"
                 }
               },
               {
@@ -493,7 +561,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 32]
+                  "defined": "Ed25519Pubkey"
                 }
               },
               {
@@ -508,7 +576,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 32]
+                  "defined": "Ed25519Pubkey"
                 }
               },
               {
@@ -527,7 +595,7 @@
               {
                 "name": "signature",
                 "type": {
-                  "array": ["u8", 64]
+                  "defined": "Secp256k1Signature"
                 }
               },
               {
@@ -537,7 +605,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 65]
+                  "defined": "UncompressedSecp256k1Pubkey"
                 }
               },
               {
@@ -552,7 +620,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 20]
+                  "defined": "EvmPubkey"
                 }
               },
               {
@@ -567,7 +635,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 32]
+                  "defined": "Ed25519Pubkey"
                 }
               },
               {

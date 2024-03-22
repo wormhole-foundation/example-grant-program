@@ -49,7 +49,7 @@ export type TokenDispenser = {
         {
           name: 'merkleRoot'
           type: {
-            array: ['u8', 20]
+            defined: 'MerkleRoot<SolanaHasher>'
           }
         },
         {
@@ -142,7 +142,7 @@ export type TokenDispenser = {
   ]
   accounts: [
     {
-      name: 'Config'
+      name: 'config'
       type: {
         kind: 'struct'
         fields: [
@@ -153,7 +153,7 @@ export type TokenDispenser = {
           {
             name: 'merkleRoot'
             type: {
-              array: ['u8', 20]
+              defined: 'MerkleRoot<SolanaHasher>'
             }
           },
           {
@@ -184,7 +184,7 @@ export type TokenDispenser = {
       }
     },
     {
-      name: 'Receipt'
+      name: 'receipt'
       type: {
         kind: 'struct'
         fields: []
@@ -206,7 +206,9 @@ export type TokenDispenser = {
           },
           {
             name: 'signer'
-            type: 'string'
+            type: {
+              defined: 'CosmosBech32Address'
+            }
           }
         ]
       }
@@ -350,10 +352,72 @@ export type TokenDispenser = {
           {
             name: 'proofOfInclusion'
             type: {
-              vec: {
-                array: ['u8', 20]
-              }
+              defined: 'MerklePath<SolanaHasher>'
             }
+          }
+        ]
+      }
+    },
+    {
+      name: 'TestIdentityCertificate'
+      type: {
+        kind: 'enum'
+        variants: [
+          {
+            name: 'Evm'
+            fields: [
+              {
+                defined: 'Secp256k1TestIdentityCertificate<EvmPrefixedMessage,Keccak256>'
+              }
+            ]
+          },
+          {
+            name: 'Discord'
+            fields: [
+              {
+                defined: 'Ed25519TestIdentityCertificate<DiscordMessage>'
+              }
+            ]
+          },
+          {
+            name: 'Cosmos'
+            fields: [
+              {
+                defined: 'Secp256k1TestIdentityCertificate<CosmosMessage,Sha256>'
+              }
+            ]
+          },
+          {
+            name: 'Aptos'
+            fields: [
+              {
+                defined: 'Ed25519TestIdentityCertificate<AptosMessage>'
+              }
+            ]
+          },
+          {
+            name: 'Sui'
+            fields: [
+              {
+                defined: 'Ed25519TestIdentityCertificate<SuiMessage>'
+              }
+            ]
+          },
+          {
+            name: 'Solana'
+            fields: [
+              {
+                defined: 'SolanaTestIdentityCertificate'
+              }
+            ]
+          },
+          {
+            name: 'Injective'
+            fields: [
+              {
+                defined: 'Secp256k1TestIdentityCertificate<EvmPrefixedMessage,Keccak256>'
+              }
+            ]
           }
         ]
       }
@@ -381,7 +445,7 @@ export type TokenDispenser = {
               {
                 name: 'pubkey'
                 type: {
-                  array: ['u8', 32]
+                  defined: 'Ed25519Pubkey'
                 }
               }
             ]
@@ -392,7 +456,7 @@ export type TokenDispenser = {
               {
                 name: 'pubkey'
                 type: {
-                  array: ['u8', 20]
+                  defined: 'EvmPubkey'
                 }
               }
             ]
@@ -403,7 +467,7 @@ export type TokenDispenser = {
               {
                 name: 'address'
                 type: {
-                  array: ['u8', 32]
+                  defined: 'SuiAddress'
                 }
               }
             ]
@@ -414,7 +478,7 @@ export type TokenDispenser = {
               {
                 name: 'address'
                 type: {
-                  array: ['u8', 32]
+                  defined: 'AptosAddress'
                 }
               }
             ]
@@ -424,7 +488,9 @@ export type TokenDispenser = {
             fields: [
               {
                 name: 'address'
-                type: 'string'
+                type: {
+                  defined: 'CosmosBech32Address'
+                }
               }
             ]
           },
@@ -433,7 +499,9 @@ export type TokenDispenser = {
             fields: [
               {
                 name: 'address'
-                type: 'string'
+                type: {
+                  defined: 'CosmosBech32Address'
+                }
               }
             ]
           },
@@ -443,7 +511,7 @@ export type TokenDispenser = {
               {
                 name: 'pubkey'
                 type: {
-                  array: ['u8', 32]
+                  defined: 'Ed25519Pubkey'
                 }
               }
             ]
@@ -475,7 +543,7 @@ export type TokenDispenser = {
               {
                 name: 'pubkey'
                 type: {
-                  array: ['u8', 20]
+                  defined: 'EvmPubkey'
                 }
               },
               {
@@ -493,7 +561,7 @@ export type TokenDispenser = {
               {
                 name: 'pubkey'
                 type: {
-                  array: ['u8', 32]
+                  defined: 'Ed25519Pubkey'
                 }
               },
               {
@@ -508,7 +576,7 @@ export type TokenDispenser = {
               {
                 name: 'pubkey'
                 type: {
-                  array: ['u8', 32]
+                  defined: 'Ed25519Pubkey'
                 }
               },
               {
@@ -527,7 +595,7 @@ export type TokenDispenser = {
               {
                 name: 'signature'
                 type: {
-                  array: ['u8', 64]
+                  defined: 'Secp256k1Signature'
                 }
               },
               {
@@ -537,7 +605,7 @@ export type TokenDispenser = {
               {
                 name: 'pubkey'
                 type: {
-                  array: ['u8', 65]
+                  defined: 'UncompressedSecp256k1Pubkey'
                 }
               },
               {
@@ -552,7 +620,7 @@ export type TokenDispenser = {
               {
                 name: 'pubkey'
                 type: {
-                  array: ['u8', 20]
+                  defined: 'EvmPubkey'
                 }
               },
               {
@@ -567,7 +635,7 @@ export type TokenDispenser = {
               {
                 name: 'pubkey'
                 type: {
-                  array: ['u8', 32]
+                  defined: 'Ed25519Pubkey'
                 }
               },
               {
@@ -651,6 +719,7 @@ export type TokenDispenser = {
     }
   ]
 }
+
 export const IDL: TokenDispenser = {
   version: '0.1.0',
   name: 'token_dispenser',
@@ -702,7 +771,7 @@ export const IDL: TokenDispenser = {
         {
           name: 'merkleRoot',
           type: {
-            array: ['u8', 20],
+            defined: 'MerkleRoot<SolanaHasher>',
           },
         },
         {
@@ -795,7 +864,7 @@ export const IDL: TokenDispenser = {
   ],
   accounts: [
     {
-      name: 'Config',
+      name: 'config',
       type: {
         kind: 'struct',
         fields: [
@@ -806,7 +875,7 @@ export const IDL: TokenDispenser = {
           {
             name: 'merkleRoot',
             type: {
-              array: ['u8', 20],
+              defined: 'MerkleRoot<SolanaHasher>',
             },
           },
           {
@@ -837,7 +906,7 @@ export const IDL: TokenDispenser = {
       },
     },
     {
-      name: 'Receipt',
+      name: 'receipt',
       type: {
         kind: 'struct',
         fields: [],
@@ -859,7 +928,9 @@ export const IDL: TokenDispenser = {
           },
           {
             name: 'signer',
-            type: 'string',
+            type: {
+              defined: 'CosmosBech32Address',
+            },
           },
         ],
       },
@@ -1003,10 +1074,75 @@ export const IDL: TokenDispenser = {
           {
             name: 'proofOfInclusion',
             type: {
-              vec: {
-                array: ['u8', 20],
-              },
+              defined: 'MerklePath<SolanaHasher>',
             },
+          },
+        ],
+      },
+    },
+    {
+      name: 'TestIdentityCertificate',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'Evm',
+            fields: [
+              {
+                defined:
+                  'Secp256k1TestIdentityCertificate<EvmPrefixedMessage,Keccak256>',
+              },
+            ],
+          },
+          {
+            name: 'Discord',
+            fields: [
+              {
+                defined: 'Ed25519TestIdentityCertificate<DiscordMessage>',
+              },
+            ],
+          },
+          {
+            name: 'Cosmos',
+            fields: [
+              {
+                defined:
+                  'Secp256k1TestIdentityCertificate<CosmosMessage,Sha256>',
+              },
+            ],
+          },
+          {
+            name: 'Aptos',
+            fields: [
+              {
+                defined: 'Ed25519TestIdentityCertificate<AptosMessage>',
+              },
+            ],
+          },
+          {
+            name: 'Sui',
+            fields: [
+              {
+                defined: 'Ed25519TestIdentityCertificate<SuiMessage>',
+              },
+            ],
+          },
+          {
+            name: 'Solana',
+            fields: [
+              {
+                defined: 'SolanaTestIdentityCertificate',
+              },
+            ],
+          },
+          {
+            name: 'Injective',
+            fields: [
+              {
+                defined:
+                  'Secp256k1TestIdentityCertificate<EvmPrefixedMessage,Keccak256>',
+              },
+            ],
           },
         ],
       },
@@ -1034,7 +1170,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 32],
+                  defined: 'Ed25519Pubkey',
                 },
               },
             ],
@@ -1045,7 +1181,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 20],
+                  defined: 'EvmPubkey',
                 },
               },
             ],
@@ -1056,7 +1192,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'address',
                 type: {
-                  array: ['u8', 32],
+                  defined: 'SuiAddress',
                 },
               },
             ],
@@ -1067,7 +1203,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'address',
                 type: {
-                  array: ['u8', 32],
+                  defined: 'AptosAddress',
                 },
               },
             ],
@@ -1077,7 +1213,9 @@ export const IDL: TokenDispenser = {
             fields: [
               {
                 name: 'address',
-                type: 'string',
+                type: {
+                  defined: 'CosmosBech32Address',
+                },
               },
             ],
           },
@@ -1086,7 +1224,9 @@ export const IDL: TokenDispenser = {
             fields: [
               {
                 name: 'address',
-                type: 'string',
+                type: {
+                  defined: 'CosmosBech32Address',
+                },
               },
             ],
           },
@@ -1096,7 +1236,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 32],
+                  defined: 'Ed25519Pubkey',
                 },
               },
             ],
@@ -1128,7 +1268,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 20],
+                  defined: 'EvmPubkey',
                 },
               },
               {
@@ -1146,7 +1286,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 32],
+                  defined: 'Ed25519Pubkey',
                 },
               },
               {
@@ -1161,7 +1301,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 32],
+                  defined: 'Ed25519Pubkey',
                 },
               },
               {
@@ -1180,7 +1320,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'signature',
                 type: {
-                  array: ['u8', 64],
+                  defined: 'Secp256k1Signature',
                 },
               },
               {
@@ -1190,7 +1330,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 65],
+                  defined: 'UncompressedSecp256k1Pubkey',
                 },
               },
               {
@@ -1205,7 +1345,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 20],
+                  defined: 'EvmPubkey',
                 },
               },
               {
@@ -1220,7 +1360,7 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 32],
+                  defined: 'Ed25519Pubkey',
                 },
               },
               {
