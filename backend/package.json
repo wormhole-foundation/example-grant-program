@@ -8,7 +8,8 @@
     "lint": "eslint \"src/**/*.{json,js,jsx,ts,tsx}\" && tsc --noemit",
     "prettier": "prettier \"./**/*.{json,js,jsx,ts,tsx}\" --write",
     "prettier:check": "prettier \"./**/*.{json,js,jsx,ts,tsx}\" --check",
-    "test": "jest --coverage test/",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "serve": "node -r @swc-node/register src/serve.ts"
   },
   "dependencies": {

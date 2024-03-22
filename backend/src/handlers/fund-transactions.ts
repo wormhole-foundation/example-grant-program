@@ -7,17 +7,15 @@ import {
 } from '../utils/fundTransactions'
 import { Keypair } from '@solana/web3.js'
 
-interface FundTransactionRequest {
-  transactions: unknown
-}
+export type FundTransactionRequest = Uint8Array[]
 
-export const fundTransaction = async (
+export const fundTransactions = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
-    const requestBody = JSON.parse(event.body!) as FundTransactionRequest
-    validateFundTransactions(requestBody.transactions)
-    const transactions = deserializeTransactions(requestBody.transactions)
+    const requestBody = JSON.parse(event.body!)
+    validateFundTransactions(requestBody)
+    const transactions = deserializeTransactions(requestBody)
     const isTransactionsValid = await checkTransactions(transactions)
 
     if (!isTransactionsValid) {
@@ -30,11 +28,12 @@ export const fundTransaction = async (
     const wallet = await loadFunderWallet()
 
     const signedTransactions = await wallet.signAllTransactions(transactions)
+    console.log('Signed transactions', signedTransactions[0].signatures[0])
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        signedTransactions: signedTransactions.map((tx) => tx.serialize())
-      })
+      body: JSON.stringify(
+        signedTransactions.map((tx) => Buffer.from(tx.serialize()))
+      )
     }
   } catch (err) {
     console.error('Error fully signing transactions', err)

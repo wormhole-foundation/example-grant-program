@@ -17,7 +17,7 @@ export async function getDispenserKey() {
 
 export async function getFundingKey() {
   if (config.keys.funding.key) {
-    return { key: config.keys.funding.key }
+    return { key: JSON.parse(config.keys.funding.key) }
   }
 
   return getSecret(config.keys.funding.secretName)

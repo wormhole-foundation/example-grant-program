@@ -14,7 +14,7 @@ let server = setupServer()
 let input: DiscordSignedDigestParams
 let response: APIGatewayProxyResult
 
-describe('DiscordSignedDigest', () => {
+describe('signDiscordMessage integration test', () => {
   beforeAll(() => {
     process.env.AWS_ACCESS_KEY_ID = 'key'
     process.env.AWS_SECRET_ACCESS_KEY = 'secret'
@@ -41,9 +41,8 @@ describe('DiscordSignedDigest', () => {
     expect(response.statusCode).toBe(400)
   })
 
-
   test('should return 400 when pubKey is invalid', async () => {
-    givenRequest('invalidPubKey') // will endup sending no pubKey
+    givenRequest('invalidPubKey')
 
     await whenSignDiscordMessageCalled(input)
 
