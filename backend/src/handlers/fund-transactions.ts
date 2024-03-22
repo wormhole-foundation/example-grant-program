@@ -4,7 +4,7 @@ import { getFundingKey } from '../utils/secrets'
 import {
   checkTransactions,
   deserializeTransactions
-} from '../utils/fundTransactions'
+} from '../utils/fund-transactions'
 import { Keypair } from '@solana/web3.js'
 import { HandlerError } from '../utils/errors'
 

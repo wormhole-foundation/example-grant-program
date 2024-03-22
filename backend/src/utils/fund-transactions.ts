@@ -8,6 +8,7 @@ import {
 import config from '../config'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
+// const SET_COMPUTE_UNIT_PRICE = 1_000_000;
 
 export function deserializeTransactions(
   transactions: unknown
@@ -69,6 +70,7 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
       if (ix.data[0] !== SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT) {
         return false
       }
+      ix
     }
   }
   return true

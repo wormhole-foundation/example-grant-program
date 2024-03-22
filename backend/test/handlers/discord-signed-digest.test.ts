@@ -10,7 +10,7 @@ import {
 } from '../../src/handlers/discord-signed-digest'
 import { Keypair } from '@solana/web3.js'
 
-let server = setupServer()
+const server = setupServer()
 let input: DiscordSignedDigestParams
 let response: APIGatewayProxyResult
 
@@ -84,7 +84,7 @@ const whenSignDiscordMessageCalled = async (
   response = await signDiscordMessage({
     queryStringParameters: queryParams,
     headers: { 'x-auth-token': 'token' }
-  } as any as APIGatewayProxyEvent)
+  } as unknown as APIGatewayProxyEvent)
 }
 
 const thenResponseIsSuccessful = () => {
