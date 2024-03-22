@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --noemit && rm -rf dist && swc ./src -d ./dist --ignore \"**/*.test.ts,**/__test__/**\"",
+    "build": "tsc --noemit && rm -rf dist && swc ./src -d ./dist --copy-files --ignore \"**/*.test.ts,**/__test__/**\"",
     "lint": "eslint \"src/**/*.{json,js,jsx,ts,tsx}\" && tsc --noemit",
     "prettier": "prettier \"./**/*.{json,js,jsx,ts,tsx}\" --write",
     "prettier:check": "prettier \"./**/*.{json,js,jsx,ts,tsx}\" --check",
