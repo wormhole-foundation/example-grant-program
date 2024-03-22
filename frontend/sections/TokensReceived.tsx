@@ -1,4 +1,4 @@
-import Pyth from '@images/pyth.inline.svg'
+import W from '@images/wtoken.inline.svg'
 
 import { Box } from '@components/Box'
 import { Button } from '@components/buttons/Button'
@@ -39,7 +39,7 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
                 'N/A'
               ) : (
                 <>
-                  {totalCoinsClaimed} <Pyth />
+                  {totalCoinsClaimed} <W />
                 </>
               )}
             </span>

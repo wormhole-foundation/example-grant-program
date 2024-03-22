@@ -29,7 +29,7 @@ export function WalletConnectedButton({
 
   return (
     <button
-      className="wbtn disabled:text-light disabled:before:bg-dark sm:min-w-[207px]"
+      className="wbtn disabled:pointer-events-none disabled:opacity-40 sm:min-w-[207px]"
       onClick={onClick}
       onMouseEnter={() => !disabled && setButtonText(onHoverText)}
       onMouseLeave={() => !disabled && setButtonText(dispAddress)}
@@ -136,7 +136,7 @@ export type SingleWalletViewProps = {
 export function SingleWalletView({ wallet, onSelect }: SingleWalletViewProps) {
   return (
     <button
-      className="wbtn wbtn-secondary  min-w-[117px]  sm:min-w-[207px] "
+      className="wallet-btn min-w-[117px]  sm:min-w-[207px] "
       onClick={() => {
         wallet.onSelect()
         onSelect()
