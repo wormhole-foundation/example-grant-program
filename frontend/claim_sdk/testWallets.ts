@@ -7,10 +7,12 @@ import {
   evmBuildSignedMessage,
   aptosBuildSignedMessage,
   suiBuildSignedMessage,
+  algorandBuildSignedMessage,
 } from './ecosystems/signatures'
 import { ethers } from 'ethers'
 import fs from 'fs'
 import { AminoSignResponse, Secp256k1HdWallet } from '@cosmjs/amino'
+import { HdPath, stringToPath } from '@cosmjs/crypto'
 import { makeADR36AminoSignDoc } from '@keplr-wallet/cosmos'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { Keypair, PublicKey } from '@solana/web3.js'
@@ -20,6 +22,9 @@ import { aptosGetFullMessage } from './ecosystems/aptos'
 import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
 import { hashDiscordUserId } from '../utils/hashDiscord'
 import { getInjectiveAddress } from '../utils/getInjectiveAddress'
+import { algorandGetFullMessage } from './ecosystems/algorand'
+import { getAlgorandAddress } from '../utils/getAlgorandAddress'
+import nacl from 'tweetnacl'
 
 dotenv.config() // Load environment variables from .env file
 
@@ -66,6 +71,10 @@ export async function loadTestWallets(): Promise<
   const cosmosPrivateKeyPath = path.resolve(KEY_DIR, 'cosmos_private_key.json')
   const aptosPrivateKeyPath = path.resolve(KEY_DIR, 'aptos_private_key.json')
   const suiPrivateKeyPath = path.resolve(KEY_DIR, 'sui_private_key.json')
+  const algorandPrivateKeyPath = path.resolve(
+    KEY_DIR,
+    'algorand_private_key.json'
+  )
 
   const dispenserGuardKeyPath = path.resolve(
     KEY_DIR,
@@ -79,8 +88,10 @@ export async function loadTestWallets(): Promise<
     evm: [],
     sui: [],
     aptos: [],
-    cosmwasm: [],
+    terra: [],
+    osmosis: [],
     injective: [],
+    algorand: [],
   }
   result['discord'] = [
     DiscordTestWallet.fromKeyfile(TEST_DISCORD_USERNAME, dispenserGuardKeyPath),
@@ -89,12 +100,15 @@ export async function loadTestWallets(): Promise<
   result['evm'] = [TestEvmWallet.fromKeyfile(evmPrivateKeyPath)]
   result['sui'] = [TestSuiWallet.fromKeyfile(suiPrivateKeyPath)]
   result['aptos'] = [TestAptosWallet.fromKeyfile(aptosPrivateKeyPath)]
-  result['cosmwasm'] = [
-    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'sei'),
-    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'osmo'),
-    await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'neutron'),
+  // prettier-ignore
+  result['osmosis'] = [await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'osmo')]
+  // prettier-ignore
+  result['terra'] = [await TestCosmWasmWallet.fromKeyFile(cosmosPrivateKeyPath, 'terra', [
+    stringToPath("m/44'/330'/0'/0/0"),
+  ]),
   ]
   result['injective'] = [TestEvmWallet.fromKeyfile(cosmosPrivateKeyPath, true)]
+  result['algorand'] = [TestAlgorandWallet.fromKeyfile(algorandPrivateKeyPath)]
 
   return result
 }
@@ -150,14 +164,15 @@ export class TestCosmWasmWallet implements TestWallet {
    */
   static async fromKeyFile(
     keyFile: string,
-    chainId?: string
+    prefix?: string,
+    hdPaths?: HdPath[]
   ): Promise<TestCosmWasmWallet> {
     const jsonContent = fs.readFileSync(keyFile, 'utf8')
 
     const mnemonic = JSON.parse(jsonContent).mnemonic
     const wallet: Secp256k1HdWallet = await Secp256k1HdWallet.fromMnemonic(
       mnemonic,
-      chainId ? { prefix: chainId } : {}
+      { prefix, hdPaths }
     )
 
     const { address: addressStr } = (await wallet.getAccounts())[0]
@@ -281,5 +296,30 @@ export class TestSuiWallet implements TestWallet {
     ).signature
 
     return suiBuildSignedMessage(response, payload)
+  }
+}
+
+export class TestAlgorandWallet implements TestWallet {
+  constructor(readonly wallet: Keypair) {}
+  static fromKeyfile(keyFile: string): TestAlgorandWallet {
+    const keypair = Keypair.fromSecretKey(
+      new Uint8Array(JSON.parse(fs.readFileSync(keyFile, 'utf-8')))
+    )
+    return new TestAlgorandWallet(keypair)
+  }
+
+  async signMessage(payload: string): Promise<SignedMessage> {
+    const fullMessage = algorandGetFullMessage(payload)
+    const messageBytes = Buffer.from(fullMessage, 'utf-8')
+    const sig = nacl.sign.detached(messageBytes, this.wallet.secretKey)
+    return algorandBuildSignedMessage(
+      this.address(),
+      Buffer.from(sig).toString('hex'),
+      fullMessage
+    )
+  }
+
+  public address(): string {
+    return getAlgorandAddress(Buffer.from(this.wallet.publicKey.toBytes()))
   }
 }

@@ -1,5 +1,19 @@
+import { Ecosystem } from 'claim_sdk/claim'
+
 // TODO remove it
 export type SOLANA_SOURCES = 'nft' | 'defi'
+
+export const ECOSYSTEM_IDS: Record<Ecosystem, number> = {
+  solana: 1,
+  evm: 2,
+  terra: 3,
+  algorand: 8,
+  injective: 19,
+  osmosis: 20,
+  sui: 21,
+  aptos: 22,
+  discord: 14443,
+} as const
 
 export const EVM_CHAINS = [
   'optimism-mainnet',
@@ -24,4 +38,4 @@ export const EVM_CHAINS = [
   'wemix-mainnet',
 ] as const
 
-export type EvmChains = (typeof EVM_CHAINS)[number]
+export type EvmChains = typeof EVM_CHAINS[number]

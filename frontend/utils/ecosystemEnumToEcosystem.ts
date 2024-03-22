@@ -9,17 +9,17 @@ export function enumToSdkEcosystem(ecosystem: EnumEcosystem): SdkEcosystem {
       return 'evm'
     case EnumEcosystem.INJECTIVE:
       return 'injective'
-    case EnumEcosystem.NEUTRON:
-      return 'cosmwasm'
+    case EnumEcosystem.TERRA:
+      return 'terra'
     case EnumEcosystem.OSMOSIS:
-      return 'cosmwasm'
-    case EnumEcosystem.SEI:
-      return 'cosmwasm'
+      return 'osmosis'
     case EnumEcosystem.SOLANA:
       return 'solana'
     case EnumEcosystem.SUI:
       return 'sui'
     case EnumEcosystem.DISCORD:
       return 'discord'
+    case EnumEcosystem.ALGORAND:
+      return 'algorand'
   }
 }

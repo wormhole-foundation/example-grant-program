@@ -3,9 +3,9 @@ import { Ecosystem } from './Ecosystem'
 import { AptosWalletButton } from './wallets/Aptos'
 import { CosmosWalletButton } from './wallets/Cosmos'
 import { EVMWalletButton } from './wallets/EVM'
-import { SeiWalletButton } from './wallets/Sei'
 import { SolanaWalletButton } from './wallets/Solana'
 import { SuiWalletButton } from './wallets/Sui'
+import { AlgorandWalletButton } from './wallets/Algorand'
 
 // A wrapper around all the wallet connect buttons.
 // It returns the relevant one based on the ecosystem prop.
@@ -29,10 +29,10 @@ export function EcosystemConnectButton({
           isInjective={true}
         />
       )
-    case Ecosystem.NEUTRON:
+    case Ecosystem.TERRA:
       return (
         <CosmosWalletButton
-          chainName="neutron"
+          chainName="terra"
           disableOnConnect={disableOnConnect}
         />
       )
@@ -43,13 +43,13 @@ export function EcosystemConnectButton({
           disableOnConnect={disableOnConnect}
         />
       )
-    case Ecosystem.SEI:
-      return <SeiWalletButton />
     case Ecosystem.SOLANA:
       return <SolanaWalletButton disableOnConnect={disableOnConnect} />
     case Ecosystem.SUI:
       return <SuiWalletButton disableOnConnect={disableOnConnect} />
     case Ecosystem.DISCORD:
       return <DiscordButton disableOnAuth={disableOnConnect} />
+    case Ecosystem.ALGORAND:
+      return <AlgorandWalletButton disableOnConnect={disableOnConnect} />
   }
 }

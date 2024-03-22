@@ -2,8 +2,7 @@ import * as anchor from '@coral-xyz/anchor'
 import { PublicKey } from '@solana/web3.js'
 import tokenDispenser from './idl/token_dispenser.json'
 import { ethers } from 'ethers'
-import { removeLeading0x } from './index'
-import { HexString } from 'aptos'
+import { base32decode, removeLeading0x } from './index'
 
 // Must be kept in line with the database types and the on-chain program
 export type Ecosystem =
@@ -11,16 +10,20 @@ export type Ecosystem =
   | 'solana'
   | 'evm'
   | 'sui'
+  | 'algorand'
   | 'aptos'
-  | 'cosmwasm'
+  | 'terra'
+  | 'osmosis'
   | 'injective'
 export const Ecosystems: Ecosystem[] = [
   'discord',
   'solana',
   'evm',
   'sui',
+  'algorand',
   'aptos',
-  'cosmwasm',
+  'terra',
+  'osmosis',
   'injective',
 ]
 
@@ -53,7 +56,8 @@ export class ClaimInfo {
         }
         break
       }
-      case 'cosmwasm': {
+      case 'osmosis':
+      case 'terra': {
         identityStruct = {
           cosmwasm: { address: this.identity },
         }
@@ -77,6 +81,14 @@ export class ClaimInfo {
         identityStruct = {
           sui: {
             address: Buffer.from(removeLeading0x(this.identity), 'hex'),
+          },
+        }
+        break
+      }
+      case 'algorand': {
+        identityStruct = {
+          algorand: {
+            address: base32decode(this.identity),
           },
         }
         break

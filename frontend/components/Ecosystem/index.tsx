@@ -10,9 +10,9 @@ export enum Ecosystem {
   SUI = 'Sui',
   INJECTIVE = 'Injective',
   OSMOSIS = 'Osmosis',
-  NEUTRON = 'Neutron',
-  SEI = 'Sei',
-  DISCORD = 'Pyth Discord',
+  TERRA = 'Terra',
+  DISCORD = 'Wormhole Discord',
+  ALGORAND = 'Algorand',
 }
 
 // We will store data by using wallets' addresses as index

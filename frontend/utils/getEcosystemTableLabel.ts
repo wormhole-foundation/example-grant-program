@@ -9,17 +9,17 @@ export function getEcosystemTableLabel(ecosystem: Ecosystem) {
       return 'EVM activity'
     case Ecosystem.INJECTIVE:
       return 'Injective activity'
-    case Ecosystem.NEUTRON:
-      return 'Neutron activity'
+    case Ecosystem.TERRA:
+      return 'Terra activity'
     case Ecosystem.OSMOSIS:
       return 'Osmosis activity'
-    case Ecosystem.SEI:
-      return 'Sei activity'
     case Ecosystem.SOLANA:
       return 'Solana activity'
     case Ecosystem.SUI:
       return 'Sui activity'
     case Ecosystem.DISCORD:
       return 'Discord activity'
+    case Ecosystem.ALGORAND:
+      return 'Algorand activity'
   }
 }

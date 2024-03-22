@@ -1,3 +1,4 @@
 frontend/claim_sdk/idl/token_dispenser.ts
 frontend/claim_sdk/idl/token_dispenser.json
-backend
+frontend/.next
+frontend/.vercel

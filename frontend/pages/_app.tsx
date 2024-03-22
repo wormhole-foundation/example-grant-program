@@ -3,23 +3,20 @@ import { SolanaWalletProvider } from '@components/wallets/Solana'
 import type { AppProps } from 'next/app'
 import { FC, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { WalletKitProvider as SuiWalletProvider } from '@mysten/wallet-kit'
-import { NextSeo } from 'next-seo'
+import { DefaultSeo } from 'next-seo'
+import SEO from '../next-seo.config'
 import { Toaster } from 'react-hot-toast'
 import { EVMWalletProvider } from '@components/wallets/EVM'
 import { CosmosWalletProvider } from '@components/wallets/Cosmos'
 import { EcosystemProviders } from '@components/Ecosystem'
 
 import '../styles/globals.css'
-import { SeiProvider } from '@components/wallets/Sei'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@components/Layout'
 import { Disclaimer } from '@components/modal/Disclaimer'
-import Script from 'next/script'
 
-import {
-  PathnameStore,
-  resetOnVersionMismatch,
-} from 'utils/store'
+import { PathnameStore, resetOnVersionMismatch } from 'utils/store'
+import { AlgorandWalletProvider } from '../components/Ecosystem/AlgorandProvider'
 
 function useRedirect(isVersionChecked: boolean) {
   // We are fetching it here and not in useEffect
@@ -32,25 +29,28 @@ function useRedirect(isVersionChecked: boolean) {
   const params = useSearchParams()
 
   const router = useRouter()
-  // We will only redirect on the first load
-  useLayoutEffect(() => {
-    if (!isVersionChecked) return
-    // These pathnames are being loaded when we have to oauth with Discord
-    // We shouldn't be redirecting the user from these pages
-    if (pathname === '/discord-login' || pathname === '/discord-logout') return
 
-    //RULES:
-    // 1. no last state -> redirect to welcome page
-    // 2. there is a last state -> redirect to that page
-    if (lastStep === null) router.replace('/')
-    if (lastStep) router.replace(lastStep)
-  }, [isVersionChecked, lastStep, router, pathname])
+  // temp disable to get the nav working - TODO Review this before live
+
+  // We will only redirect on the first load
+  // useLayoutEffect(() => {
+  //   if (!isVersionChecked) return
+  //   // These pathnames are being loaded when we have to oauth with Discord
+  //   // We shouldn't be redirecting the user from these pages
+  //   if (pathname === '/discord-login' || pathname === '/discord-logout') return
+
+  //   //RULES:
+  //   // 1. no last state -> redirect to welcome page
+  //   // 2. there is a last state -> redirect to that page
+  //   if (lastStep === null) router.replace('/')
+  //   if (lastStep) router.replace(lastStep)
+  // }, [isVersionChecked, lastStep, router, pathname])
 
   useEffect(() => {
     if (!isVersionChecked) return
     // If the pathname for the current page is the once used for discord oauth,
     // don't store it.
-    if (pathname === '/discord-login' || pathname === '/discord-logout') return
+    if (pathname === '/auth/discord') return
     else
       PathnameStore.set(
         `${pathname}${params.toString() ? '?' + params.toString() : ''}`
@@ -71,62 +71,48 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
     setIsVersionChecked(true)
   }, [router])
 
-  useRedirect(isVersionChecked)
+  // TODO Review this, we should check if the user
+  // loads the page, we should redirect to welcome pages again
+  // useRedirect(isVersionChecked)
 
   return (
     <>
-      <Script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-C2TFD85LKJ"
-      />
-      <Script id="google-tag">
-        {`
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-C2TFD85LKJ');
-  `}
-      </Script>
       {isVersionChecked ? (
-          <SolanaWalletProvider>
-            <AptosWalletProvider>
-              <SuiWalletProvider>
+        <SolanaWalletProvider>
+          <AptosWalletProvider>
+            <SuiWalletProvider>
+              <AlgorandWalletProvider>
                 <EVMWalletProvider>
                   <CosmosWalletProvider>
-                    <SeiProvider>
-                      {/* WARN: EcosystemProviders might use wallet provider addresses and hence
+                    {/* WARN: EcosystemProviders might use wallet provider addresses and hence
                  They should be inside all those providers. */}
-                      <EcosystemProviders>
-                        <Layout>
-                          <NextSeo
-                            title="Pyth Network Retrospective Airdrop"
-                            description="This is the official claim webpage for the Pyth Network Retrospective Airdrop program."
-                          />
-                          <Component {...pageProps} />
-                        </Layout>
-                        <Toaster
-                          position="bottom-left"
-                          toastOptions={{
-                            style: {
-                              wordBreak: 'break-word',
-                            },
-                          }}
-                          reverseOrder={false}
-                        />
-                        <Disclaimer
-                          showModal={!disclaimerWasRead}
-                          onAgree={() => {
-                            setDisclaimerWasRead(true)
-                          }}
-                        />
-                      </EcosystemProviders>
-                    </SeiProvider>
+                    <EcosystemProviders>
+                      <Layout>
+                        <DefaultSeo {...SEO} />
+                        <Component {...pageProps} />
+                      </Layout>
+                      <Toaster
+                        position="bottom-left"
+                        toastOptions={{
+                          style: {
+                            wordBreak: 'break-word',
+                          },
+                        }}
+                        reverseOrder={false}
+                      />
+                      <Disclaimer
+                        showModal={!disclaimerWasRead}
+                        onAgree={() => {
+                          setDisclaimerWasRead(true)
+                        }}
+                      />
+                    </EcosystemProviders>
                   </CosmosWalletProvider>
                 </EVMWalletProvider>
-              </SuiWalletProvider>
-            </AptosWalletProvider>
-          </SolanaWalletProvider>
+              </AlgorandWalletProvider>
+            </SuiWalletProvider>
+          </AptosWalletProvider>
+        </SolanaWalletProvider>
       ) : (
         <></>
       )}

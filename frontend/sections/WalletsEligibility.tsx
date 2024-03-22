@@ -17,6 +17,7 @@ import { useCoins } from 'hooks/useCoins'
 import { useGetEcosystemIdentity } from 'hooks/useGetEcosystemIdentity'
 import { useTotalGrantedCoins } from 'hooks/useTotalGrantedCoins'
 import { classNames } from 'utils/classNames'
+import { BoxTitle } from '@components/BoxTitle'
 
 const Eligibility = ({
   onBack,
@@ -77,20 +78,20 @@ const Eligibility = ({
 
   return (
     <Box>
-      <div className="flex items-center justify-between border-b border-light-35 bg-[#242339] py-4 px-4 sm:py-8 sm:px-10">
-        <h4 className="font-header text-[20px] font-light leading-[1.2] sm:text-[28px]">
-          Verify Eligibility
-        </h4>
-        <div className="flex gap-2 sm:gap-4">
-          <BackButton onBack={onBack} hideText={isMobile} />
-          <ProceedButton
-            onProceed={onProceed}
-            disabled={isProceedDisabled}
-            tooltipContent={proceedTooltipContent}
-            hideText={isMobile}
-          />
+      <BoxTitle>
+        <div className="flex items-center justify-between ">
+          <span className="">Verify Eligibility</span>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <BackButton onBack={onBack} hideText={isMobile} />
+            <ProceedButton
+              onProceed={onProceed}
+              disabled={isProceedDisabled}
+              tooltipContent={proceedTooltipContent}
+              hideText={isMobile}
+            />
+          </div>
         </div>
-      </div>
+      </BoxTitle>
       <table>
         <tbody>
           {Object.values(Ecosystem).map((ecosystem) => (
@@ -106,6 +107,7 @@ const Eligibility = ({
 type TableRowProps = {
   ecosystem: Ecosystem
 }
+
 function TableRow({ ecosystem }: TableRowProps) {
   const { activity } = useActivity()
   const getEcosystemIdentity = useGetEcosystemIdentity()
@@ -180,6 +182,7 @@ function TableRow({ ecosystem }: TableRowProps) {
     eligibility?.isClaimAlreadySubmitted,
     identity,
     isActive,
+    ecosystem,
   ])
 
   return (

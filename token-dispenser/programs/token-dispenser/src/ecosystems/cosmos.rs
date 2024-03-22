@@ -31,7 +31,7 @@ use {
 
 pub const EXPECTED_COSMOS_MESSAGE_TYPE: &str = "sign/MsgSignData";
 pub const INJECTIVE_CHAIN_ID: &str = "inj";
-pub const ADMISSIBLE_CHAIN_IDS: [&str; 3] = ["sei", "neutron", "osmo"];
+pub const ADMISSIBLE_CHAIN_IDS: [&str; 2] = ["terra", "osmo"];
 
 /**
 * An ADR036 message used in Cosmos. ADR036 is a standard for signing arbitrary data.

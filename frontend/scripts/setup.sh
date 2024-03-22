@@ -13,7 +13,7 @@ TOKEN_DISPENSER_DIR="$DIR/../../token-dispenser";
 
 usage() {
   cat <<EOF
-  Usage: $0 -d[--dev]|-t[--test]|-c[--csv] -v[--verbose] -h[--help]
+  Usage: $0 -d[--dev]|-t[--test] -v[--verbose] -h[--help]
   where:
     -d | --dev  : start up test validator, deploy programs
     -t | --test : run tests
@@ -28,7 +28,7 @@ for i in "$@"
 do
 case $i in
     -d|--dev)
-    if [ "$test" -eq 1 ] || [ "$csv" -eq 1 ]; then
+    if [ "$test" -eq 1 ]; then
       usage
       exit
     else
@@ -59,8 +59,8 @@ case $i in
 esac
 done
 
-if [ "$dev" -eq 0 ] && [ "$test" -eq 0 ] && [ "$csv" -eq 0 ]; then
-  printf "No mode selected. Please select either -d[--dev] or -t[--test] or -c[--csv]\n\n"
+if [ "$dev" -eq 0 ] && [ "$test" -eq 0 ]; then
+  printf "No mode selected. Please select either -d[--dev] or -t[--test]\n\n"
   usage
   exit 1
 fi

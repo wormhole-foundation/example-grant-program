@@ -3,8 +3,13 @@ import { ClaimInfo, Ecosystem } from '../claim_sdk/claim'
 import { HASH_SIZE } from '../claim_sdk/merkleTree'
 import { PublicKey, VersionedTransaction } from '@solana/web3.js'
 import { SignedMessage } from '../claim_sdk/ecosystems/signatures'
+import { ECOSYSTEM_IDS } from './constants'
+
+const MERKLE_PROOFS = process.env.NEXT_PUBLIC_MERKLE_PROOFS
 
 function parseProof(proof: string) {
+  // TODO remove it, we should not have empty proofs and will fail if tahat happens
+  if (!proof || proof === '') return []
   const buffer = Buffer.from(proof, 'hex')
   const chunks = []
 
@@ -19,47 +24,73 @@ function parseProof(proof: string) {
   return chunks
 }
 
-export function getAmountAndProofRoute(
+const getAmountAndProofRoute = (
   ecosystem: Ecosystem,
   identity: string
-): string {
-  return `/api/grant/v1/amount_and_proof?ecosystem=${ecosystem}&identity=${identity}`
+): string[] => {
+  if (ecosystem === 'evm') {
+    return [
+      `${MERKLE_PROOFS}/${identity.toLowerCase()}_${
+        ECOSYSTEM_IDS[ecosystem]
+      }.json`,
+      `${MERKLE_PROOFS}/${identity.toUpperCase()}_${
+        ECOSYSTEM_IDS[ecosystem]
+      }.json`,
+      `${MERKLE_PROOFS}/${identity}_${ECOSYSTEM_IDS[ecosystem]}.json`,
+    ]
+  } else {
+    return [`${MERKLE_PROOFS}/${identity}_${ECOSYSTEM_IDS[ecosystem]}.json`]
+  }
 }
 
+// TODO refactor/remove
 export function handleAmountAndProofResponse(
   ecosystem: Ecosystem,
   identity: string,
   status: number,
-  data: any
+  { address, amount, hashes }: any = {}
 ): { claimInfo: ClaimInfo; proofOfInclusion: Uint8Array[] } | undefined {
   if (status == 404) return undefined
   if (status == 200) {
-    return {
-      claimInfo: new ClaimInfo(ecosystem, identity, new BN(data.amount)),
-      proofOfInclusion: parseProof(data.proof),
+    if (identity === address) {
+      return {
+        claimInfo: new ClaimInfo(ecosystem, identity, new BN(amount)),
+        proofOfInclusion: parseProof(hashes),
+      }
     }
   }
 }
 
 // If the given identity is not eligible the value will be undefined
 // Else the value contains the eligibility information
-export type Eligibility =
-  | { claimInfo: ClaimInfo; proofOfInclusion: Uint8Array[] }
-  | undefined
+export type Eligibility = {
+  claimInfo: ClaimInfo
+  proofOfInclusion: Uint8Array[]
+}
+
 export async function fetchAmountAndProof(
   ecosystem: Ecosystem,
   identity: string
-): Promise<Eligibility> {
-  const response = await fetch(getAmountAndProofRoute(ecosystem, identity))
-  return handleAmountAndProofResponse(
-    ecosystem,
-    identity,
-    response.status,
-    await response.json()
-  )
+): Promise<Eligibility | undefined> {
+  const files = getAmountAndProofRoute(ecosystem, identity)
+  // Iterate over each posible file name and return the first valid response
+  // The best case will be to have only one file per identity
+  for (const file of files) {
+    const response = await fetch(file)
+    if (response.headers.get('content-type') === 'application/json') {
+      const data = await response.json()
+      if (response.status === 200 && data.address === identity) {
+        return {
+          claimInfo: new ClaimInfo(ecosystem, identity, new BN(data.amount)),
+          proofOfInclusion: parseProof(data.hashes),
+        }
+      }
+    }
+  }
 }
 
 export function getDiscordSignedMessageRoute(claimant: PublicKey) {
+  // TODO update it with lambda route
   return `/api/grant/v1/discord_signed_message?publicKey=${claimant.toBase58()}`
 }
 
@@ -88,6 +119,7 @@ export async function fetchDiscordSignedMessage(
 }
 
 export function getFundTransactionRoute(): string {
+  // TODO update it with lambda route
   return `/api/grant/v1/fund_transaction`
 }
 
