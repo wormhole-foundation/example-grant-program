@@ -5,12 +5,11 @@ import IDL from '../token_dispenser.json'
 import * as anchor from '@coral-xyz/anchor'
 import config from '../config'
 
-export async function isAccessTokenValid(
-  discordId: string,
+export async function getDiscordUser(
   token: string
-): Promise<boolean> {
+): Promise<{ id: string; username: string }> {
   try {
-    const url = config.discord.baseUrl() + '/api/users/@me'
+    const url = config.discord.baseUrl + '/api/users/@me'
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -22,7 +21,7 @@ export async function isAccessTokenValid(
     }
 
     const userData = await response.json()
-    return userData.id === discordId
+    return { id: userData.id, username: userData.username }
   } catch (err) {
     console.error('Error validating discord access token', err)
     throw err

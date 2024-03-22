@@ -5,7 +5,7 @@ import {
   Secp256k1Program,
   VersionedTransaction
 } from '@solana/web3.js'
-import { getSecret } from './secrets'
+import config from '../config'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
 
@@ -22,18 +22,13 @@ export function deserializeTransactions(
   }
 }
 
-async function loadTokenDispenserProgramId(): Promise<string> {
-  const secretData = await getSecret(
-    process.env.TOKEN_DISPENSER_PROGRAM_ID_SECRET_NAME ??
-      'xli-test-secret-token-dispenser-program-id'
-  )
-  const programId = secretData.target
-
-  return programId
-}
-
 async function loadWhitelistedProgramIds(): Promise<PublicKey[]> {
-  const PROGRAM_ID = new PublicKey(await loadTokenDispenserProgramId())
+  const programId = config.tokenDispenserProgramId()
+  if (!programId) {
+    throw new Error('Token dispenser program ID not set')
+  }
+
+  const PROGRAM_ID = new PublicKey(programId)
   return [
     PROGRAM_ID,
     Secp256k1Program.programId,
