@@ -11,8 +11,8 @@ export enum Ecosystem {
   INJECTIVE = 'Injective',
   OSMOSIS = 'Osmosis',
   TERRA = 'Terra',
-  DISCORD = 'Wormhole Discord',
   ALGORAND = 'Algorand',
+  DISCORD = 'Wormhole Discord',
 }
 
 // We will store data by using wallets' addresses as index
