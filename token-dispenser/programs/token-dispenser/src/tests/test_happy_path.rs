@@ -277,7 +277,6 @@ pub async fn test_happy_path() {
             address_lookup_table,
             None,
             None,
-            None,
         )
         .await
         .unwrap();
@@ -287,9 +286,7 @@ pub async fn test_happy_path() {
         merkle_root: merkle_tree.root.clone(),
         dispenser_guard: dispenser_guard.pubkey(),
         mint: simulator.mint_keypair.pubkey(),
-        treasury,
         address_lookup_table,
-        funder: simulator.genesis_keypair.pubkey(),
         max_transfer: u64::MAX,
     };
 

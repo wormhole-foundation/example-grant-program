@@ -89,7 +89,6 @@ pub mod token_dispenser {
         ctx: Context<Initialize>,
         merkle_root: MerkleRoot<SolanaHasher>,
         dispenser_guard: Pubkey,
-        funder: Pubkey,
         max_transfer: u64,
     ) -> Result<()> {
         require_keys_neq!(dispenser_guard, Pubkey::default());
@@ -98,9 +97,7 @@ pub mod token_dispenser {
         config.merkle_root = merkle_root;
         config.dispenser_guard = dispenser_guard;
         config.mint = ctx.accounts.mint.key();
-        config.treasury = ctx.accounts.treasury.key();
         config.address_lookup_table = ctx.accounts.address_lookup_table.key();
-        config.funder = funder;
         config.max_transfer = max_transfer;
         Ok(())
     }
@@ -191,15 +188,9 @@ pub struct Initialize<'info> {
     pub payer:                Signer<'info>,
     #[account(init, payer = payer, space = Config::LEN, seeds = [CONFIG_SEED], bump)]
     pub config:               Account<'info, Config>,
-    /// Mint of the treasury
     pub mint:                 Account<'info, Mint>,
-    /// Treasury token account. This is an externally owned token account and
-    /// the owner of this account will approve the config as a delegate using the
-    /// solana CLI command `spl-token approve <treasury_account_address> <approve_amount> <config_address>`
-    #[account( token::mint = mint )]
-    pub treasury:             Account<'info, TokenAccount>,
     pub system_program:       Program<'info, System>,
-    /// CHECK: Anchor doesn't have built-in support for address lookup table so adding this check to make sure at least the PDA owner is correct
+    /// CHECK: we only store this on-chain so it can be conveniently looked up off-chain
     #[account(owner = solana_address_lookup_table_program::id())]
     pub address_lookup_table: UncheckedAccount<'info>,
 }
@@ -219,7 +210,7 @@ pub struct Claim<'info> {
         associated_token::mint = mint,
     )]
     pub claimant_fund:            Account<'info, TokenAccount>,
-    #[account(seeds = [CONFIG_SEED], bump = config.bump, has_one = treasury, has_one = mint)]
+    #[account(seeds = [CONFIG_SEED], bump = config.bump, has_one = mint)]
     pub config:                   Account<'info, Config>,
     pub mint:                     Account<'info, Mint>,
     #[account(mut)]
@@ -312,13 +303,16 @@ pub struct ClaimCertificate {
  */
 #[derive(Default, Debug, Clone, PartialEq)]
 pub struct SolanaHasher {}
+impl SolanaHasher {
+    const LEN: usize = 20;
+}
 impl Hasher for SolanaHasher {
-    type Hash = [u8; 20];
+    type Hash = [u8; Self::LEN];
 
     fn hashv(data: &[impl AsRef<[u8]>]) -> Self::Hash {
         let bytes = hashv(&data.iter().map(|x| x.as_ref()).collect::<Vec<&[u8]>>());
-        let mut hash = [0u8; 20];
-        hash.copy_from_slice(&bytes.as_ref()[0..20]);
+        let mut hash = [0u8; Self::LEN];
+        hash.copy_from_slice(&bytes.as_ref()[0..Self::LEN]);
         hash
     }
 }
@@ -330,14 +324,12 @@ pub struct Config {
     pub merkle_root:          MerkleRoot<SolanaHasher>,
     pub dispenser_guard:      Pubkey,
     pub mint:                 Pubkey,
-    pub treasury:             Pubkey,
     pub address_lookup_table: Pubkey,
-    pub funder:               Pubkey,
     pub max_transfer:         u64, // This is an extra safeguard to prevent the dispenser from being drained
 }
 
 impl Config {
-    pub const LEN: usize = 8 + 1 + 20 + 32 + 32 + 32 + 32 + 32 + 8;
+    pub const LEN: usize = 8 + 1 + SolanaHasher::LEN + 32 + 32 + 32 + 8;
 }
 
 #[account]
@@ -638,14 +630,12 @@ impl crate::accounts::Initialize {
     pub fn populate(
         payer: Pubkey,
         mint: Pubkey,
-        treasury: Pubkey,
         address_lookup_table: Pubkey,
     ) -> Self {
         crate::accounts::Initialize {
             payer,
             config: get_config_pda().0,
             mint,
-            treasury,
             system_program: system_program::System::id(),
             address_lookup_table,
         }

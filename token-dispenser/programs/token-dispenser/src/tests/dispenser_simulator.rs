@@ -235,7 +235,6 @@ impl DispenserSimulator {
         self.banks_client.process_transaction(transaction).await
     }
 
-
     pub async fn init_lookup_table(&mut self) -> Result<Pubkey, BanksClientError> {
         let recent_slot = self
             .banks_client
@@ -280,20 +279,17 @@ impl DispenserSimulator {
         dispenser_guard: Pubkey,
         address_lookup_table: Pubkey,
         mint_pubkey_override: Option<Pubkey>,
-        treasury_pubkey_override: Option<Pubkey>,
         max_transfer_override: Option<u64>,
     ) -> Result<(), BanksClientError> {
         let accounts = accounts::Initialize::populate(
             self.genesis_keypair.pubkey(),
             mint_pubkey_override.unwrap_or(self.mint_keypair.pubkey()),
-            treasury_pubkey_override.unwrap_or(self.pyth_treasury),
             address_lookup_table,
         )
         .to_account_metas(None);
         let instruction_data = instruction::Initialize {
             merkle_root,
             dispenser_guard,
-            funder: self.genesis_keypair.pubkey(),
             max_transfer: max_transfer_override.unwrap_or(u64::MAX),
         };
         let instruction =
@@ -346,7 +342,6 @@ impl DispenserSimulator {
             merkle_tree.root.clone(),
             dispenser_guard.pubkey(),
             address_lookup_table,
-            None,
             None,
             max_transfer_override,
         )
@@ -427,7 +422,7 @@ impl DispenserSimulator {
             config.mint,
             claimant_fund
                 .unwrap_or_else(|| get_associated_token_address(&claimant.pubkey(), &config.mint)),
-            config.treasury,
+            self.pyth_treasury,
         )
         .to_account_metas(None);
 
