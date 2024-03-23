@@ -141,36 +141,32 @@ export class TokenDispenserProvider {
   public async initialize(
     root: Buffer,
     mint: anchor.web3.PublicKey,
-    treasury: anchor.web3.PublicKey,
     dispenserGuard: anchor.web3.PublicKey,
-    funder: anchor.web3.PublicKey,
+    treasuries: readonly anchor.web3.PublicKey[],
+    funders: readonly anchor.web3.PublicKey[],
     maxTransfer: anchor.BN
   ): Promise<TransactionSignature> {
-    const addressLookupTable = await this.initAddressLookupTable(
-      mint,
-      treasury,
-      funder
-    )
+    const addressLookupTable =
+      await this.initAddressLookupTable(mint, treasuries, funders)
 
     return this.tokenDispenserProgram.methods
-      .initialize(Array.from(root), dispenserGuard, funder, maxTransfer)
+      .initialize(Array.from(root), dispenserGuard, maxTransfer)
       .accounts({
         config: this.getConfigPda()[0],
         mint,
-        treasury,
         systemProgram: anchor.web3.SystemProgram.programId,
         addressLookupTable,
       })
       .rpc()
   }
 
-  private async initAddressLookupTable(
+  async initAddressLookupTable(
     mint: anchor.web3.PublicKey,
-    treasury: anchor.web3.PublicKey,
-    funder: anchor.web3.PublicKey
+    treasuries: readonly anchor.web3.PublicKey[],
+    funders: readonly anchor.web3.PublicKey[]
   ): Promise<anchor.web3.PublicKey> {
     const recentSlot = await this.provider.connection.getSlot()
-    const [loookupTableInstruction, lookupTableAddress] =
+    const [lookupTableInstruction, lookupTableAddress] =
       AddressLookupTableProgram.createLookupTable({
         authority: this.provider.publicKey!,
         payer: this.provider.publicKey!,
@@ -183,17 +179,17 @@ export class TokenDispenserProvider {
       addresses: [
         this.configPda[0],
         mint,
-        treasury,
         TOKEN_PROGRAM_ID,
         SystemProgram.programId,
         SYSVAR_INSTRUCTIONS_PUBKEY,
         splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
-        funder,
+        ...treasuries,
+        ...funders,
       ],
     })
     let createLookupTableTx = new VersionedTransaction(
       new TransactionMessage({
-        instructions: [loookupTableInstruction, extendInstruction],
+        instructions: [lookupTableInstruction, extendInstruction],
         payerKey: this.provider.publicKey!,
         recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
       }).compileToV0Message()
