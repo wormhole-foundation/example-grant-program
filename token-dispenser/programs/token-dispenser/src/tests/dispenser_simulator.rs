@@ -9,6 +9,11 @@ use {
         ClaimInfo,
         ErrorCode,
         SolanaHasher,
+        pythnet_sdk_cpy::{
+            MerklePath,
+            MerkleRoot,
+            MerkleTree,
+        },
     },
     anchor_lang::{
         prelude::{
@@ -50,11 +55,6 @@ use {
             Token,
             TokenAccount,
         },
-    },
-    pythnet_sdk::accumulators::merkle::{
-        MerklePath,
-        MerkleRoot,
-        MerkleTree,
     },
     solana_program_test::{
         BanksClient,

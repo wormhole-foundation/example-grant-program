@@ -13,6 +13,10 @@ use {
         ClaimInfo,
         ErrorCode,
         SolanaHasher,
+        pythnet_sdk_cpy::{
+            Accumulator,
+            MerkleTree
+        },
     },
     anchor_lang::{
         prelude::Pubkey,
@@ -26,10 +30,6 @@ use {
             InsufficientFunds,
             OwnerMismatch,
         },
-    },
-    pythnet_sdk::accumulators::{
-        merkle::MerkleTree,
-        Accumulator,
     },
     solana_program_test::tokio,
     solana_sdk::{

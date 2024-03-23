@@ -30,6 +30,12 @@ use {
         Identity,
         IdentityCertificate,
         SolanaHasher,
+        pythnet_sdk_cpy::{
+            Accumulator,
+            MerklePath,
+            MerkleTree,
+            HasherKeccak256,
+        },
     },
     anchor_lang::{
         prelude::Pubkey,
@@ -38,16 +44,6 @@ use {
         AnchorSerialize,
     },
     anchor_spl::associated_token::get_associated_token_address,
-    pythnet_sdk::{
-        accumulators::{
-            merkle::{
-                MerklePath,
-                MerkleTree,
-            },
-            Accumulator,
-        },
-        hashers::keccak256::Keccak256,
-    },
     rand::Rng,
     solana_program_test::tokio,
     solana_sdk::{
@@ -87,7 +83,7 @@ impl TestClaimCertificate {
         Self {
             amount:                      Self::random_amount(),
             off_chain_proof_of_identity: TestIdentityCertificate::Evm(
-                Secp256k1TestIdentityCertificate::<EvmPrefixedMessage, Keccak256>::random(claimant),
+                Secp256k1TestIdentityCertificate::<EvmPrefixedMessage, HasherKeccak256>::random(claimant),
             ),
         }
     }
@@ -141,7 +137,7 @@ impl TestClaimCertificate {
         Self {
             amount:                      Self::random_amount(),
             off_chain_proof_of_identity: TestIdentityCertificate::Injective(
-                Secp256k1TestIdentityCertificate::<EvmPrefixedMessage, Keccak256>::random(claimant),
+                Secp256k1TestIdentityCertificate::<EvmPrefixedMessage, HasherKeccak256>::random(claimant),
             ),
         }
     }
@@ -230,13 +226,13 @@ impl TestClaimCertificate {
 
 #[derive(Clone)]
 pub enum TestIdentityCertificate {
-    Evm(Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256>),
+    Evm(Secp256k1TestIdentityCertificate<EvmPrefixedMessage, HasherKeccak256>),
     Discord(Ed25519TestIdentityCertificate<DiscordMessage>),
     Cosmos(Secp256k1TestIdentityCertificate<CosmosMessage, Sha256>),
     Aptos(Ed25519TestIdentityCertificate<AptosMessage>),
     Sui(Ed25519TestIdentityCertificate<SuiMessage>),
     Solana(SolanaTestIdentityCertificate),
-    Injective(Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256>),
+    Injective(Secp256k1TestIdentityCertificate<EvmPrefixedMessage, HasherKeccak256>),
 }
 
 #[tokio::test]

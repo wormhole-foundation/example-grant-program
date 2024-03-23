@@ -2,9 +2,9 @@ use {
     crate::{
         ClaimInfo,
         SolanaHasher,
+        pythnet_sdk_cpy::MerkleTree,
     },
     anchor_lang::AnchorSerialize,
-    pythnet_sdk::accumulators::merkle::MerkleTree,
 };
 
 mod dispenser_simulator;
