@@ -120,9 +120,9 @@ describe('integration test', () => {
       await deployerTokenDispenserProvider.initialize(
         root,
         mint.publicKey,
-        treasury,
         dispenserGuard,
-        funderWallet.publicKey,
+        [treasury],
+        [funderWallet.publicKey],
         maxAmount
       )
 
@@ -131,7 +131,6 @@ describe('integration test', () => {
       expect(configAccount.bump).toEqual(configBump)
       expect(configAccount.merkleRoot).toEqual(Array.from(root))
       expect(configAccount.mint).toEqual(mint.publicKey)
-      expect(configAccount.treasury).toEqual(treasury)
       expect(configAccount.dispenserGuard).toEqual(dispenserGuard)
       const lookupTableAddress = configAccount.addressLookupTable
       const lookupTableResp =
