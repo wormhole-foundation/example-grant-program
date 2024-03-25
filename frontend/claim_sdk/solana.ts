@@ -71,7 +71,10 @@ export class TokenDispenserProvider {
       provider
     ) as unknown as Program<TokenDispenser>
 
-    this.configPda = this.getConfigPda()
+    this.configPda = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from('config')],
+      this.programId
+    )
   }
 
   get programId(): anchor.web3.PublicKey {
@@ -91,13 +94,7 @@ export class TokenDispenserProvider {
   }
 
   public getConfigPda(): [anchor.web3.PublicKey, bump] {
-    return (
-      this.configPda ??
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from('config')],
-        this.programId
-      )
-    )
+    return this.configPda
   }
 
   public async getConfig(): Promise<IdlAccounts<TokenDispenser>['Config']> {
@@ -223,6 +220,8 @@ export class TokenDispenserProvider {
 
   public async submitClaims(
     claims: {
+      funder: PublicKey
+      treasury: PublicKey
       claimInfo: ClaimInfo
       proofOfInclusion: Uint8Array[]
       signedMessage: SignedMessage | undefined
@@ -237,6 +236,8 @@ export class TokenDispenserProvider {
       for (const claim of claims) {
         txs.push(
           await this.generateClaimTransaction(
+            claim.funder,
+            claim.treasury,
             claim.claimInfo,
             claim.proofOfInclusion,
             claim.signedMessage
@@ -289,6 +290,8 @@ export class TokenDispenserProvider {
   }
 
   public async generateClaimTransaction(
+    funder: PublicKey,
+    treasury: PublicKey,
     claimInfo: ClaimInfo,
     proofOfInclusion: Uint8Array[],
     signedMessage: SignedMessage | undefined
@@ -319,12 +322,12 @@ export class TokenDispenserProvider {
     const claim_ix = await this.tokenDispenserProgram.methods
       .claim(claimCert)
       .accounts({
-        funder: (await this.getConfig()).funder,
+        funder,
         claimant: this.claimant,
         claimantFund: await this.getClaimantFundAddress(),
         config: this.getConfigPda()[0],
         mint: (await this.getConfig()).mint,
-        treasury: (await this.getConfig()).treasury,
+        treasury,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: anchor.web3.SystemProgram.programId,
         sysvarInstruction: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
@@ -347,7 +350,7 @@ export class TokenDispenserProvider {
     const claimTx = new VersionedTransaction(
       new TransactionMessage({
         instructions: ixs,
-        payerKey: (await this.getConfig()).funder,
+        payerKey: funder,
         recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
       }).compileToV0Message([lookupTableAccount!])
     )
@@ -456,6 +459,7 @@ export class TokenDispenserProvider {
       )
     }
   }
+
   public async getClaimantFundAddress(): Promise<PublicKey> {
     const config = await this.getConfig()
     const associatedTokenAccount =
