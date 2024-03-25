@@ -25,16 +25,6 @@ export type TokenDispenser = {
           docs: ['Mint of the treasury']
         },
         {
-          name: 'treasury'
-          isMut: false
-          isSigner: false
-          docs: [
-            'Treasury token account. This is an externally owned token account and',
-            'the owner of this account will approve the config as a delegate using the',
-            'solana CLI command `spl-token approve <treasury_account_address> <approve_amount> <config_address>`'
-          ]
-        },
-        {
           name: 'systemProgram'
           isMut: false
           isSigner: false
@@ -54,10 +44,6 @@ export type TokenDispenser = {
         },
         {
           name: 'dispenserGuard'
-          type: 'publicKey'
-        },
-        {
-          name: 'funder'
           type: 'publicKey'
         },
         {
@@ -678,16 +664,6 @@ export const IDL: TokenDispenser = {
           docs: ['Mint of the treasury'],
         },
         {
-          name: 'treasury',
-          isMut: false,
-          isSigner: false,
-          docs: [
-            'Treasury token account. This is an externally owned token account and',
-            'the owner of this account will approve the config as a delegate using the',
-            'solana CLI command `spl-token approve <treasury_account_address> <approve_amount> <config_address>`',
-          ],
-        },
-        {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
@@ -707,10 +683,6 @@ export const IDL: TokenDispenser = {
         },
         {
           name: 'dispenserGuard',
-          type: 'publicKey',
-        },
-        {
-          name: 'funder',
           type: 'publicKey',
         },
         {
