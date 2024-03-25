@@ -1,7 +1,8 @@
 import * as anchor from '@coral-xyz/anchor'
 import { expect } from '@jest/globals'
 
-import { Ecosystem } from '../claim_sdk/claim'
+import { SignedMessage } from '../claim_sdk/ecosystems/signatures'
+import { Ecosystem, ClaimInfo } from '../claim_sdk/claim'
 import { Token, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import {
   PublicKey,
@@ -108,6 +109,17 @@ describe('integration test', () => {
     let mint: Token
     let treasury: PublicKey
     let expectedTreasuryBalance = new anchor.BN(1000000000)
+    const makeClaim = (
+      claimInfo: ClaimInfo,
+      proofOfInclusion: Uint8Array[],
+      signedMessage?: SignedMessage
+    ) => ({
+      funder: funderWallet.publicKey,
+      treasury,
+      claimInfo,
+      proofOfInclusion,
+      signedMessage,
+    })
     beforeAll(async () => {
       const mintAndTreasury =
         await deployerTokenDispenserProvider.setupMintAndTreasury()
@@ -175,13 +187,7 @@ describe('integration test', () => {
 
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
-          [
-            {
-              claimInfo,
-              proofOfInclusion,
-              signedMessage,
-            },
-          ],
+          [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction
         )
       )
@@ -237,13 +243,7 @@ describe('integration test', () => {
 
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
-          [
-            {
-              claimInfo,
-              proofOfInclusion,
-              signedMessage,
-            },
-          ],
+          [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction
         )
       )
@@ -296,13 +296,13 @@ describe('integration test', () => {
               ecosystem as Ecosystem,
               wallet.address()
             ))!
-          return {
+          return makeClaim(
             claimInfo,
             proofOfInclusion,
-            signedMessage: await wallet.signMessage(
+            await wallet.signMessage(
               tokenDispenserProvider.generateAuthorizationPayload()
-            ),
-          }
+            )
+          )
         })
       )
 
@@ -349,6 +349,39 @@ describe('integration test', () => {
       ).toBeTruthy()
     })
 
+    it('submits an injective claim', async () => {
+      const wallet = testWallets.injective[0]
+      const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
+        'injective',
+        wallet.address()
+      ))!
+      const signedMessage = await wallet.signMessage(
+        tokenDispenserProvider.generateAuthorizationPayload()
+      )
+
+      await Promise.all(
+        await tokenDispenserProvider.submitClaims(
+          [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
+          mockfetchFundTransaction
+        )
+      )
+
+      expect(
+        await tokenDispenserProvider.isClaimAlreadySubmitted(claimInfo)
+      ).toBeTruthy()
+
+      const claimantFundPubkey =
+        await tokenDispenserProvider.getClaimantFundAddress()
+
+      const claimantFund = await mint.getAccountInfo(claimantFundPubkey)
+
+      expect(
+        claimantFund.amount.eq(
+          new anchor.BN(3000000 + 6000000 + 6100000 + 6200000 + 7000000)
+        )
+      ).toBeTruthy()
+    }, 40000)
+
     it('submits an aptos claim', async () => {
       const wallet = testWallets.aptos[0]
       const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
@@ -361,13 +394,7 @@ describe('integration test', () => {
 
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
-          [
-            {
-              claimInfo,
-              proofOfInclusion,
-              signedMessage,
-            },
-          ],
+          [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction
         )
       )
@@ -404,13 +431,7 @@ describe('integration test', () => {
 
         await Promise.all(
           await tokenDispenserProvider.submitClaims(
-            [
-              {
-                claimInfo,
-                proofOfInclusion,
-                signedMessage,
-              },
-            ],
+            [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
             mockfetchFundTransaction
           )
         )
@@ -444,13 +465,7 @@ describe('integration test', () => {
 
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
-          [
-            {
-              claimInfo,
-              proofOfInclusion,
-              signedMessage: undefined,
-            },
-          ],
+          [makeClaim(claimInfo, proofOfInclusion, undefined)],
           mockfetchFundTransaction
         )
       )
@@ -485,13 +500,7 @@ describe('integration test', () => {
 
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
-          [
-            {
-              claimInfo,
-              proofOfInclusion,
-              signedMessage,
-            },
-          ],
+          [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction
         )
       )
@@ -533,13 +542,7 @@ describe('integration test', () => {
 
       const res = await Promise.all(
         await tokenDispenserProvider.submitClaims(
-          [
-            {
-              claimInfo,
-              proofOfInclusion,
-              signedMessage,
-            },
-          ],
+          [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction
         )
       )
