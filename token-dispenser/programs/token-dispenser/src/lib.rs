@@ -627,11 +627,7 @@ pub fn get_receipt_pda(leaf: &[u8]) -> (Pubkey, u8) {
 }
 
 impl crate::accounts::Initialize {
-    pub fn populate(
-        payer: Pubkey,
-        mint: Pubkey,
-        address_lookup_table: Pubkey,
-    ) -> Self {
+    pub fn populate(payer: Pubkey, mint: Pubkey, address_lookup_table: Pubkey) -> Self {
         crate::accounts::Initialize {
             payer,
             config: get_config_pda().0,
