@@ -6,6 +6,7 @@ import { SignedMessage } from '../claim_sdk/ecosystems/signatures'
 import { ECOSYSTEM_IDS } from './constants'
 
 const MERKLE_PROOFS = process.env.NEXT_PUBLIC_MERKLE_PROOFS
+const BACKEND_API = process.env.NEXT_PUBLIC_BACKEND_API
 
 function parseProof(proof: string) {
   // TODO remove it, we should not have empty proofs and will fail if tahat happens
@@ -90,8 +91,7 @@ export async function fetchAmountAndProof(
 }
 
 export function getDiscordSignedMessageRoute(claimant: PublicKey) {
-  // TODO update it with lambda route
-  return `/api/grant/v1/discord_signed_message?publicKey=${claimant.toBase58()}`
+  return `${BACKEND_API}/api/grant/v1/discord_signed_message?publicKey=${claimant.toBase58()}`
 }
 
 export function handleDiscordSignedMessageResponse(
@@ -119,8 +119,7 @@ export async function fetchDiscordSignedMessage(
 }
 
 export function getFundTransactionRoute(): string {
-  // TODO update it with lambda route
-  return `/api/grant/v1/fund_transaction`
+  return `${BACKEND_API}/api/grant/v1/fund_transaction`
 }
 
 export function handleFundTransaction(
