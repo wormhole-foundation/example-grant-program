@@ -13,7 +13,7 @@ export function useAptosAddress(): string | undefined {
   if (account && account.address) {
     return `${PREFIX_0X}${account.address
       .replace(PREFIX_0X, '')
-      .padStart(32, '0')}`
+      .padStart(64, '0')}`
   }
 }
 
