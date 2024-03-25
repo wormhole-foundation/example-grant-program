@@ -8,7 +8,7 @@ import { LoggedInSolana } from '@sections/LoggedInSolana'
 
 export const LOGIN_SOLANA_METADATA = {
   url: '/login-solana',
-  title: 'Log in with Solana',
+  title: 'Connect to Solana',
 }
 
 export default function LogInWithSolanaPage() {

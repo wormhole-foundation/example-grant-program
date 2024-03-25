@@ -51,7 +51,7 @@ export const ClaimStatus = ({
       <BoxTitle>
         <div className="flex items-center justify-between ">
           <h4 className=" text-[20px] sm:text-[28px]">
-            Sign Your Wallets and Claim
+            Sign and Claim
           </h4>
           <div className="flex gap-4">
             <ProceedButton

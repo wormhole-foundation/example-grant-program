@@ -18,7 +18,7 @@ export function ProceedButton({
   return (
     <Tooltip content={tooltipContent} placement={'bottom'}>
       <Button onClick={onProceed} type={'primary'} disabled={disabled}>
-        {hideText ? '' : 'proceed'} <Arrow />
+        {hideText ? '' : 'Proceed'} <Arrow />
       </Button>
     </Tooltip>
   )

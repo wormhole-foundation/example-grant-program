@@ -17,14 +17,10 @@ export default function VerifyEligibilityPage() {
       <BoxTitle> Verify Eligibility</BoxTitle>
       <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
         <p className="mb-6">
-          Please connect your wallets and Discord account according to the boxes
-          you checked in <strong>Step 2</strong>. You can go back and change any
-          of your selections.
+          Please connect all wallets based on the networks you chose in the previous step. Feel free to go back and adjust any selections if necessary.
         </p>
         <p>
-          You will not be able to proceed to <strong>Step 4</strong> to claim
-          your PYTH tokens if you do not successfully connect all of your
-          wallets or Discord account.
+          Note that you won't be able to move on to the next step and claim your W unless all your wallets or Discord account are successfully connected.
         </p>
 
         <div className="mt-12 flex justify-end gap-4">
