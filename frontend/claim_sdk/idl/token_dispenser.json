@@ -22,7 +22,9 @@
           "name": "mint",
           "isMut": false,
           "isSigner": false,
-          "docs": ["Mint of the treasury"]
+          "docs": [
+            "Mint of the treasury"
+          ]
         },
         {
           "name": "treasury",
@@ -49,7 +51,10 @@
         {
           "name": "merkleRoot",
           "type": {
-            "defined": "MerkleRoot<SolanaHasher>"
+            "array": [
+              "u8",
+              20
+            ]
           }
         },
         {
@@ -153,7 +158,10 @@
           {
             "name": "merkleRoot",
             "type": {
-              "defined": "MerkleRoot<SolanaHasher>"
+              "array": [
+                "u8",
+                20
+              ]
             }
           },
           {
@@ -206,9 +214,7 @@
           },
           {
             "name": "signer",
-            "type": {
-              "defined": "CosmosBech32Address"
-            }
+            "type": "string"
           }
         ]
       }
@@ -352,72 +358,13 @@
           {
             "name": "proofOfInclusion",
             "type": {
-              "defined": "MerklePath<SolanaHasher>"
+              "vec": {
+                "array": [
+                  "u8",
+                  20
+                ]
+              }
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "TestIdentityCertificate",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Evm",
-            "fields": [
-              {
-                "defined": "Secp256k1TestIdentityCertificate<EvmPrefixedMessage,Keccak256>"
-              }
-            ]
-          },
-          {
-            "name": "Discord",
-            "fields": [
-              {
-                "defined": "Ed25519TestIdentityCertificate<DiscordMessage>"
-              }
-            ]
-          },
-          {
-            "name": "Cosmos",
-            "fields": [
-              {
-                "defined": "Secp256k1TestIdentityCertificate<CosmosMessage,Sha256>"
-              }
-            ]
-          },
-          {
-            "name": "Aptos",
-            "fields": [
-              {
-                "defined": "Ed25519TestIdentityCertificate<AptosMessage>"
-              }
-            ]
-          },
-          {
-            "name": "Sui",
-            "fields": [
-              {
-                "defined": "Ed25519TestIdentityCertificate<SuiMessage>"
-              }
-            ]
-          },
-          {
-            "name": "Solana",
-            "fields": [
-              {
-                "defined": "SolanaTestIdentityCertificate"
-              }
-            ]
-          },
-          {
-            "name": "Injective",
-            "fields": [
-              {
-                "defined": "Secp256k1TestIdentityCertificate<EvmPrefixedMessage,Keccak256>"
-              }
-            ]
           }
         ]
       }
@@ -445,7 +392,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "defined": "Ed25519Pubkey"
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               }
             ]
@@ -456,7 +406,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "defined": "EvmPubkey"
+                  "array": [
+                    "u8",
+                    20
+                  ]
                 }
               }
             ]
@@ -467,7 +420,10 @@
               {
                 "name": "address",
                 "type": {
-                  "defined": "SuiAddress"
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               }
             ]
@@ -478,7 +434,10 @@
               {
                 "name": "address",
                 "type": {
-                  "defined": "AptosAddress"
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               }
             ]
@@ -488,9 +447,7 @@
             "fields": [
               {
                 "name": "address",
-                "type": {
-                  "defined": "CosmosBech32Address"
-                }
+                "type": "string"
               }
             ]
           },
@@ -499,9 +456,7 @@
             "fields": [
               {
                 "name": "address",
-                "type": {
-                  "defined": "CosmosBech32Address"
-                }
+                "type": "string"
               }
             ]
           },
@@ -511,7 +466,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "defined": "Ed25519Pubkey"
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               }
             ]
@@ -543,7 +501,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "defined": "EvmPubkey"
+                  "array": [
+                    "u8",
+                    20
+                  ]
                 }
               },
               {
@@ -561,7 +522,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "defined": "Ed25519Pubkey"
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               },
               {
@@ -576,7 +540,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "defined": "Ed25519Pubkey"
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               },
               {
@@ -595,7 +562,10 @@
               {
                 "name": "signature",
                 "type": {
-                  "defined": "Secp256k1Signature"
+                  "array": [
+                    "u8",
+                    64
+                  ]
                 }
               },
               {
@@ -605,7 +575,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "defined": "UncompressedSecp256k1Pubkey"
+                  "array": [
+                    "u8",
+                    65
+                  ]
                 }
               },
               {
@@ -620,7 +593,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "defined": "EvmPubkey"
+                  "array": [
+                    "u8",
+                    20
+                  ]
                 }
               },
               {
@@ -635,7 +611,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "defined": "Ed25519Pubkey"
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               },
               {

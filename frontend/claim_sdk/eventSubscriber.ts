@@ -232,7 +232,7 @@ function formatClaimInfo(
     return {
       ecosystem: 'solana',
       address: new anchor.web3.PublicKey(
-        claimInfo.identity.solana.pubkey as Uint8Array
+        claimInfo.identity.solana.pubkey
       ).toBase58(),
       amount: claimInfo.amount.toString(),
     }
@@ -240,21 +240,21 @@ function formatClaimInfo(
     return {
       ecosystem: 'evm',
       address:
-        '0x' + Buffer.from(claimInfo.identity.evm.pubkey as Uint8Array).toString('hex'),
+        '0x' + Buffer.from(claimInfo.identity.evm.pubkey).toString('hex'),
       amount: claimInfo.amount.toString(),
     }
   } else if (claimInfo.identity.aptos) {
     return {
       ecosystem: 'aptos',
       address:
-        '0x' + Buffer.from(claimInfo.identity.aptos.address as Uint8Array).toString('hex'),
+        '0x' + Buffer.from(claimInfo.identity.aptos.address).toString('hex'),
       amount: claimInfo.amount.toString(),
     }
   } else if (claimInfo.identity.sui) {
     return {
       ecosystem: 'sui',
       address:
-        '0x' + Buffer.from(claimInfo.identity.sui.address as Uint8Array).toString('hex'),
+        '0x' + Buffer.from(claimInfo.identity.sui.address).toString('hex'),
       amount: claimInfo.amount.toString(),
     }
   } else if (claimInfo.identity.cosmwasm) {
@@ -272,7 +272,7 @@ function formatClaimInfo(
   } else if (claimInfo.identity.algorand?.pubkey) {
     return {
       ecosystem: 'algorand',
-      address: base32encode(claimInfo.identity.algorand.pubkey as Uint8Array),
+      address: base32encode(claimInfo.identity.algorand.pubkey),
       amount: claimInfo.amount.toString(),
     }
   } else

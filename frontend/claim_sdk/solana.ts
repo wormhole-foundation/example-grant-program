@@ -51,7 +51,7 @@ const AUTHORIZATION_PAYLOAD = [
 export class TokenDispenserProvider {
   tokenDispenserProgram: anchor.Program<TokenDispenser>
   configPda: [anchor.web3.PublicKey, bump]
-  config: IdlAccounts<TokenDispenser>['config'] | undefined
+  config: IdlAccounts<TokenDispenser>['Config'] | undefined
 
   constructor(
     endpoint: string,
@@ -100,7 +100,7 @@ export class TokenDispenserProvider {
     )
   }
 
-  public async getConfig(): Promise<IdlAccounts<TokenDispenser>['config']> {
+  public async getConfig(): Promise<IdlAccounts<TokenDispenser>['Config']> {
     // config is immutable once its been initialized so this is safe.
     if (this.config === undefined) {
       this.config = await this.fetchConfigData()
@@ -109,7 +109,7 @@ export class TokenDispenserProvider {
   }
 
   private async fetchConfigData(): Promise<
-    IdlAccounts<TokenDispenser>['config']
+    IdlAccounts<TokenDispenser>['Config']
   > {
     const configAccountInfo = await this.provider.connection.getAccountInfo(
       this.getConfigPda()[0]
