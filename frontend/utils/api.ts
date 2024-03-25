@@ -44,7 +44,6 @@ const getAmountAndProofRoute = (
   }
 }
 
-// TODO refactor/remove
 export function handleAmountAndProofResponse(
   ecosystem: Ecosystem,
   identity: string,
@@ -80,7 +79,10 @@ export async function fetchAmountAndProof(
     const response = await fetch(file)
     if (response.headers.get('content-type') === 'application/json') {
       const data = await response.json()
-      if (response.status === 200 && data.address === identity) {
+      if (
+        response.status === 200 &&
+        data.address.toLocaleLowerCase() === identity.toLocaleLowerCase()
+      ) {
         return {
           claimInfo: new ClaimInfo(ecosystem, identity, new BN(data.amount)),
           proofOfInclusion: parseProof(data.hashes),
