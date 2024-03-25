@@ -16,6 +16,9 @@ import {
 import { ClaimInfo, Ecosystem } from '../claim_sdk/claim'
 import { loadFunderWallet } from '../claim_sdk/testWallets'
 import { checkTransactions } from '../utils/verifyTransaction'
+import fs from 'fs'
+import path from 'path'
+import { getInMemoryDb } from './utils'
 
 //import handlerAmountAndProof from '../pages/api/grant/v1/amount_and_proof'
 //import handlerFundTransaction from '../pages/api/grant/v1/fund_transaction'
@@ -41,13 +44,6 @@ function getAmountAndProofRoute(..._: any[]): string {
   return ''
 }
 
-function lowerCapIfEvm(identity: string, ecosystem: string): string {
-  if (ecosystem === 'evm') {
-    return identity.toLowerCase()
-  }
-  return identity
-}
-
 export async function handlerAmountAndProof(
   req: NextApiRequest,
   res: NextApiResponse
@@ -66,20 +62,18 @@ export async function handlerAmountAndProof(
   }
 
   try {
-    const result = {
-      rows: [{ amount: 0, proof_of_inclusion: Buffer.from('') }],
-    } /*await pool.query(
-      'SELECT amount, proof_of_inclusion FROM claims WHERE ecosystem = $1 AND identity = $2',
-      [ecosystem, lowerCapIfEvm(identity, ecosystem)]
-    )*/
-    if (result.rows.length == 0) {
+    // TODO: read flat file?
+    const db = getInMemoryDb()
+    const result = db.get(ecosystem)!.get(identity)
+    if (!result) {
       res.status(404).json({
         error: `No result found for ${ecosystem} identity ${identity}`,
       })
     } else {
       res.status(200).json({
-        amount: result.rows[0].amount,
-        proof: (result.rows[0].proof_of_inclusion as Buffer).toString('hex'),
+        amount: result.amount,
+        proof: result.proof,
+        address: identity,
       })
     }
   } catch (error) {

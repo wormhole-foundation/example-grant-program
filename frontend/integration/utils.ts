@@ -51,10 +51,11 @@ export type SolanaBreakdownRow = {
   amount: anchor.BN
 }
 
-const DB = new Map<any, any>()
+type InMemoryDB = Map<string, Map<string, any>>
+const DB: InMemoryDB = new Map()
 
 /** Get in memory db. */
-export function getInMemoryDb(): Map<any, any> {
+export function getInMemoryDb(): InMemoryDB {
   return DB
 }
 
@@ -95,7 +96,7 @@ export function addClaimInfosToInMemoryDb(claimInfos: ClaimInfo[]): Buffer {
       if (!DB.has(claimInfo.ecosystem)) {
         DB.set(claimInfo.ecosystem, new Map<any, any>())
       }
-      DB.get(claimInfo.ecosystem).set(claimInfo.identity, claimInfo)
+      DB.get(claimInfo.ecosystem)!.set(claimInfo.identity, claimInfo)
     }
   }
   const claimsInsertEnd = Date.now()
