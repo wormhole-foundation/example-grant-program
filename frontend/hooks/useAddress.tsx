@@ -6,9 +6,15 @@ import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react'
 import { useAccount } from 'wagmi'
 import { useWallet as useAlgorandWallet } from '@components/Ecosystem/AlgorandProvider'
 
+const PREFIX_0X = '0x'
+
 export function useAptosAddress(): string | undefined {
   const { account } = useAptosWallet()
-  return account?.address
+  if (account && account.address) {
+    return `${PREFIX_0X}${account.address
+      .replace(PREFIX_0X, '')
+      .padStart(64, '0')}`
+  }
 }
 
 export function useCosmosAddress(
