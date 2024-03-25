@@ -104,15 +104,15 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     let totalCoinsClaimed = new BN(0)
     let broadcastPromises
     try {
-      broadcastPromises = await tokenDispenser?.submitClaims(claims.map(
-        (claim) => ({
+      broadcastPromises = await tokenDispenser?.submitClaims(
+        claims.map((claim) => ({
           //TODO FIXME set funder for this claim
           funder: tokenDispenser.getConfigPda()[0],
           //TODO FIXME set treasury for this claim
           treasury: tokenDispenser.getConfigPda()[0],
-          ...claim
-        })
-      ))
+          ...claim,
+        }))
+      )
     } catch (e) {
       const err = e as Error
       let message: string
