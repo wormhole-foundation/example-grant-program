@@ -312,7 +312,42 @@ export class TokenDispenserProvider {
       )
 
     // 3. derive receipt pda
-    const receiptPda = this.getReceiptPda(claimInfo)[0]
+    const [receiptPda, receiptBump] = this.getReceiptPda(claimInfo)
+
+    const { funder, mint, treasury } = await this.getConfig()
+
+    //same as getClaimantFundAddress / getAssociatedTokenAddress but with bump
+    const [claimantFund, claimaintFundBump] = PublicKey.findProgramAddressSync(
+      [
+        this.claimant.toBytes(),
+        splToken.TOKEN_PROGRAM_ID.toBytes(),
+        mint.toBytes(),
+      ],
+      splToken.ASSOCIATED_TOKEN_PROGRAM_ID
+    )
+
+    const claimantFundExists =
+      (await this.connection.getAccountInfo(claimantFund)) !== null
+
+    const pdaDerivationIterations = 2 * 256 - receiptBump - claimaintFundBump
+    const cusPerPdaDerivation = 1500 //TODO determine true value
+    const ataCreationCost = 5000 //TODO determine true value
+    const ecosystemCUs = {
+      solana: 80000, //TODO determine true value
+      evm: 80000, //TODO determine true value
+      sui: 80000, //TODO determine true value
+      algorand: 80000, //TODO determine true value
+      aptos: 80000, //TODO determine true value
+      terra: 80000, //TODO determine true value
+      osmosis: 80000, //TODO determine true value
+      injective: 80000, //TODO determine true value
+      discord: 80000, //TODO determine true value
+    }
+
+    const units =
+      ecosystemCUs[claimInfo.ecosystem] +
+      pdaDerivationIterations * cusPerPdaDerivation +
+      (claimantFundExists ? 0 : ataCreationCost)
 
     const lookupTableAccount = await this.getLookupTableAccount()
 
@@ -320,12 +355,12 @@ export class TokenDispenserProvider {
     const claim_ix = await this.tokenDispenserProgram.methods
       .claim(claimCert)
       .accounts({
-        funder: (await this.getConfig()).funder,
+        funder,
         claimant: this.claimant,
-        claimantFund: await this.getClaimantFundAddress(),
+        claimantFund,
         config: this.getConfigPda()[0],
-        mint: (await this.getConfig()).mint,
-        treasury: (await this.getConfig()).treasury,
+        mint,
+        treasury,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: anchor.web3.SystemProgram.programId,
         sysvarInstruction: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
@@ -340,7 +375,7 @@ export class TokenDispenserProvider {
       ])
       .instruction()
     ixs.push(claim_ix)
-    ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }))
+    ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
     const microLamports = 1 //TODO determine true value
     ixs.push(ComputeBudgetProgram.setComputeUnitPrice({ microLamports }))
@@ -348,7 +383,7 @@ export class TokenDispenserProvider {
     const claimTx = new VersionedTransaction(
       new TransactionMessage({
         instructions: ixs,
-        payerKey: (await this.getConfig()).funder,
+        payerKey: funder,
         recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
       }).compileToV0Message([lookupTableAccount!])
     )
