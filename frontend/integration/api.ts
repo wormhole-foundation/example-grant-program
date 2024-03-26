@@ -72,7 +72,7 @@ export async function handlerAmountAndProof(
     } else {
       res.status(200).json({
         amount: result.amount,
-        proof: result.proof_of_inclusion,
+        hashes: result.proof_of_inclusion,
         address: identity,
       })
     }
