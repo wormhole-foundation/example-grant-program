@@ -17,7 +17,10 @@ export const signDiscordMessage = async (
     const publicKey = (event.queryStringParameters ?? {})['publicKey']
     validatePublicKey(publicKey)
 
-    const accessToken = event.headers['Authorization']
+    const accessToken =
+      event.headers['Authorization'] ??
+      event.headers['authorization'] ??
+      event.headers['x-auth-token']
     const discordId = await getDiscordId(accessToken)
 
     const claimant = new PublicKey(publicKey!)
