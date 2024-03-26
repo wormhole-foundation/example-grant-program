@@ -1,8 +1,10 @@
 name: Frontend Tests
 on:
   pull_request:
+    paths: [frontend/**, token-dispenser/**]
   push:
     branches: [main]
+    paths: [frontend/**, token-dispenser/**]
 
 jobs:
   test:
