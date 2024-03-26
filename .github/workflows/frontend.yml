@@ -7,6 +7,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: jetprotocol/builder:rust-1.68.0-node-18.15.0-solana-1.14.17-anchor-0.27.0-1
+      env:
+        ENDPOINT: http://localhost:8899
+
+    env:
+      PROGRAM_ID: Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS
 
     defaults:
       run:
@@ -14,8 +21,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      # - name: setup os dependencies
-      #   run: apt-get update && apt-get install -y jq
+      - name: setup os dependencies
+        run: apt-get update && apt-get install -y jq
       - uses: actions/setup-node@v3
         with:
           node-version: 18
