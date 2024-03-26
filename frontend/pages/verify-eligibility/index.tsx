@@ -17,7 +17,9 @@ export default function VerifyEligibilityPage() {
       <BoxTitle> Verify Eligibility</BoxTitle>
       <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
         <p className="mb-6">
-          Please connect all wallets based on the networks you chose in the previous step. Feel free to go back and adjust any selections if necessary.
+          Please connect all wallets based on the networks you chose in the
+          previous step. Feel free to go back and adjust any selections if
+          necessary.
         </p>
         <p>
           {`Note that you won't be able to move on to the next step and claim your W unless all your wallets or Discord account are successfully connected.`}
