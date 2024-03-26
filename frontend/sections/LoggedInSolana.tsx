@@ -16,15 +16,13 @@ export const LoggedInSolana = ({ onBack, onProceed }: StepProps) => {
     <Box>
       <BoxTitle>
         <div className="flex items-center justify-between">
-          <span>Log in with Solana</span>
+          <span>Connect to Solana</span>
           <BackButton onBack={onBack} />
         </div>
       </BoxTitle>
       <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
         <p className="mb-6">
-          PYTH tokens are native to Solana. You need a Solana wallet to receive
-          your tokens. Your claimed PYTH tokens will go to the Solana wallet you
-          have connected in the previous step.
+          W is native to the Solana network. To receive your W, a Solana wallet is required. The W you claim will be sent to the Solana wallet you link during this process.
         </p>
         <p className="">
           To change the connected wallet please go to the previous step.
