@@ -11,7 +11,7 @@ import {
 import config from '../config'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
-const MAX_COMPUTE_UNIT_PRICE = BigInt(1_000_000) // 1 SOL;
+const MAX_COMPUTE_UNIT_PRICE = BigInt(1_000_000)
 
 export function deserializeTransactions(
   transactions: unknown
@@ -173,7 +173,6 @@ export function countPrecompiledSignatures(
     .reduce((acc, ix) => acc + ix.data[0], 0)
 }
 
-// TODO: Verify if this is the expected behavior
 export function checkNumberOfSignatures(
   transaction: VersionedTransaction
 ): boolean {
