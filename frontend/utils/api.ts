@@ -48,14 +48,14 @@ export function handleAmountAndProofResponse(
   ecosystem: Ecosystem,
   identity: string,
   status: number,
-  { address, amount, hashes }: any = {}
+  { address, amount, proof }: any = {}
 ): { claimInfo: ClaimInfo; proofOfInclusion: Uint8Array[] } | undefined {
   if (status == 404) return undefined
   if (status == 200) {
     if (identity === address) {
       return {
         claimInfo: new ClaimInfo(ecosystem, identity, new BN(amount)),
-        proofOfInclusion: parseProof(hashes),
+        proofOfInclusion: parseProof(proof),
       }
     }
   }

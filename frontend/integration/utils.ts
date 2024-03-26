@@ -1,17 +1,12 @@
 import 'dotenv/config' // Load environment variables from .env file
 import * as anchor from '@coral-xyz/anchor'
-import {
-  TestEvmWallet,
-  TestSolanaWallet,
-  TestWallet,
-} from '../claim_sdk/testWallets'
+import { TestWallet } from '../claim_sdk/testWallets'
 import { ClaimInfo, Ecosystem, Ecosystems } from '../claim_sdk/claim'
 import { getMaxAmount } from '../claim_sdk/claim'
 import { MerkleTree } from '../claim_sdk/merkleTree'
 
 const CHUNK_SIZE = 1000
-const SOLANA_ECOSYSTEM_INDEX = 2
-const EVM_ECOSYSTEM_INDEX = 3
+
 export const EVM_CHAINS = [
   'optimism-mainnet',
   'arbitrum-mainnet',
