@@ -14,8 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: setup os dependencies
-        run: apt-get update && apt-get install -y jq
+      # - name: setup os dependencies
+      #   run: apt-get update && apt-get install -y jq
       - uses: actions/setup-node@v3
         with:
           node-version: 18
