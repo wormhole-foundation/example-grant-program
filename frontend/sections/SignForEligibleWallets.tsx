@@ -87,7 +87,7 @@ export const SignForEligibleWallets = ({
       <BoxTitle>
         <div className="flex items-center justify-between ">
           <span className=" text-[20px]  sm:text-[28px]">
-            Sign Your Wallets and Claim
+            Sign and Claim
           </span>
           <div className="flex gap-1 sm:gap-4">
             <BackButton onBack={onBack} hideText={isMobile} />

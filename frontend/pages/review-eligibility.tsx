@@ -5,7 +5,7 @@ import { VERIFY_ELIGIBILITY_METADATA } from './verify-eligibility'
 
 export const REVIEW_ELIGIBILITY_METADATA = {
   url: '/review-eligibility',
-  title: 'Review Airdrop Eligibility',
+  title: 'Review Eligibility',
 }
 
 export default function ReviewEligibilitPage() {

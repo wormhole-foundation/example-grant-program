@@ -65,7 +65,7 @@ const Eligibility = ({
       return
     } else if (areAllTokensClaimed) {
       setIsProceedDisabled(true)
-      setProceedTooltipContent('There are no tokens to claim.')
+      setProceedTooltipContent('There are no W to claim')
       return
     } else {
       setIsProceedDisabled(false)
@@ -159,7 +159,7 @@ function TableRow({ ecosystem }: TableRowProps) {
       } else {
         if (eligibility?.claimInfo === undefined) {
           return [
-            'This wallet is unfortunately not eligible for an allocation. You can click on the wallet address to disconnect and connect to another wallet.',
+            'The connected wallet is unfortunately not eligible for any W.',
             <NotVerified key={null} />,
           ]
         } else {
