@@ -8,6 +8,8 @@ export interface DiscordSignedDigestParams {
   publicKey: string
 }
 
+let guardKeyPair: Keypair
+
 export const signDiscordMessage = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -48,6 +50,10 @@ export const signDiscordMessage = async (
 }
 
 async function loadDispenserGuard() {
+  if (guardKeyPair) {
+    return guardKeyPair
+  }
+
   const secretData = await getDispenserKey()
   const dispenserGuardKey = secretData.key
 
@@ -55,7 +61,9 @@ async function loadDispenserGuard() {
     Uint8Array.from(dispenserGuardKey)
   )
 
-  return dispenserGuard
+  guardKeyPair = dispenserGuard
+  console.log('Loaded dispenser guard key')
+  return guardKeyPair
 }
 
 function validatePublicKey(publicKey?: string) {

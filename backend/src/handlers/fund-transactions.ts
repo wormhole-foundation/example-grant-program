@@ -10,6 +10,8 @@ import { HandlerError } from '../utils/errors'
 
 export type FundTransactionRequest = Uint8Array[]
 
+let funderWallet: NodeWallet
+
 export const fundTransactions = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -63,10 +65,16 @@ function validateFundTransactions(transactions: unknown) {
 }
 
 async function loadFunderWallet(): Promise<NodeWallet> {
+  if (funderWallet) {
+    return funderWallet
+  }
+
   const secretData = await getFundingKey()
   const funderWalletKey = secretData.key
 
-  const keypair = Keypair.fromSecretKey(new Uint8Array(funderWalletKey))
+  const keypair = Keypair.fromSecretKey(Uint8Array.from(funderWalletKey))
 
-  return new NodeWallet(keypair)
+  funderWallet = new NodeWallet(keypair)
+  console.log('Loaded funder wallet')
+  return funderWallet
 }

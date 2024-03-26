@@ -8,21 +8,30 @@ import config from '../config'
 const client = new SecretsManagerClient({ region: config.aws.region })
 
 export async function getDispenserKey() {
+  let key: string
   if (config.keys.dispenserGuard.key) {
     console.log('Using dispenser guard key from config')
-    return { key: JSON.parse(config.keys.dispenserGuard.key) }
+    key = config.keys.dispenserGuard.key
   }
 
-  return getSecret(config.keys.dispenserGuard.secretName)
+  key = await getSecretKey(config.keys.dispenserGuard.secretName, 'key')
+  return { key: JSON.parse(key) }
 }
 
-export async function getFundingKey() {
+export async function getFundingKey(): Promise<{ key: Uint8Array }> {
+  let key: string
   if (config.keys.funding.key) {
     console.log('Using funding key from config')
-    return { key: JSON.parse(config.keys.funding.key) }
+    key = config.keys.funding.key
   }
 
-  return getSecret(config.keys.funding.secretName)
+  key = await getSecretKey(config.keys.funding.secretName, 'key')
+  return { key: JSON.parse(key) }
+}
+
+export async function getSecretKey(secretName: string, keyName: string) {
+  const secret = await getSecret(secretName)
+  return secret[keyName]
 }
 
 export async function getSecret(secretName: string) {

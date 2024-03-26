@@ -64,7 +64,7 @@ const givenDownstreamServicesWork = () => {
     }),
     http.all('https://secretsmanager.us-east-2.amazonaws.com', () => {
       return HttpResponse.json({
-        SecretString: JSON.stringify({ key: [...new Keypair().secretKey] })
+        SecretString: JSON.stringify({ key: `[${new Keypair().secretKey}]` })
       })
     })
   )
