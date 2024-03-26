@@ -2,9 +2,9 @@ import { afterEach, beforeAll, describe, expect, test } from '@jest/globals'
 import { setupServer } from 'msw/node'
 import { HttpResponse, http } from 'msw'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-
 import { fundTransactions } from '../../src/handlers/fund-transactions'
 import {
+  ComputeBudgetProgram,
   Keypair,
   TransactionInstruction,
   TransactionMessage,
@@ -13,7 +13,7 @@ import {
 
 const PROGRAM_ID = new Keypair().publicKey
 const FUNDER_KEY = new Keypair()
-let server = setupServer()
+const server = setupServer()
 let input: VersionedTransaction[]
 let response: APIGatewayProxyResult
 
@@ -28,7 +28,7 @@ describe('fundTransactions integration test', () => {
     server.resetHandlers()
   })
 
-  test('should return signed message', async () => {
+  test('should return fully signed txn', async () => {
     givenDownstreamServicesWork()
     givenRequest()
 
@@ -57,7 +57,9 @@ const givenRequest = () => {
     new VersionedTransaction(
       new TransactionMessage({
         instructions: [
-          new TransactionInstruction({ programId: PROGRAM_ID, keys: [] })
+          new TransactionInstruction({ programId: PROGRAM_ID, keys: [] }),
+          ComputeBudgetProgram.setComputeUnitLimit({ units: 200 }),
+          ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 5_000 })
         ],
         payerKey: FUNDER_KEY.publicKey,
         recentBlockhash: 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
@@ -69,7 +71,7 @@ const givenRequest = () => {
 const whenFundTransactionsCalled = async () => {
   response = await fundTransactions({
     body: JSON.stringify(input.map((tx) => Buffer.from(tx.serialize())))
-  } as any as APIGatewayProxyEvent)
+  } as unknown as APIGatewayProxyEvent)
 }
 
 const thenResponseIsSuccessful = () => {
