@@ -51,6 +51,7 @@ export function checkAllProgramsWhitelisted(
         transaction.message.staticAccountKeys[ix.programIdIndex].equals(program)
       )
     ) {
+      console.error('Program not whitelisted')
       return false
     }
   }
@@ -58,7 +59,11 @@ export function checkAllProgramsWhitelisted(
 }
 
 export function checkV0(transaction: VersionedTransaction) {
-  return transaction.version === 0
+  const isVersion0Transaction = transaction.version === 0;
+  if (!isVersion0Transaction) {
+    console.error('Transaction sent is a legacy transaction, expected a V0 transaction.')
+  }
+  return isVersion0Transaction
 }
 
 export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
@@ -90,6 +95,7 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
         instructonType === 'SetComputeUnitLimit' &&
         ix.data[0] !== SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT
       ) {
+        console.error('Compute unit limit not discriminant does not match')
         return false
       }
     }
@@ -128,6 +134,7 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitPrice(
           legacTransactionInstruction
         )
         if (priorityFee.microLamports >= MAX_COMPUTE_UNIT_PRICE) {
+          console.error('Priority fee set is too high')
           return false
         }
       }
@@ -147,6 +154,7 @@ export function checkProgramAppears(
       return true
     }
   }
+  console.error('Token dispenser program not found in transaction')
   return false
 }
 
@@ -176,7 +184,11 @@ export function countPrecompiledSignatures(
 export function checkNumberOfSignatures(
   transaction: VersionedTransaction
 ): boolean {
-  return countTotalSignatures(transaction) <= 3
+  const numberOfSignatures = countTotalSignatures(transaction);
+  if (numberOfSignatures > 3) {
+    console.error('Transaction has too many signatures')
+  }
+  return numberOfSignatures <= 3
 }
 
 export function checkTransaction(
