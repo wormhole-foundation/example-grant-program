@@ -59,9 +59,11 @@ export function checkAllProgramsWhitelisted(
 }
 
 export function checkV0(transaction: VersionedTransaction) {
-  const isVersion0Transaction = transaction.version === 0;
+  const isVersion0Transaction = transaction.version === 0
   if (!isVersion0Transaction) {
-    console.error('Transaction sent is a legacy transaction, expected a V0 transaction.')
+    console.error(
+      'Transaction sent is a legacy transaction, expected a V0 transaction.'
+    )
   }
   return isVersion0Transaction
 }
@@ -184,7 +186,7 @@ export function countPrecompiledSignatures(
 export function checkNumberOfSignatures(
   transaction: VersionedTransaction
 ): boolean {
-  const numberOfSignatures = countTotalSignatures(transaction);
+  const numberOfSignatures = countTotalSignatures(transaction)
   if (numberOfSignatures > 3) {
     console.error('Transaction has too many signatures')
   }
