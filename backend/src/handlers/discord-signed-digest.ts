@@ -17,7 +17,7 @@ export const signDiscordMessage = async (
     const publicKey = (event.queryStringParameters ?? {})['publicKey']
     validatePublicKey(publicKey)
 
-    const accessToken = event.headers['x-auth-token']
+    const accessToken = event.headers['Authorization']
     const discordId = await getDiscordId(accessToken)
 
     const claimant = new PublicKey(publicKey!)
@@ -88,13 +88,18 @@ function validatePublicKey(publicKey?: string) {
   }
 }
 
-async function getDiscordId(accessToken?: string) {
-  if (!accessToken) {
-    throw new HandlerError(400, { error: 'Must provide discord auth token' })
+async function getDiscordId(tokenHeaderValue?: string) {
+  if (!tokenHeaderValue) {
+    throw new HandlerError(403, { error: 'Must provide discord auth token' })
+  }
+
+  const tokenParts = tokenHeaderValue.split(' ')
+  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+    throw new HandlerError(403, { error: 'Invalid authorization header' })
   }
 
   try {
-    const user = await getDiscordUser(accessToken)
+    const user = await getDiscordUser(tokenParts[1])
     return user.id
   } catch (err) {
     throw new HandlerError(403, { error: 'Invalid discord access token' })

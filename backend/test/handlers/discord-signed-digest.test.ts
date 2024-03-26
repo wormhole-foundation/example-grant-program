@@ -83,7 +83,7 @@ const whenSignDiscordMessageCalled = async (
 ) => {
   response = await signDiscordMessage({
     queryStringParameters: queryParams,
-    headers: { 'x-auth-token': 'token' }
+    headers: { Authorization: 'Bearer token' }
   } as unknown as APIGatewayProxyEvent)
 }
 
