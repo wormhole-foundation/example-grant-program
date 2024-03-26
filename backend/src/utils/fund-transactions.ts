@@ -97,7 +97,7 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
         instructonType === 'SetComputeUnitLimit' &&
         ix.data[0] !== SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT
       ) {
-        console.error('Compute unit limit not discriminant does not match')
+        console.error('Compute unit limit discriminant does not match')
         return false
       }
     }
