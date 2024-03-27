@@ -304,6 +304,8 @@ export class TokenDispenserProvider {
       proofOfInclusion,
     }
 
+    const ixs: anchor.web3.TransactionInstruction[] = []
+
     // 2. generate signature verification instruction if needed
     const signatureVerificationIx =
       this.generateSignatureVerificationInstruction(
@@ -326,12 +328,58 @@ export class TokenDispenserProvider {
       splToken.ASSOCIATED_TOKEN_PROGRAM_ID
     )
 
-    const claimantFundExists =
-      (await this.connection.getAccountInfo(claimantFund)) !== null
+    const [claimantFundAccount, lookupTableAccount] = await Promise.all([
+      this.connection.getAccountInfo(claimantFund),
+      this.getLookupTableAccount(),
+    ])
 
-    const pdaDerivationIterations = 2 * 256 - receiptBump - claimaintFundBump
-    const cusPerPdaDerivation = 1500 //TODO determine true value
-    const ataCreationCost = 5000 //TODO determine true value
+    const claimantFundExists = claimantFundAccount !== null
+
+    if (!claimantFundExists)
+      ixs.push(
+        splToken.Token.createAssociatedTokenAccountInstruction(
+          splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+          splToken.TOKEN_PROGRAM_ID,
+          mint,
+          claimantFund,
+          this.claimant,
+          funder
+        )
+      )
+
+    if (signatureVerificationIx) ixs.push(signatureVerificationIx)
+
+    ixs.push(
+      await this.tokenDispenserProgram.methods
+        .claim(claimCert)
+        .accounts({
+          funder,
+          claimant: this.claimant,
+          claimantFund,
+          config: this.getConfigPda()[0],
+          mint,
+          treasury,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: anchor.web3.SystemProgram.programId,
+          sysvarInstruction: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+          associatedTokenProgram: splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+        })
+        .remainingAccounts([
+          {
+            pubkey: receiptPda,
+            isWritable: true,
+            isSigner: false,
+          },
+        ])
+        .instruction()
+    )
+
+    const pdaDerivationCosts = (bump: number) => {
+      const maxBump = 255
+      const cusPerPdaDerivation = 1500
+      return (maxBump - bump) * cusPerPdaDerivation
+    }
+    const ataCreationCost = 20460
     const ecosystemCUs = {
       solana: 80000, //TODO determine true value
       evm: 80000, //TODO determine true value
@@ -346,35 +394,11 @@ export class TokenDispenserProvider {
 
     const units =
       ecosystemCUs[claimInfo.ecosystem] +
-      pdaDerivationIterations * cusPerPdaDerivation +
-      (claimantFundExists ? 0 : ataCreationCost)
-
-    const lookupTableAccount = await this.getLookupTableAccount()
-
-    const ixs = signatureVerificationIx ? [signatureVerificationIx] : []
-    const claim_ix = await this.tokenDispenserProgram.methods
-      .claim(claimCert)
-      .accounts({
-        funder,
-        claimant: this.claimant,
-        claimantFund,
-        config: this.getConfigPda()[0],
-        mint,
-        treasury,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId,
-        sysvarInstruction: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
-        associatedTokenProgram: splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
-      })
-      .remainingAccounts([
-        {
-          pubkey: receiptPda,
-          isWritable: true,
-          isSigner: false,
-        },
-      ])
-      .instruction()
-    ixs.push(claim_ix)
+      pdaDerivationCosts(claimaintFundBump) +
+      pdaDerivationCosts(receiptBump) +
+      (claimantFundExists
+        ? 0
+        : ataCreationCost + pdaDerivationCosts(claimaintFundBump))
     ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
     const microLamports = 1 //TODO determine true value
