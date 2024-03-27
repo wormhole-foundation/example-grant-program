@@ -17,6 +17,7 @@ import { fetchDiscordSignedMessage } from 'utils/api'
 import { useTokenDispenserProvider } from './useTokenDispenserProvider'
 import { ChainName } from '@components/wallets/Cosmos'
 import { useWallet as useAlgorandWallet } from '@components/Ecosystem/AlgorandProvider'
+import useDiscordAuth from './useDiscordAuth'
 
 // SignMessageFn signs the message and returns it.
 // It will return undefined:
@@ -177,11 +178,11 @@ export function useSuiSignMessage(): SignMessageFn {
 
 export function useDiscordSignMessage(): SignMessageFn {
   const tokenDispenser = useTokenDispenserProvider()
-
+  const { token } = useDiscordAuth()
   return useCallback(async () => {
-    if (tokenDispenser?.claimant === undefined) return
-    return await fetchDiscordSignedMessage(tokenDispenser.claimant)
-  }, [tokenDispenser?.claimant])
+    if (tokenDispenser?.claimant === undefined || token === null) return
+    return await fetchDiscordSignedMessage(tokenDispenser.claimant, token)
+  }, [tokenDispenser?.claimant, token])
 }
 
 // This hook returns a function to sign message for the Algorand wallet.

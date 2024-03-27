@@ -207,7 +207,8 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
               {`Please proceed to sign your connected wallets. Press the “Sign” button next to each wallet and confirm in the pop-up window.`}
             </p>
             <p className="mb-6">
-              Signing with your Solana wallet will be done at a later step. Discord requires no further action.
+              Signing with your Solana wallet will be done at a later step.
+              Discord requires no further action.
             </p>
             <p>Your W will be claimed to the following Solana wallet:</p>
             <div className="mt-8 flex items-center justify-between gap-4">
@@ -253,7 +254,9 @@ function ClaimAirdropModal({
         Claim W
       </h3>
       <p className="mx-auto max-w-[454px] font-body text-base16">
-        Please make sure you’ve connected all required wallets and Discord accounts. You have the option to go through the claim process again using different wallets.
+        Please make sure you’ve connected all required wallets and Discord
+        accounts. You have the option to go through the claim process again
+        using different wallets.
       </p>
       <div className="mt-12 flex justify-center gap-4">
         <BackButton onBack={onBack} />

@@ -8,6 +8,8 @@ export interface DiscordSignedDigestParams {
   publicKey: string
 }
 
+let guardKeyPair: Keypair
+
 export const signDiscordMessage = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -15,7 +17,10 @@ export const signDiscordMessage = async (
     const publicKey = (event.queryStringParameters ?? {})['publicKey']
     validatePublicKey(publicKey)
 
-    const accessToken = event.headers['x-auth-token']
+    const accessToken =
+      event.headers['Authorization'] ??
+      event.headers['authorization'] ??
+      event.headers['x-auth-token']
     const discordId = await getDiscordId(accessToken)
 
     const claimant = new PublicKey(publicKey!)
@@ -48,6 +53,10 @@ export const signDiscordMessage = async (
 }
 
 async function loadDispenserGuard() {
+  if (guardKeyPair) {
+    return guardKeyPair
+  }
+
   const secretData = await getDispenserKey()
   const dispenserGuardKey = secretData.key
 
@@ -55,7 +64,9 @@ async function loadDispenserGuard() {
     Uint8Array.from(dispenserGuardKey)
   )
 
-  return dispenserGuard
+  guardKeyPair = dispenserGuard
+  console.log('Loaded dispenser guard key')
+  return guardKeyPair
 }
 
 function validatePublicKey(publicKey?: string) {
@@ -80,13 +91,18 @@ function validatePublicKey(publicKey?: string) {
   }
 }
 
-async function getDiscordId(accessToken?: string) {
-  if (!accessToken) {
-    throw new HandlerError(400, { error: 'Must provide discord auth token' })
+async function getDiscordId(tokenHeaderValue?: string) {
+  if (!tokenHeaderValue) {
+    throw new HandlerError(403, { error: 'Must provide discord auth token' })
+  }
+
+  const tokenParts = tokenHeaderValue.split(' ')
+  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+    throw new HandlerError(403, { error: 'Invalid authorization header' })
   }
 
   try {
-    const user = await getDiscordUser(accessToken)
+    const user = await getDiscordUser(tokenParts[1])
     return user.id
   } catch (err) {
     throw new HandlerError(403, { error: 'Invalid discord access token' })
