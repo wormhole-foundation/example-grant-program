@@ -77,7 +77,7 @@ export async function fetchAmountAndProof(
   // The best case will be to have only one file per identity
   for (const file of files) {
     const response = await fetch(file)
-    if (response.headers.get('content-type') === 'application/json') {
+    if (response.headers.get('content-type')?.includes('application/json')) {
       const data = await response.json()
       if (
         response.status === 200 &&
@@ -111,9 +111,14 @@ export function handleDiscordSignedMessageResponse(
 }
 
 export async function fetchDiscordSignedMessage(
-  claimant: PublicKey
+  claimant: PublicKey,
+  accessToken: string
 ): Promise<SignedMessage | undefined> {
-  const response = await fetch(getDiscordSignedMessageRoute(claimant))
+  const response = await fetch(getDiscordSignedMessageRoute(claimant), {
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+    },
+  })
   return handleDiscordSignedMessageResponse(
     response.status,
     await response.json()

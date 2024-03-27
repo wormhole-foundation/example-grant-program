@@ -5,10 +5,14 @@ import {
   checkTransactions,
   deserializeTransactions
 } from '../utils/fund-transactions'
-import { Keypair } from '@solana/web3.js'
+import { Keypair, VersionedTransaction } from '@solana/web3.js'
+import bs58 from 'bs58'
 import { HandlerError } from '../utils/errors'
+import { asJsonResponse } from '../utils/response'
 
 export type FundTransactionRequest = Uint8Array[]
+
+let funderWallet: NodeWallet
 
 export const fundTransactions = async (
   event: APIGatewayProxyEvent
@@ -20,35 +24,25 @@ export const fundTransactions = async (
     const isTransactionsValid = await checkTransactions(transactions)
 
     if (!isTransactionsValid) {
-      return {
-        statusCode: 403,
-        body: JSON.stringify({ error: 'Unauthorized transactions' })
-      }
+      return asJsonResponse(403, { error: 'Unauthorized transactions' })
     }
 
     const wallet = await loadFunderWallet()
 
     const signedTransactions = await wallet.signAllTransactions(transactions)
-    return {
-      statusCode: 200,
-      body: JSON.stringify(
-        signedTransactions.map((tx) => Buffer.from(tx.serialize()))
-      )
-    }
+    logSignatures(signedTransactions)
+    return asJsonResponse(
+      200,
+      signedTransactions.map((tx) => Buffer.from(tx.serialize()))
+    )
   } catch (err: HandlerError | unknown) {
     console.error('Error signing transactions', err)
 
     if (err instanceof HandlerError) {
-      return {
-        statusCode: err.statusCode,
-        body: JSON.stringify(err.body)
-      }
+      return asJsonResponse(err.statusCode, err.body)
     }
 
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' })
-    }
+    return asJsonResponse(500, { error: 'Internal server error' })
   }
 }
 
@@ -63,10 +57,32 @@ function validateFundTransactions(transactions: unknown) {
 }
 
 async function loadFunderWallet(): Promise<NodeWallet> {
+  if (funderWallet) {
+    return funderWallet
+  }
+
   const secretData = await getFundingKey()
   const funderWalletKey = secretData.key
 
-  const keypair = Keypair.fromSecretKey(new Uint8Array(funderWalletKey))
+  const keypair = Keypair.fromSecretKey(Uint8Array.from(funderWalletKey))
 
-  return new NodeWallet(keypair)
+  funderWallet = new NodeWallet(keypair)
+  console.log('Loaded funder wallet')
+  return funderWallet
+}
+
+function getSignature(tx: VersionedTransaction): string {
+  if (tx.signatures.length > 0) {
+    return bs58.encode(tx.signatures[0])
+  }
+
+  return 'unkown signature'
+}
+
+function logSignatures(signedTransactions: VersionedTransaction[]) {
+  const sigs: string[] = []
+  signedTransactions.forEach((tx) => {
+    sigs.push(getSignature(tx))
+  })
+  console.log(`Signed transactions: ${sigs}`)
 }

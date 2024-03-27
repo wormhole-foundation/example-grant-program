@@ -3,10 +3,13 @@ import { getDispenserKey } from '../utils/secrets'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getDiscordUser, signDiscordDigest } from '../utils/discord'
 import { HandlerError } from '../utils/errors'
+import { asJsonResponse } from '../utils/response'
 
 export interface DiscordSignedDigestParams {
   publicKey: string
 }
+
+let guardKeyPair: Keypair
 
 export const signDiscordMessage = async (
   event: APIGatewayProxyEvent
@@ -15,7 +18,10 @@ export const signDiscordMessage = async (
     const publicKey = (event.queryStringParameters ?? {})['publicKey']
     validatePublicKey(publicKey)
 
-    const accessToken = event.headers['x-auth-token']
+    const accessToken =
+      event.headers['Authorization'] ??
+      event.headers['authorization'] ??
+      event.headers['x-auth-token']
     const discordId = await getDiscordId(accessToken)
 
     const claimant = new PublicKey(publicKey!)
@@ -23,31 +29,26 @@ export const signDiscordMessage = async (
 
     const signedDigest = signDiscordDigest(discordId, claimant, dispenserGuard)
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        signature: Buffer.from(signedDigest.signature).toString('hex'),
-        publicKey: Buffer.from(signedDigest.publicKey).toString('hex'), // The dispenser guard's public key
-        fullMessage: Buffer.from(signedDigest.fullMessage).toString('hex')
-      })
-    }
+    return asJsonResponse(200, {
+      signature: Buffer.from(signedDigest.signature).toString('hex'),
+      publicKey: Buffer.from(signedDigest.publicKey).toString('hex'), // The dispenser guard's public key
+      fullMessage: Buffer.from(signedDigest.fullMessage).toString('hex')
+    })
   } catch (err: HandlerError | unknown) {
     console.error('Error generating signed discord digest', err)
     if (err instanceof HandlerError) {
-      return {
-        statusCode: err.statusCode,
-        body: JSON.stringify(err.body)
-      }
+      return asJsonResponse(err.statusCode, err.body)
     }
 
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' })
-    }
+    return asJsonResponse(500, { error: 'Internal server error' })
   }
 }
 
 async function loadDispenserGuard() {
+  if (guardKeyPair) {
+    return guardKeyPair
+  }
+
   const secretData = await getDispenserKey()
   const dispenserGuardKey = secretData.key
 
@@ -55,7 +56,9 @@ async function loadDispenserGuard() {
     Uint8Array.from(dispenserGuardKey)
   )
 
-  return dispenserGuard
+  guardKeyPair = dispenserGuard
+  console.log('Loaded dispenser guard key')
+  return guardKeyPair
 }
 
 function validatePublicKey(publicKey?: string) {
@@ -80,13 +83,18 @@ function validatePublicKey(publicKey?: string) {
   }
 }
 
-async function getDiscordId(accessToken?: string) {
-  if (!accessToken) {
-    throw new HandlerError(400, { error: 'Must provide discord auth token' })
+async function getDiscordId(tokenHeaderValue?: string) {
+  if (!tokenHeaderValue) {
+    throw new HandlerError(403, { error: 'Must provide discord auth token' })
+  }
+
+  const tokenParts = tokenHeaderValue.split(' ')
+  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+    throw new HandlerError(403, { error: 'Invalid authorization header' })
   }
 
   try {
-    const user = await getDiscordUser(accessToken)
+    const user = await getDiscordUser(tokenParts[1])
     return user.id
   } catch (err) {
     throw new HandlerError(403, { error: 'Invalid discord access token' })

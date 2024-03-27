@@ -33,14 +33,14 @@ export const PastActivity = ({ onBack, onProceed }: StepProps) => {
   return (
     <>
       <Box>
-        <BoxTitle> {`Let's Review Your Activity`}</BoxTitle>
+        <BoxTitle> {`Activity Review`}</BoxTitle>
         <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
           <p className="mb-6">
-            Please check the following boxes below corresponding to your wallet
-            and social activity in the Pyth ecosystem.
+            Please tick the appropriate boxes below that reflect your wallet
+            usage and participation in the Wormhole ecosystem.
           </p>
 
-          <p className="mb-6 font-light">I am active on…</p>
+          <p className="mb-6 font-light">Active on:</p>
           <div className="mb-6 grid max-w-[420px] grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {Object.values(Ecosystem).map((ecosystem) => {
               if (ecosystem === Ecosystem.DISCORD) {
@@ -57,7 +57,7 @@ export const PastActivity = ({ onBack, onProceed }: StepProps) => {
               }
             })}
           </div>
-          <p className="mb-6 font-light">I am an active member of…</p>
+          <p className="mb-6 font-light">Wormhole Discord member:</p>
           <div>
             <CheckBox
               label={Ecosystem.DISCORD}

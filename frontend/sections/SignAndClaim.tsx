@@ -198,22 +198,19 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
         <Box>
           <BoxTitle>
             <span className="flex items-center justify-between ">
-              <span>Sign Your Wallets and Claim</span>
+              <span>Sign and Claim</span>
               <BackButton onBack={onBack} />
             </span>
           </BoxTitle>
           <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
             <p className="mb-6">
-              {`Please sign your connected wallets. To sign, click the
-              corresponding “sign” button for each wallet. Your wallet will ask
-              if you wish to sign the transaction. Confirm by clicking “sign” in
-              your wallet's pop-up window.`}
+              {`Please proceed to sign your connected wallets. Press the “Sign” button next to each wallet and confirm in the pop-up window.`}
             </p>
             <p className="mb-6">
-              Note: You will sign with your Solana wallet at a later stage. No
-              action is required for your Discord account.
+              Signing with your Solana wallet will be done at a later step.
+              Discord requires no further action.
             </p>
-            <p>Your claimed PYTH tokens will go to this Solana wallet: </p>
+            <p>Your W will be claimed to the following Solana wallet:</p>
             <div className="mt-8 flex items-center justify-between gap-4">
               <SolanaWalletCopyButton />
               <ProceedButton onProceed={() => setScreen(2)} />
@@ -254,12 +251,12 @@ function ClaimAirdropModal({
   return (
     <Modal openModal={openModal}>
       <h3 className="mb-8  font-header text-[30px] font-light sm:text-[36px]">
-        Claim Airdrop
+        Claim W
       </h3>
       <p className="mx-auto max-w-[454px] font-body text-base16">
-        Please ensure that you have connected all the necessary wallets and the
-        Discord account with your claim. Additionally, you can repeat the
-        Airdrop Claim process using a different set of wallets.
+        Please make sure you’ve connected all required wallets and Discord
+        accounts. You have the option to go through the claim process again
+        using different wallets.
       </p>
       <div className="mt-12 flex justify-center gap-4">
         <BackButton onBack={onBack} />
