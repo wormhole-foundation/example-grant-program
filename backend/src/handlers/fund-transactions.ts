@@ -5,7 +5,8 @@ import {
   checkTransactions,
   deserializeTransactions
 } from '../utils/fund-transactions'
-import { Keypair } from '@solana/web3.js'
+import { Keypair, VersionedTransaction } from '@solana/web3.js'
+import bs58 from 'bs58'
 import { HandlerError } from '../utils/errors'
 import { asJsonResponse } from '../utils/response'
 
@@ -29,6 +30,7 @@ export const fundTransactions = async (
     const wallet = await loadFunderWallet()
 
     const signedTransactions = await wallet.signAllTransactions(transactions)
+    logSignatures(signedTransactions)
     return asJsonResponse(
       200,
       signedTransactions.map((tx) => Buffer.from(tx.serialize()))
@@ -67,4 +69,20 @@ async function loadFunderWallet(): Promise<NodeWallet> {
   funderWallet = new NodeWallet(keypair)
   console.log('Loaded funder wallet')
   return funderWallet
+}
+
+function getSignature(tx: VersionedTransaction): string {
+  if (tx.signatures.length > 0) {
+    return bs58.encode(tx.signatures[0])
+  }
+
+  return 'unkown signature'
+}
+
+function logSignatures(signedTransactions: VersionedTransaction[]) {
+  const sigs: string[] = []
+  signedTransactions.forEach((tx) => {
+    sigs.push(getSignature(tx))
+  })
+  console.log(`Signed transactions: ${sigs}`)
 }

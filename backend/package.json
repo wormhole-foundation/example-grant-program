@@ -16,6 +16,7 @@
     "@aws-sdk/client-secrets-manager": "^3.535.0",
     "@coral-xyz/anchor": "^0.29.0",
     "@solana/web3.js": "^1.91.1",
+    "bs58": "^5.0.0",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
