@@ -3,6 +3,7 @@ import { getDispenserKey } from '../utils/secrets'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getDiscordUser, signDiscordDigest } from '../utils/discord'
 import { HandlerError } from '../utils/errors'
+import { asJsonResponse } from '../utils/response'
 
 export interface DiscordSignedDigestParams {
   publicKey: string
@@ -28,27 +29,18 @@ export const signDiscordMessage = async (
 
     const signedDigest = signDiscordDigest(discordId, claimant, dispenserGuard)
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        signature: Buffer.from(signedDigest.signature).toString('hex'),
-        publicKey: Buffer.from(signedDigest.publicKey).toString('hex'), // The dispenser guard's public key
-        fullMessage: Buffer.from(signedDigest.fullMessage).toString('hex')
-      })
-    }
+    return asJsonResponse(200, {
+      signature: Buffer.from(signedDigest.signature).toString('hex'),
+      publicKey: Buffer.from(signedDigest.publicKey).toString('hex'), // The dispenser guard's public key
+      fullMessage: Buffer.from(signedDigest.fullMessage).toString('hex')
+    })
   } catch (err: HandlerError | unknown) {
     console.error('Error generating signed discord digest', err)
     if (err instanceof HandlerError) {
-      return {
-        statusCode: err.statusCode,
-        body: JSON.stringify(err.body)
-      }
+      return asJsonResponse(err.statusCode, err.body)
     }
 
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' })
-    }
+    return asJsonResponse(500, { error: 'Internal server error' })
   }
 }
 
