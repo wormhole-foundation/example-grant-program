@@ -1,42 +1,14 @@
 name: Frontend Tests
 on:
   pull_request:
+    paths: [frontend/**]
   push:
     branches: [main]
+    paths: [frontend/**]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    container:
-      image: jetprotocol/builder:rust-1.68.0-node-18.15.0-solana-1.14.17-anchor-0.27.0-1
-      env:
-        PGUSER: ${{ env.PGUSER }}
-        PGPASSWORD: ${{ env.PGPASSWORD }}
-        PGDATABASE: ${{ env.PGDATABASE }}
-        PROGRAM_ID: ${{ env.PROGRAM_ID }}
-        PGHOST: postgres
-        ENDPOINT: http://localhost:8899
-
-    env:
-      PGUSER: myuser
-      PGPASSWORD: mypass
-      PGDATABASE: mydb
-      PROGRAM_ID: Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS
-
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: ${{ env.PGUSER }}
-          POSTGRES_PASSWORD: ${{ env.PGPASSWORD }}
-          POSTGRES_DB: ${{ env.PGDATABASE }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     defaults:
       run:

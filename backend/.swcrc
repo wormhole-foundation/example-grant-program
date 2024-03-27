@@ -1,0 +1,14 @@
+{
+  "minify": false,
+  "jsc": {
+    "target": "es2016",
+    "parser": {
+      "syntax": "typescript",
+      "preserveAllComments": false
+    }
+  },
+  "module": {
+    "type": "commonjs",
+    "strict": true
+  }
+}

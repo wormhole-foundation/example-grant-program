@@ -20,7 +20,7 @@ export default function VerifyEligibilityPage() {
           Please connect all wallets based on the networks you chose in the previous step. Feel free to go back and adjust any selections if necessary.
         </p>
         <p>
-          Note that you won't be able to move on to the next step and claim your W unless all your wallets or Discord account are successfully connected.
+          {`Note that you won't be able to move on to the next step and claim your W unless all your wallets or Discord account are successfully connected.`}
         </p>
 
         <div className="mt-12 flex justify-end gap-4">
