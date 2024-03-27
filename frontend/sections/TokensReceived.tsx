@@ -45,13 +45,11 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
             </span>
           </h3>
           <p className="mb-6">
-            You can stake your PYTH tokens to participate in Pyth Network’s
-            governance, secure the network, and vote on important decisions.
+            Thank you for participating in this Wormhole airdrop. 
           </p>
 
           <p>
-            Follow us on our socials to stay updated on grant opportunities,
-            developer updates, and community events!
+            Stay in the loop with Wormhole updates by subscribing to the newsletter. 
           </p>
 
           <div

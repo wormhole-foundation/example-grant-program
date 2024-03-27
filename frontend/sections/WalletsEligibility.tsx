@@ -133,7 +133,7 @@ function TableRow({ ecosystem }: TableRowProps) {
       } else {
         if (eligibility?.claimInfo === undefined) {
           return [
-            'This Discord account is unfortunately not eligible for an allocation. You can click on your Discord username to disconnect and connect to another Discord account.',
+            'This Discord account does not qualify for an allocation. To switch accounts, click on your Discord username to disconnect and then reconnect using a different account.',
             <NotVerified key={null} />,
           ]
         } else {
