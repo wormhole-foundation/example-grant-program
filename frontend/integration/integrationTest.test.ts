@@ -522,6 +522,55 @@ describe('integration test', () => {
       ).toBeTruthy()
     }, 40000)
 
+    it('submits an algorand claim', async () => {
+      const wallet = testWallets.algorand[0]
+      const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
+        'algorand',
+        wallet.address()
+      ))!
+      const signedMessage = await wallet.signMessage(
+        tokenDispenserProvider.generateAuthorizationPayload()
+      )
+
+      await Promise.all(
+        await tokenDispenserProvider.submitClaims(
+          [
+            {
+              claimInfo,
+              proofOfInclusion,
+              signedMessage,
+            },
+          ],
+          mockfetchFundTransaction
+        )
+      )
+
+      expect(
+        await tokenDispenserProvider.isClaimAlreadySubmitted(claimInfo)
+      ).toBeTruthy()
+
+      const claimantFundPubkey =
+        await tokenDispenserProvider.getClaimantFundAddress()
+
+      const claimantFund = await mint.getAccountInfo(claimantFundPubkey)
+
+      expect(
+        claimantFund.amount.eq(
+          new anchor.BN(
+            3000000 +
+              7000000 +
+              8000000 +
+              9000000 +
+              6000000 +
+              1000000 +
+              2000000 +
+              4000000 +
+              5000000
+          )
+        )
+      ).toBeTruthy()
+    }, 40000)
+
     it('fails to submit a duplicate claim', async () => {
       const wallet = testWallets.sui[0]
       const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
