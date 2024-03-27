@@ -44,7 +44,7 @@ export const LogInWithSolana = ({ onBack, onProceed }: StepProps) => {
       </BoxTitle>
       <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
         <p className="mb-6">
-          W is native to the Solana network. To receive your W, a Solana wallet
+          W is native to Solana. To receive your W, a Solana wallet
           is required. The W you claim will be sent to the Solana wallet you
           link during this process.
         </p>
