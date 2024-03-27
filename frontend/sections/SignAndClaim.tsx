@@ -22,6 +22,7 @@ import { SignForEligibleWallets } from './SignForEligibleWallets'
 import { StepProps } from './common'
 import { PathnameStore } from 'utils/store'
 import { BoxTitle } from '@components/BoxTitle'
+import { TransactionError } from '@solana/web3.js'
 
 // Following the convention,
 // If error is:
@@ -102,7 +103,7 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     setEcosystemsClaimState(stateObj)
 
     let totalCoinsClaimed = new BN(0)
-    let broadcastPromises
+    let broadcastPromises: Promise<TransactionError | null>[][]
     try {
       broadcastPromises = await tokenDispenser?.submitClaims(
         claims.map((claim) => ({
@@ -139,7 +140,7 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     const allPromises = broadcastPromises.map(
       async (broadcastPromise, index) => {
         await Promise.race([
-          broadcastPromise,
+          Promise.race(broadcastPromise),
           new Promise((_, reject) => {
             setTimeout(() => reject(), 10000)
           }),

@@ -59,23 +59,32 @@ export class TokenDispenserProvider {
   tokenDispenserProgram: anchor.Program<TokenDispenser>
   configPda: [anchor.web3.PublicKey, bump]
   config: IdlAccounts<TokenDispenser>['Config'] | undefined
+  providers: anchor.Provider[]
 
   constructor(
-    endpoint: string,
+    endpoints: string[],
     wallet: Wallet,
     programId: anchor.web3.PublicKey,
     confirmOpts?: anchor.web3.ConfirmOptions
   ) {
     confirmOpts = confirmOpts ?? anchor.AnchorProvider.defaultOptions()
-    const provider = new anchor.AnchorProvider(
-      new anchor.web3.Connection(endpoint, confirmOpts.preflightCommitment),
-      wallet,
-      confirmOpts
+
+    this.providers = endpoints.map(
+      (endpoint) =>
+        new anchor.AnchorProvider(
+          new anchor.web3.Connection(
+            endpoint,
+            confirmOpts?.preflightCommitment
+          ),
+          wallet,
+          confirmOpts ?? anchor.AnchorProvider.defaultOptions()
+        )
     )
+
     this.tokenDispenserProgram = new Program(
       tokenDispenser as Idl,
       programId,
-      provider
+      this.providers[0]
     ) as unknown as Program<TokenDispenser>
 
     this.configPda = anchor.web3.PublicKey.findProgramAddressSync(
@@ -237,8 +246,8 @@ export class TokenDispenserProvider {
     getPayersForClaim: (
       claimInfo: ClaimInfo
     ) => [anchor.web3.PublicKey, anchor.web3.PublicKey] = getClaimPayers // This argument is only used for testing where we can't call the API
-  ): Promise<Promise<TransactionError | null>[]> {
-    const txs: TransactionWithPayers[] = []
+  ): Promise<Promise<TransactionError | null>[][]> {
+    const txs: VersionedTransaction[] = []
 
     try {
       for (const claim of claims) {
@@ -280,7 +289,7 @@ export class TokenDispenserProvider {
       }
     )
 
-    let txsSignedTwice
+    let txsSignedTwice: VersionedTransaction[]
     try {
       txsSignedTwice = await fetchFundTransactionFunction(
         txsSignedOnceWithPayers
@@ -291,25 +300,27 @@ export class TokenDispenserProvider {
     }
 
     // send the txns. Associated token account will be created if needed.
-    const sendTxs = txsSignedTwice.map(async (signedTx) => {
-      try {
-        const signature = await this.connection.sendTransaction(signedTx, {
-          skipPreflight: true,
-        })
-        const latestBlockHash = await this.connection.getLatestBlockhash()
-        const result = await this.connection.confirmTransaction(
-          {
-            signature,
-            blockhash: latestBlockHash.blockhash,
-            lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-          },
-          'confirmed'
-        )
+    const sendTxs = this.providers.map(({ connection }) => {
+      return txsSignedTwice.map(async (signedTx) => {
+        try {
+          const signature = await connection.sendTransaction(signedTx, {
+            skipPreflight: true,
+          })
+          const latestBlockHash = await connection.getLatestBlockhash()
+          const result = await connection.confirmTransaction(
+            {
+              signature,
+              blockhash: latestBlockHash.blockhash,
+              lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+            },
+            'confirmed'
+          )
 
-        return result.value.err
-      } catch {
-        throw new Error(ERROR_RPC_CONNECTION)
-      }
+          return result.value.err
+        } catch {
+          throw new Error(ERROR_RPC_CONNECTION)
+        }
+      })
     })
 
     return sendTxs
