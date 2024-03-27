@@ -49,7 +49,8 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
           </p>
 
           <p>
-            Stay in the loop with Wormhole updates by subscribing to the newsletter.
+            Stay in the loop with Wormhole updates by subscribing to the
+            newsletter.
           </p>
 
           <div
