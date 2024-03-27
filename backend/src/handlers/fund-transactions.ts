@@ -7,6 +7,7 @@ import {
 } from '../utils/fund-transactions'
 import { Keypair } from '@solana/web3.js'
 import { HandlerError } from '../utils/errors'
+import { asJsonResponse } from '../utils/response'
 
 export type FundTransactionRequest = Uint8Array[]
 
@@ -22,35 +23,24 @@ export const fundTransactions = async (
     const isTransactionsValid = await checkTransactions(transactions)
 
     if (!isTransactionsValid) {
-      return {
-        statusCode: 403,
-        body: JSON.stringify({ error: 'Unauthorized transactions' })
-      }
+      return asJsonResponse(403, { error: 'Unauthorized transactions' })
     }
 
     const wallet = await loadFunderWallet()
 
     const signedTransactions = await wallet.signAllTransactions(transactions)
-    return {
-      statusCode: 200,
-      body: JSON.stringify(
-        signedTransactions.map((tx) => Buffer.from(tx.serialize()))
-      )
-    }
+    return asJsonResponse(
+      200,
+      signedTransactions.map((tx) => Buffer.from(tx.serialize()))
+    )
   } catch (err: HandlerError | unknown) {
     console.error('Error signing transactions', err)
 
     if (err instanceof HandlerError) {
-      return {
-        statusCode: err.statusCode,
-        body: JSON.stringify(err.body)
-      }
+      return asJsonResponse(err.statusCode, err.body)
     }
 
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' })
-    }
+    return asJsonResponse(500, { error: 'Internal server error' })
   }
 }
 
