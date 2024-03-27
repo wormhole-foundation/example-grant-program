@@ -8,8 +8,10 @@ export function useTokenDispenserProvider() {
   const anchorWallet = useAnchorWallet()
   return useMemo(() => {
     if (anchorWallet === undefined) return undefined
+
+    const endpoints = process.env.ENDPOINT!
     return new CTokenDispenserProvider(
-      process.env.ENDPOINT!,
+      Array.isArray(endpoints) ? endpoints : [endpoints],
       anchorWallet,
       new web3.PublicKey(process.env.PROGRAM_ID!)
     )

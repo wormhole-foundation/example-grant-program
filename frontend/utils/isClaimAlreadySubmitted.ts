@@ -7,7 +7,9 @@ import { TokenDispenserProvider } from 'claim_sdk/solana'
 // Tokendispenser with randomly generated keypair. Since we don't need a
 // specific one to check if claims were already submitted
 const tokenDispenser = new TokenDispenserProvider(
-  process.env.ENDPOINT!,
+  Array.isArray(process.env.ENDPOINT)
+    ? process.env.ENDPOINT!
+    : [process.env.ENDPOINT!],
   new NodeWallet(new Keypair()),
   new web3.PublicKey(process.env.PROGRAM_ID!)
 )

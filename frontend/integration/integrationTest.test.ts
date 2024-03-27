@@ -83,14 +83,14 @@ describe('integration test', () => {
     }
 
     const deployerTokenDispenserProvider = new TokenDispenserProvider(
-      endpoint,
+      [endpoint],
       funderWallet,
       tokenDispenserPid,
       confirmOpts
     )
 
     const tokenDispenserProvider = new TokenDispenserProvider(
-      endpoint,
+      [endpoint],
       wallet,
       tokenDispenserPid,
       confirmOpts
