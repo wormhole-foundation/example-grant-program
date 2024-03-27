@@ -2,7 +2,6 @@ import { afterEach, beforeAll, describe, expect, test } from '@jest/globals'
 import { setupServer } from 'msw/node'
 import { HttpResponse, http } from 'msw'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { ethers } from 'ethers'
 import {
   ComputeBudgetProgram,
   Connection,
@@ -325,10 +324,7 @@ const createSystemProgramInstruction = () => {
 
 const createSecp256k1ProgramInstruction = () => {
   return Secp256k1Program.createInstructionWithPrivateKey({
-    privateKey: Buffer.from(
-      ethers.Wallet.createRandom().privateKey.slice(2),
-      'hex'
-    ),
+    privateKey: Keypair.generate().secretKey.slice(0, 32),
     message: Buffer.from('hello')
   })
 }
