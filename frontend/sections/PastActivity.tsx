@@ -36,7 +36,8 @@ export const PastActivity = ({ onBack, onProceed }: StepProps) => {
         <BoxTitle> {`Activity Review`}</BoxTitle>
         <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
           <p className="mb-6">
-            Please tick the appropriate boxes below that reflect your wallet usage and participation in the Wormhole ecosystem.
+            Please tick the appropriate boxes below that reflect your wallet
+            usage and participation in the Wormhole ecosystem.
           </p>
 
           <p className="mb-6 font-light">Active on:</p>
