@@ -9,6 +9,7 @@ import Twitter from '@images/twitter.inline.svg'
 import Link from 'next/link'
 import { resetLocalState } from 'utils/store'
 import { BoxTitle } from '@components/BoxTitle'
+import Subscribe from '@components/Subscribe'
 
 export type TokensReceivedProps = {
   totalCoinsClaimed: string | null
@@ -104,6 +105,9 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
             >
               explore governance
             </Button>
+          </div>
+          <div className="mt-6 border border-light-25 bg-black bg-opacity-30 px-8 pt-8 pb-1">
+            <Subscribe />
           </div>
         </div>
       </Box>

@@ -12,7 +12,7 @@ export function Disclaimer({ onAgree, showModal }: DisclaimerProps) {
   const [agreed, setAgreed] = useState(false)
   return showModal ? (
     <ModalWrapper>
-      <div className="relative max-h-[80vh] w-full max-w-[588px] border border-light-25 bg-black bg-opacity-50">
+      <div className="relative  min-h-[480px] w-full max-w-[588px] border border-light-25 bg-black bg-opacity-50">
         <h3 className="disclaimer-title">
           {'Supplemental Token Airdrop Terms'}
         </h3>
