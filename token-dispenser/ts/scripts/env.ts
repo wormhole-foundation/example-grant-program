@@ -1,8 +1,4 @@
-import {
-  Connection,
-  Keypair,
-  Commitment,
-} from "@solana/web3.js";
+import { Connection, Keypair, Commitment } from "@solana/web3.js";
 import { SolanaLedgerSigner } from "@xlabs-xyz/ledger-signer-solana";
 
 if (!process.env.LEDGER_DERIVATION_PATH) {
@@ -11,10 +7,10 @@ if (!process.env.LEDGER_DERIVATION_PATH) {
 
 const derivationPath = process.env.LEDGER_DERIVATION_PATH! as string;
 
-let signer
+let signer;
 export async function getSigner(): Promise<SolanaLedgerSigner> {
   if (!signer) {
-    signer = await SolanaLedgerSigner.create(derivationPath)
+    signer = await SolanaLedgerSigner.create(derivationPath);
   }
 
   return signer;
@@ -28,8 +24,10 @@ export function getEnv(key: string): string {
   return process.env[key]!;
 }
 
-export const rpcUrl = process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
+export const rpcUrl =
+  process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
 
-export const connectionCommitmentLevel = (process.env.SOLANA_COMMITMENT || "confirmed") as Commitment;
+export const connectionCommitmentLevel = (process.env.SOLANA_COMMITMENT ||
+  "confirmed") as Commitment;
 
 export const connection = new Connection(rpcUrl, connectionCommitmentLevel);

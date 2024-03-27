@@ -1,16 +1,19 @@
-import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMint2Instruction } from "@solana/spl-token";
 import {
-  SystemProgram,
-  Keypair,
-  PublicKey,
-} from "@solana/web3.js";
+  MINT_SIZE,
+  TOKEN_PROGRAM_ID,
+  createInitializeMint2Instruction,
+} from "@solana/spl-token";
+import { SystemProgram, Keypair, PublicKey } from "@solana/web3.js";
 
 import { connection, getSigner } from "./env";
 import { ledgerSignAndSend } from "./helpers";
 
 const mintKeypair = Keypair.generate();
 
-console.log("Creating mint account with keypair:", mintKeypair.publicKey.toBase58());
+console.log(
+  "Creating mint account with keypair:",
+  mintKeypair.publicKey.toBase58()
+);
 
 (async () => {
   const tokenConfig = {
@@ -27,7 +30,7 @@ console.log("Creating mint account with keypair:", mintKeypair.publicKey.toBase5
     newAccountPubkey: mintKeypair.publicKey,
     space: MINT_SIZE,
     lamports: await connection.getMinimumBalanceForRentExemption(MINT_SIZE),
-    programId: TOKEN_PROGRAM_ID
+    programId: TOKEN_PROGRAM_ID,
   });
 
   const initMintIx = createInitializeMint2Instruction(
@@ -35,9 +38,8 @@ console.log("Creating mint account with keypair:", mintKeypair.publicKey.toBase5
     tokenConfig.decimals,
     signerPk,
     signerPk, //signerPk,
-    TOKEN_PROGRAM_ID,
+    TOKEN_PROGRAM_ID
   );
 
   return ledgerSignAndSend([createAccountIx, initMintIx], [mintKeypair]);
 })();
-

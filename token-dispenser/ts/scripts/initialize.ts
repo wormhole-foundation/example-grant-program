@@ -1,19 +1,27 @@
-import { PublicKey, SystemProgram, AddressLookupTableProgram, SYSVAR_INSTRUCTIONS_PUBKEY } from "@solana/web3.js";
+import {
+  PublicKey,
+  SystemProgram,
+  AddressLookupTableProgram,
+  SYSVAR_INSTRUCTIONS_PUBKEY,
+} from "@solana/web3.js";
 
 import { TokenDispenserSdk } from "../sdk";
-import { ledgerSignAndSend, ledgerSignAndSendV0 } from './helpers';
-import { connection, getSigner, getEnv } from './env';
-import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { ledgerSignAndSend, ledgerSignAndSendV0 } from "./helpers";
+import { connection, getSigner, getEnv } from "./env";
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 
 type InitConfig = {
   // Account Addresses (base58 encoded):
-  tokenDispenser: string,
-  mint: string,
-  treasury: string,
-  dispenserGuard: string,
-  funder: string,
-  merkleRoot: Buffer,
-  maxTransfer: bigint,
+  tokenDispenser: string;
+  mint: string;
+  treasury: string;
+  dispenserGuard: string;
+  funder: string;
+  merkleRoot: Buffer;
+  maxTransfer: bigint;
 };
 
 (async () => {
@@ -40,32 +48,38 @@ type InitConfig = {
   const funder = new PublicKey(config.funder);
   const dispenserGuard = new PublicKey(config.dispenserGuard);
 
-  const [createAddressLookupTableIx, lookupTable] = AddressLookupTableProgram.createLookupTable({
-    payer: signerPk,
-    authority: signerPk,
-    recentSlot: await connection.getSlot(),
-  });
+  const [createAddressLookupTableIx, lookupTable] =
+    AddressLookupTableProgram.createLookupTable({
+      payer: signerPk,
+      authority: signerPk,
+      recentSlot: await connection.getSlot(),
+    });
 
   console.log("Lookup Table: ", lookupTable.toBase58());
   console.log("Config PDA: ", configPda.toBase58());
 
-  const extendAddressLooupTableIx = AddressLookupTableProgram.extendLookupTable({
-    payer: signerPk,
-    authority: signerPk,
-    lookupTable,
-    addresses: [
-      configPda,
-      mint,
-      treasury,
-      TOKEN_PROGRAM_ID,
-      SystemProgram.programId,
-      SYSVAR_INSTRUCTIONS_PUBKEY,
-      ASSOCIATED_TOKEN_PROGRAM_ID,
-      funder
-    ],
-  });
+  const extendAddressLooupTableIx = AddressLookupTableProgram.extendLookupTable(
+    {
+      payer: signerPk,
+      authority: signerPk,
+      lookupTable,
+      addresses: [
+        configPda,
+        mint,
+        treasury,
+        TOKEN_PROGRAM_ID,
+        SystemProgram.programId,
+        SYSVAR_INSTRUCTIONS_PUBKEY,
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        funder,
+      ],
+    }
+  );
 
-  await ledgerSignAndSendV0([createAddressLookupTableIx, extendAddressLooupTableIx], []);
+  await ledgerSignAndSendV0(
+    [createAddressLookupTableIx, extendAddressLooupTableIx],
+    []
+  );
 
   const initializeIx = await tokenDispenser.createInitializeInstruction({
     payer: signerPk,
@@ -82,4 +96,3 @@ type InitConfig = {
 
   console.log("Dispenser initialized. Signature: ", result);
 })();
-
