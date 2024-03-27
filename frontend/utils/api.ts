@@ -116,8 +116,8 @@ export async function fetchDiscordSignedMessage(
 ): Promise<SignedMessage | undefined> {
   const response = await fetch(getDiscordSignedMessageRoute(claimant), {
     headers: {
-      'authorization': `Bearer ${accessToken}`
-    }
+      authorization: `Bearer ${accessToken}`,
+    },
   })
   return handleDiscordSignedMessageResponse(
     response.status,
