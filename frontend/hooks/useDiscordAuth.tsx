@@ -142,5 +142,5 @@ export default function useDiscordAuth() {
   // Fetch user info on getDiscordUserInfo change, that should mutate on token or isAuthenticated change
   useEffect(() => getDiscordUserInfo(), [getDiscordUserInfo])
 
-  return { authenticate, clear, isConnecting, isAuthenticated, profile }
+  return { authenticate, clear, isConnecting, isAuthenticated, profile, token }
 }
