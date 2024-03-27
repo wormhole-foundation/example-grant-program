@@ -45,10 +45,6 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
               )}
             </span>
           </h3>
-          <p className="mb-6">
-            You can stake your PYTH tokens to participate in Pyth Network’s
-            governance, secure the network, and vote on important decisions.
-          </p>
 
           <p>
             Follow us on our socials to stay updated on grant opportunities,
@@ -62,7 +58,7 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
             <div className="flex gap-2">
               <Link
                 className="btn-square "
-                href={'https://x.com/PythNetwork'}
+                href={'https://twitter.com/wormholecrypto'}
                 target="_blank"
               >
                 <span className="relative inline-flex items-center whitespace-nowrap">
@@ -71,7 +67,7 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
               </Link>
               <Link
                 className="btn-square "
-                href={'https://t.me/Pyth_Network'}
+                href={'https://t.me/wormholecrypto'}
                 target="_blank"
               >
                 <span className="relative inline-flex items-center whitespace-nowrap">
@@ -80,7 +76,7 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
               </Link>
               <Link
                 className="btn-square "
-                href={'https://discord.gg/PythNetwork'}
+                href={'https://discord.gg/wormholecrypto'}
                 target="_blank"
               >
                 <span className="relative inline-flex items-center whitespace-nowrap">
@@ -89,7 +85,7 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
               </Link>
               <Link
                 className="btn-square "
-                href={'https://www.linkedin.com/company/pyth-network'}
+                href={'https://www.linkedin.com/company/wormhole-protocol/'}
                 target="_blank"
               >
                 <span className="relative inline-flex items-center whitespace-nowrap">
@@ -97,14 +93,6 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
                 </span>
               </Link>
             </div>
-            <Button
-              onClick={() => {
-                window.location.href = 'https://staking.pyth.network/'
-              }}
-              type={'primary'}
-            >
-              explore governance
-            </Button>
           </div>
           <div className="mt-6 border border-light-25 bg-black bg-opacity-30 px-8 pt-8 pb-1">
             <Subscribe />
