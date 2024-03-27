@@ -51,49 +51,6 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
             developer updates, and community events!
           </p>
 
-          <div
-            className="space-between mt-12 flex flex-wrap items-center justify-between
-           gap-4"
-          >
-            <div className="flex gap-2">
-              <Link
-                className="btn-square "
-                href={'https://twitter.com/wormholecrypto'}
-                target="_blank"
-              >
-                <span className="relative inline-flex items-center whitespace-nowrap">
-                  <Twitter />
-                </span>
-              </Link>
-              <Link
-                className="btn-square "
-                href={'https://t.me/wormholecrypto'}
-                target="_blank"
-              >
-                <span className="relative inline-flex items-center whitespace-nowrap">
-                  <Telegram />
-                </span>
-              </Link>
-              <Link
-                className="btn-square "
-                href={'https://discord.gg/wormholecrypto'}
-                target="_blank"
-              >
-                <span className="relative inline-flex items-center whitespace-nowrap">
-                  <Discord />
-                </span>
-              </Link>
-              <Link
-                className="btn-square "
-                href={'https://www.linkedin.com/company/wormhole-protocol/'}
-                target="_blank"
-              >
-                <span className="relative inline-flex items-center whitespace-nowrap">
-                  <Linkedin />
-                </span>
-              </Link>
-            </div>
-          </div>
           <div className="mt-6 border border-light-25 bg-black bg-opacity-30 px-8 pt-8 pb-1">
             <Subscribe />
           </div>

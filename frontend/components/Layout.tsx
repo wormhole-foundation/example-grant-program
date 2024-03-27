@@ -134,6 +134,13 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
             <SocialIcons icon="twitter" width={21} height={22} />
           </Link>
           <Link
+            href="https://discord.gg/wormholecrypto"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <SocialIcons icon="discord" width={28} height={21} />
+          </Link>
+          <Link
             href="https://t.me/wormholecrypto"
             target="_blank"
             rel="noreferrer"
