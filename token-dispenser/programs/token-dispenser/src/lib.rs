@@ -169,6 +169,7 @@ pub mod token_dispenser {
 
         emit!(ClaimEvent {
             remaining_balance: treasury.amount,
+            treasury: *ctx.accounts.treasury.key,
             claimant: *ctx.accounts.claimant.key,
             claim_info,
         });
@@ -668,6 +669,7 @@ impl crate::accounts::Claim {
 
 #[event]
 pub struct ClaimEvent {
+    pub treasury:          Pubkey,
     pub remaining_balance: u64,
     pub claimant:          Pubkey,
     pub claim_info:        ClaimInfo,
