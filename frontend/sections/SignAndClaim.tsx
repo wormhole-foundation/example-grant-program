@@ -69,13 +69,21 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     onProceed(totalCoinsClaimed())
   }, [onProceed, totalCoinsClaimed])
 
-  const getSuccessfulProviderSubmit = useCallback(async (ecosystemPromises: Promise<TransactionError | null>[]): Promise<TransactionError | null> => {
-    const resolvedProviderPromises = await Promise.all(ecosystemPromises);
+  const getSuccessfulProviderSubmit = useCallback(
+    async (
+      ecosystemPromises: Promise<TransactionError | null>[]
+    ): Promise<TransactionError | null> => {
+      const resolvedProviderPromises = await Promise.all(ecosystemPromises)
 
-    // find the first rpc provider submit that is successful (i.e. null error)
-    // or grab the first one if all failed
-    return resolvedProviderPromises.find(error => error === null) || resolvedProviderPromises[0];
-  }, [])
+      // find the first rpc provider submit that is successful (i.e. null error)
+      // or grab the first one if all failed
+      return (
+        resolvedProviderPromises.find((error) => error === null) ||
+        resolvedProviderPromises[0]
+      )
+    },
+    []
+  )
 
   const submitTxs = useCallback(async () => {
     window.onbeforeunload = (e) => {
