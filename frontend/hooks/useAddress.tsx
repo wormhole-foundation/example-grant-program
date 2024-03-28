@@ -1,10 +1,10 @@
 import { useWallet as useAptosWallet } from '@aptos-labs/wallet-adapter-react'
 import { ChainName } from '@components/wallets/Cosmos'
-import { useChainWallet } from '@cosmos-kit/react-lite'
 import { useWalletKit } from '@mysten/wallet-kit'
 import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react'
 import { useAccount } from 'wagmi'
 import { useWallet as useAlgorandWallet } from '@components/Ecosystem/AlgorandProvider'
+import { useChainWallet } from './useChainWallet'
 
 const PREFIX_0X = '0x'
 
@@ -17,12 +17,8 @@ export function useAptosAddress(): string | undefined {
   }
 }
 
-export function useCosmosAddress(
-  chainName: ChainName,
-  walletName = 'keplr-extension'
-): string | undefined {
-  const { address } = useChainWallet(chainName, walletName)
-  return address
+export function useCosmosAddress(chainName: ChainName): string | undefined {
+  return useChainWallet(chainName).address
 }
 
 export function useEVMAddress(): string | undefined {
