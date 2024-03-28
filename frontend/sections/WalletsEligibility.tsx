@@ -189,7 +189,7 @@ function TableRow({ ecosystem }: TableRowProps) {
     <tr className={'border-b border-light-35'}>
       <td
         className={classNames(
-          'w-full py-2 pl-4 pr-2 sm:pr-4 sm:pl-10',
+          'w-full py-2 pl-4 pr-2 sm:pl-10 sm:pr-4',
           rowDisabled ? 'opacity-25' : ''
         )}
       >

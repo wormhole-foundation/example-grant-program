@@ -134,7 +134,7 @@ export function Disclaimer({ onAgree, showModal }: DisclaimerProps) {
             Terms.{' '}
           </p>
         </div>
-        <div className="[&>button]:w-[200px] flex min-h-fit flex-col items-stretch gap-4 py-5 px-6 text-sm md:px-10">
+        <div className="[&>button]:w-[200px] flex min-h-fit flex-col items-stretch gap-4 px-6 py-5 text-sm md:px-10">
           <div
             className="flex items-center justify-center gap-2 hover:cursor-pointer"
             onClick={() => setAgreed((agreed) => !agreed)}
@@ -143,7 +143,7 @@ export function Disclaimer({ onAgree, showModal }: DisclaimerProps) {
               className={classNames(
                 'relative h-4 w-4 border',
                 agreed
-                  ? 'before:absolute before:top-1/2 before:left-1/2 before:h-2.5 before:w-2.5 before:-translate-y-1/2 before:-translate-x-1/2 before:bg-light'
+                  ? 'before:absolute before:left-1/2 before:top-1/2 before:h-2.5 before:w-2.5 before:-translate-x-1/2 before:-translate-y-1/2 before:bg-light'
                   : ''
               )}
             ></span>
