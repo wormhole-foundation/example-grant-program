@@ -51,7 +51,6 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
       if (ix.data[0] === SET_COMPUTE_UNIT_PRICE_DISCRIMINANT) continue
 
       if (ix.data[0] !== SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT) {
-        console.error('Compute unit limit discriminant does not match')
         return false
       }
     }
@@ -90,7 +89,6 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitPrice(
           legacTransactionInstruction
         )
         if (priorityFee.microLamports >= MAX_COMPUTE_UNIT_PRICE) {
-          console.error('Priority fee set is too high')
           return false
         }
       }
@@ -110,7 +108,6 @@ export function checkProgramAppears(
       return true
     }
   }
-  console.error('Token dispenser program not found in transaction')
   return false
 }
 
@@ -140,11 +137,7 @@ export function countPrecompiledSignatures(
 export function checkNumberOfSignatures(
   transaction: VersionedTransaction
 ): boolean {
-  const numberOfSignatures = countTotalSignatures(transaction)
-  if (numberOfSignatures > 3) {
-    console.error('Transaction has too many signatures')
-  }
-  return numberOfSignatures <= 3
+  return countTotalSignatures(transaction) <= 3
 }
 
 export function checkTransaction(
