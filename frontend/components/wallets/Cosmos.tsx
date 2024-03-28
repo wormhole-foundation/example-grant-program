@@ -7,7 +7,11 @@ import { MainWalletBase } from '@cosmos-kit/core'
 import { WalletButton, WalletConnectedButton } from './WalletButton'
 
 import keplr from '@images/keplr.svg'
-import { ChainWalletProvider, useChainWallet, WALLET_NAME } from 'hooks/useChainWallet'
+import {
+  ChainWalletProvider,
+  useChainWallet,
+  WALLET_NAME,
+} from 'hooks/useChainWallet'
 
 export type ChainName = 'osmosis' | 'terra'
 
@@ -26,9 +30,7 @@ export function CosmosWalletProvider({
         [...keplrWallets, ...compassWallets] as unknown as MainWalletBase[]
       }
     >
-      <ChainWalletProvider>
-        {children}
-      </ChainWalletProvider>
+      <ChainWalletProvider>{children}</ChainWalletProvider>
     </ChainProvider>
   )
 }
@@ -41,7 +43,7 @@ type CosmosWalletButtonProps = {
 export function CosmosWalletButton({
   chainName,
   disableOnConnect,
-  }: CosmosWalletButtonProps) {
+}: CosmosWalletButtonProps) {
   const {
     isWalletConnecting,
     isWalletConnected,

@@ -17,9 +17,7 @@ export function useAptosAddress(): string | undefined {
   }
 }
 
-export function useCosmosAddress(
-  chainName: ChainName
-): string | undefined {
+export function useCosmosAddress(chainName: ChainName): string | undefined {
   return useChainWallet(chainName).address
 }
 
