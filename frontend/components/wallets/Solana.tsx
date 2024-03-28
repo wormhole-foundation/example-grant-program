@@ -19,6 +19,7 @@ import { useMemo, ReactElement, ReactNode, useCallback, useEffect } from 'react'
 import { clusterApiUrl } from '@solana/web3.js'
 import { Adapter, WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import { Wallet, WalletButton, WalletConnectedButton } from './WalletButton'
+import config from '../../utils/config'
 
 export const PHANTOM_WALLET_ADAPTER = new PhantomWalletAdapter()
 export const BACKPACK_WALLET_ADAPTER = new BackpackWalletAdapter()
@@ -51,8 +52,7 @@ type SolanaWalletProviderProps = {
 export function SolanaWalletProvider({
   children,
 }: SolanaWalletProviderProps): ReactElement {
-  const endpoint =
-    process.env.ENDPOINT || clusterApiUrl(WalletAdapterNetwork.Devnet)
+  const endpoint = config.ENDPOINTS[0]
 
   const wallets = useSolanaWalletAdapters()
 

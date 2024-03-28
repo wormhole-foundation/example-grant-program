@@ -2,6 +2,7 @@ import { TokenDispenserProvider as CTokenDispenserProvider } from 'claim_sdk/sol
 import { useMemo } from 'react'
 import { useAnchorWallet } from '@solana/wallet-adapter-react'
 import { web3 } from '@coral-xyz/anchor'
+import config from '../utils/config'
 
 // It will return undefined if no Solana wallet is connected.
 export function useTokenDispenserProvider() {
@@ -9,9 +10,8 @@ export function useTokenDispenserProvider() {
   return useMemo(() => {
     if (anchorWallet === undefined) return undefined
 
-    const endpoints = process.env.ENDPOINT!
     return new CTokenDispenserProvider(
-      Array.isArray(endpoints) ? endpoints : [endpoints],
+      config.ENDPOINTS,
       anchorWallet,
       new web3.PublicKey(process.env.PROGRAM_ID!)
     )

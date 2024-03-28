@@ -3,13 +3,12 @@ import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { Keypair } from '@solana/web3.js'
 import { ClaimInfo } from 'claim_sdk/claim'
 import { TokenDispenserProvider } from 'claim_sdk/solana'
+import config from './config'
 
 // Tokendispenser with randomly generated keypair. Since we don't need a
 // specific one to check if claims were already submitted
 const tokenDispenser = new TokenDispenserProvider(
-  Array.isArray(process.env.ENDPOINT)
-    ? process.env.ENDPOINT!
-    : [process.env.ENDPOINT!],
+  config.ENDPOINTS,
   new NodeWallet(new Keypair()),
   new web3.PublicKey(process.env.PROGRAM_ID!)
 )
