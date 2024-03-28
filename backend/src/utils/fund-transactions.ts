@@ -78,7 +78,7 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
       )
     ) {
       /*
-        Below is a hack that was added to extract the priority fee from the transaction
+        Below is a hack that was added to extract the instructionType from the transaction
         ComputeBudgetInstruction.decodeInstructionType requires legacTransactionInstruction not
         MessageCompiledInstruction
       */
@@ -93,8 +93,10 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
         legacTransactionInstruction
       )
 
+      // Note: We check that instruction is not SetComputeUnitPrice because we want to make sure that
+      // that the instruction is SetComputeUnitLimit when we compare against the discriminant
       if (
-        instructonType === 'SetComputeUnitLimit' &&
+        instructonType !== 'SetComputeUnitPrice' &&
         ix.data[0] !== SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT
       ) {
         console.error('Compute unit limit discriminant does not match')

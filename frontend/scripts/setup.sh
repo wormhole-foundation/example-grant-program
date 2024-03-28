@@ -85,6 +85,7 @@ function stop_anchor_localnet() {
   if [ -n "$solana_pid" ]; then
     echo "killing solana-test-validator with pid: $solana_pid"
     kill -9 "$solana_pid"
+    pgrep -f 'solana-test-validator' | xargs kill -9
   else
     echo "No solana-test-validator process found to stop"
   fi
