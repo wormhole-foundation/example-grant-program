@@ -1,5 +1,5 @@
-import { ReactElement, ReactNode, useEffect } from 'react'
-import { ChainProvider, useChainWallet } from '@cosmos-kit/react-lite'
+import { ReactElement, useEffect } from 'react'
+import { ChainProvider } from '@cosmos-kit/react-lite'
 import { assets, chains } from '../../utils/chain-registry'
 import { wallets as keplrWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as compassWallets } from '@cosmos-kit/compass-extension'
@@ -7,13 +7,12 @@ import { MainWalletBase } from '@cosmos-kit/core'
 import { WalletButton, WalletConnectedButton } from './WalletButton'
 
 import keplr from '@images/keplr.svg'
-
-export const WALLET_NAME = 'keplr-extension'
+import { ChainWalletProvider, useChainWallet, WALLET_NAME } from 'hooks/useChainWallet'
 
 export type ChainName = 'osmosis' | 'terra'
 
 type CosmosWalletProviderProps = {
-  children: ReactNode
+  children: JSX.Element
 }
 
 export function CosmosWalletProvider({
@@ -27,7 +26,9 @@ export function CosmosWalletProvider({
         [...keplrWallets, ...compassWallets] as unknown as MainWalletBase[]
       }
     >
-      {children}
+      <ChainWalletProvider>
+        {children}
+      </ChainWalletProvider>
     </ChainProvider>
   )
 }
@@ -36,20 +37,20 @@ type CosmosWalletButtonProps = {
   chainName: ChainName
   disableOnConnect?: boolean
 }
+
 export function CosmosWalletButton({
   chainName,
   disableOnConnect,
-}: CosmosWalletButtonProps) {
-  const chainWalletContext = useChainWallet(chainName, WALLET_NAME)
+  }: CosmosWalletButtonProps) {
   const {
-    address,
     isWalletConnecting,
     isWalletConnected,
-    connect,
-    isWalletNotExist,
-    disconnect,
     isWalletDisconnected,
-  } = chainWalletContext
+    isWalletNotExist,
+    address,
+    connect,
+    disconnect,
+  } = useChainWallet(chainName, WALLET_NAME)
 
   // Keplr doesn't provide any autoconnect feature
   // Implementing it here
@@ -77,14 +78,13 @@ export function CosmosWalletButton({
 
   // fetch the eligibility and store it
   useEffect(() => {
-    ;(async () => {
-      if (isWalletConnected === true && address !== undefined) {
-        // Here, store locally that the wallet was connected
-        localStorage.setItem(getKeplrConnectionStatusKey(chainName), 'true')
-      }
-    })()
-    if (isWalletDisconnected)
+    if (isWalletConnected === true && address !== undefined) {
+      // Here, store locally that the wallet was connected
+      localStorage.setItem(getKeplrConnectionStatusKey(chainName), 'true')
+    }
+    if (isWalletDisconnected) {
       localStorage.setItem(getKeplrConnectionStatusKey(chainName), 'false')
+    }
   }, [isWalletConnected, address, chainName, isWalletDisconnected])
 
   return (
@@ -95,7 +95,7 @@ export function CosmosWalletButton({
       wallets={[{ name: 'keplr', icon: keplr, onSelect: connect }]}
       walletConnectedButton={(address: string) => (
         <WalletConnectedButton
-          onClick={disconnect}
+          onClick={() => disconnect()}
           address={address}
           disabled={disableOnConnect}
           icon={keplr}
