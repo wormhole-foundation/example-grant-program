@@ -11,6 +11,8 @@ import {
 import config from '../config'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
+const SET_COMPUTE_UNIT_PRICE_DISCRIMINANT = 3
+
 const MAX_COMPUTE_UNIT_PRICE = BigInt(1_000_000)
 
 export function deserializeTransactions(
@@ -77,26 +79,11 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
         ComputeBudgetProgram.programId
       )
     ) {
-      /*
-        Below is a hack that was added to extract the instructionType from the transaction
-        ComputeBudgetInstruction.decodeInstructionType requires legacTransactionInstruction not
-        MessageCompiledInstruction
-      */
-      const programId = ComputeBudgetProgram.programId
-      const legacTransactionInstruction = new TransactionInstruction({
-        keys: [],
-        programId,
-        data: Buffer.from(ix.data)
-      })
 
-      const instructonType = ComputeBudgetInstruction.decodeInstructionType(
-        legacTransactionInstruction
-      )
+      // Note: We continue processing tx data because setComputeUnitPrice is mandatory to be set
+      if (ix.data[0] === SET_COMPUTE_UNIT_PRICE_DISCRIMINANT) continue;
 
-      // Note: We check that instruction is not SetComputeUnitPrice because we want to make sure that
-      // that the instruction is SetComputeUnitLimit when we compare against the discriminant
       if (
-        instructonType !== 'SetComputeUnitPrice' &&
         ix.data[0] !== SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT
       ) {
         console.error('Compute unit limit discriminant does not match')
