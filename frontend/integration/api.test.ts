@@ -103,16 +103,22 @@ describe('test fund transaction api', () => {
       lamports: 1000,
     })
 
+    const computeBudgetUnitPrice = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: BigInt(1000),
+    })
+
     // API call
 
     const transactionOK1 = createTestTransactionFromInstructions([
       tokenDispenserInstruction,
+      computeBudgetUnitPrice,
     ])
 
     const transactionOK2 = createTestTransactionFromInstructions([
       tokenDispenserInstruction,
       secp256k1ProgramInstruction,
       computeBudgetSetComputeUnits,
+      computeBudgetUnitPrice,
     ])
 
     const transactionTooManySigs = createTestTransactionFromInstructions([
