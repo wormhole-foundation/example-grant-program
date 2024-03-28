@@ -342,6 +342,9 @@ export class TokenDispenserProvider {
     ixs.push(claim_ix)
     ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }))
 
+    const microLamports = 1 //TODO determine true value
+    ixs.push(ComputeBudgetProgram.setComputeUnitPrice({ microLamports }))
+
     const claimTx = new VersionedTransaction(
       new TransactionMessage({
         instructions: ixs,

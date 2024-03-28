@@ -1,7 +1,7 @@
 import { Keypair, PublicKey } from '@solana/web3.js'
 import { SignedMessage } from '../types'
 import nacl from 'tweetnacl'
-import IDL from '../token_dispenser.json'
+import IDL from '../token-dispenser.json'
 import * as anchor from '@coral-xyz/anchor'
 import config from '../config'
 

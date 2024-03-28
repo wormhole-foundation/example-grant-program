@@ -10,7 +10,7 @@ export function BackButton({ onBack, disabled, hideText }: BackButtonProps) {
   return (
     <Button onClick={onBack} type={'secondary'} disabled={disabled}>
       <Arrow className="origin-center rotate-180" />
-      {hideText ? '' : 'back'}
+      {hideText ? '' : 'Back'}
     </Button>
   )
 }
