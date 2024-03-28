@@ -5,10 +5,14 @@ import {
   Secp256k1Program,
   VersionedTransaction
 } from '@solana/web3.js'
+import IDL from '../token_dispenser.json'
+import * as anchor from '@coral-xyz/anchor'
 import config from '../config'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
 // const SET_COMPUTE_UNIT_PRICE = 1_000_000;
+
+const coder = new anchor.BorshCoder(IDL as any)
 
 export function deserializeTransactions(
   transactions: unknown
@@ -143,4 +147,26 @@ export async function checkTransactions(
   return transactions.every((tx) =>
     checkTransaction(tx, whitelist[0], whitelist)
   )
+}
+
+export function extractCallData(
+  versionedTx: VersionedTransaction,
+  programId: string
+) {
+  try {
+    const instruction = versionedTx.message.compiledInstructions.find(
+      (ix) =>
+        versionedTx.message.staticAccountKeys[ix.programIdIndex].toBase58() ===
+        programId
+    )
+
+    if (!instruction) {
+      return null
+    }
+
+    return coder.instruction.decode(Buffer.from(instruction.data), 'base58')
+  } catch (err) {
+    console.error('Failed to extract call data', err)
+    return null
+  }
 }
