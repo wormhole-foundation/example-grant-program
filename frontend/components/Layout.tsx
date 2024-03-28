@@ -44,7 +44,7 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
   return (
     <>
       <header className="absolute left-0 top-0 z-40 w-full px-1 transition-all lg:px-10">
-        <div className=" relative flex items-center justify-between  gap-2 px-4 py-3 lg:py-6 lg:px-10">
+        <div className=" relative flex items-center justify-between  gap-2 px-4 py-3 lg:px-10 lg:py-6">
           <Link
             href="/"
             className="flex items-center justify-center  border-light border-opacity-60 outline-none sm:h-12 sm:border sm:px-4 md:px-[29px]"
@@ -60,7 +60,7 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
           </div>
         </div>
       </header>
-      <div className="relative min-h-[calc(100vh-80px)] px-4 pt-20 pb-32 sm:pt-28 lg:pt-40">
+      <div className="relative min-h-[calc(100vh-80px)] px-4 pb-32 pt-20 sm:pt-28 lg:pt-40">
         <div className="mx-auto max-w-[997px] items-start justify-between gap-2.5 lg:flex">
           <ul
             className={classNames(
@@ -107,7 +107,7 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
       </div>
       <footer className="footer">
         <span>{year} Ⓒ Wormhole. All Rights Reserved.</span>
-        <span className="mb-2 flex-1 space-y-2 border-white border-opacity-50 py-2 text-center opacity-75 md:space-y-0 md:space-x-10 lg:mb-0 lg:ml-10 lg:border-l lg:py-0 lg:pl-10 lg:text-left">
+        <span className="mb-2 flex-1 space-y-2 border-white border-opacity-50 py-2 text-center opacity-75 md:space-x-10 md:space-y-0 lg:mb-0 lg:ml-10 lg:border-l lg:py-0 lg:pl-10 lg:text-left">
           <a
             target="_blank"
             rel="noreferrer"

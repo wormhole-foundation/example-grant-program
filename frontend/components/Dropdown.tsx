@@ -38,7 +38,7 @@ export function Dropdown({ icon, title, items }: DropdownProps) {
                   <Listbox.Option
                     key={index}
                     value={item.label}
-                    className="relative z-50 flex cursor-pointer items-center justify-center gap-2.5 py-3 px-8 hover:bg-darkGray3"
+                    className="relative z-50 flex cursor-pointer items-center justify-center gap-2.5 px-8 py-3 hover:bg-darkGray3"
                     onClick={item.onClick}
                   >
                     {item.icon}
