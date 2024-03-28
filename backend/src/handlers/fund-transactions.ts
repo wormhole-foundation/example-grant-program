@@ -3,12 +3,14 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getFundingKey } from '../utils/secrets'
 import {
   checkTransactions,
-  deserializeTransactions
+  deserializeTransactions,
+  extractCallData
 } from '../utils/fund-transactions'
 import { Keypair, VersionedTransaction } from '@solana/web3.js'
 import bs58 from 'bs58'
 import { HandlerError } from '../utils/errors'
 import { asJsonResponse } from '../utils/response'
+import { Instruction } from '@coral-xyz/anchor'
 
 export type FundTransactionRequest = Uint8Array[]
 
@@ -80,9 +82,9 @@ function getSignature(tx: VersionedTransaction): string {
 }
 
 function logSignatures(signedTransactions: VersionedTransaction[]) {
-  const sigs: string[] = []
+  const sigs: { sig: string; instruction?: Instruction | null }[] = []
   signedTransactions.forEach((tx) => {
-    sigs.push(getSignature(tx))
+    sigs.push({ sig: getSignature(tx), instruction: extractCallData(tx) })
   })
-  console.log(`Signed transactions: ${sigs}`)
+  console.log(`Signed transactions: ${JSON.stringify(sigs)}`)
 }

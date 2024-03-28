@@ -7,7 +7,7 @@ import {
   TransactionInstruction,
   VersionedTransaction
 } from '@solana/web3.js'
-import IDL from '../token_dispenser.json'
+import IDL from '../token-dispenser.json'
 import * as anchor from '@coral-xyz/anchor'
 
 import config from '../config'
@@ -17,6 +17,7 @@ const SET_COMPUTE_UNIT_PRICE_DISCRIMINANT = 3
 
 const MAX_COMPUTE_UNIT_PRICE = BigInt(1_000_000)
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const coder = new anchor.BorshCoder(IDL as any)
 
 export function deserializeTransactions(
@@ -215,13 +216,19 @@ export async function checkTransactions(
 
 export function extractCallData(
   versionedTx: VersionedTransaction,
-  programId: string
+  programId?: string
 ) {
+  const tokenDispenserPid = programId || config.tokenDispenserProgramId()
+  if (!tokenDispenserPid) {
+    console.error('Token dispenser program ID not set')
+    throw new Error('Token dispenser program ID not set')
+  }
+
   try {
     const instruction = versionedTx.message.compiledInstructions.find(
       (ix) =>
         versionedTx.message.staticAccountKeys[ix.programIdIndex].toBase58() ===
-        programId
+        tokenDispenserPid
     )
 
     if (!instruction) {

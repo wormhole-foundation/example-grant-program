@@ -21,7 +21,7 @@ import IDL from '../../src/token-dispenser.json'
 import { fundTransactions } from '../../src/handlers/fund-transactions'
 
 const RANDOM_BLOCKHASH = 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
-const PROGRAM_ID = 'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS' //new Keypair().publicKey
+const PROGRAM_ID = new PublicKey('Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS')
 const FUNDER_KEY = new Keypair()
 const server = setupServer()
 let input: VersionedTransaction[]
@@ -222,27 +222,21 @@ describe('fundTransactions integration test', () => {
     expect(response.statusCode).toBe(403)
   })
 
-  test.only('should extract claim info', async () => {
-    const x = VersionedTransaction.deserialize(serialedSignedOnceEvmClaimTx)
-
-    const found = x.message.compiledInstructions.find(
-      (i) =>
-        x.message.staticAccountKeys[i.programIdIndex].toBase58() === PROGRAM_ID
+  test('should extract claim info', async () => {
+    const versionedTx = VersionedTransaction.deserialize(
+      serialedSignedOnceEvmClaimTx
     )
-    const callData = extractCallData(x, PROGRAM_ID)
-    console.log(callData)
+    const callData = extractCallData(versionedTx, PROGRAM_ID.toBase58())
 
     expect(callData).not.toBeNull()
     expect(callData.name).toBe('claim')
     expect(callData.data.claimCertificate.amount.toNumber()).toBe(3000000)
-    expect(callData?.data.claimCertificate.proofOfInclusion).toBeDefined()
+    expect(callData.data.claimCertificate.proofOfInclusion).toBeDefined()
     expect(
       Buffer.from(
         callData.data.claimCertificate.proofOfIdentity.evm.pubkey
       ).toString('hex')
     ).toBe('b80eb09f118ca9df95b2df575f68e41ac7b9e2f8')
-
-    expect(found).toBeDefined()
   })
 })
 
