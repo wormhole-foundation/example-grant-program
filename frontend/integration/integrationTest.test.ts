@@ -322,12 +322,14 @@ describe('integration test', () => {
       ).toBeFalsy()
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           claims,
           mockfetchFundTransaction,
-          getTestClaimPayers(treasury)
+          getTestClaimPayers(treasury))
         )
       )
+
+
 
       expect(
         await tokenDispenserProvider.isClaimAlreadySubmitted(
@@ -493,13 +495,13 @@ describe('integration test', () => {
         claimantFund.amount.eq(
           new anchor.BN(
             3000000 +
-              7000000 +
-              8000000 +
-              9000000 +
-              6000000 +
-              1000000 +
-              2000000 +
-              4000000
+            7000000 +
+            8000000 +
+            9000000 +
+            6000000 +
+            1000000 +
+            2000000 +
+            4000000
           )
         )
       ).toBeTruthy()
