@@ -23,22 +23,7 @@ import { ethers } from 'ethers'
 import {
   addTestWalletsToDatabase as addTestWalletsToInMemoryDb,
   clearInMemoryDb,
-  getInMemoryDb,
 } from './utils'
-
-function getDatabasePool() {
-  return {
-    end: async () => {},
-  }
-}
-
-async function clearDatabase(..._: any[]) {}
-
-async function addTestWalletsToDatabase(..._: any[]) {
-  return []
-}
-
-const pool = getDatabasePool()
 
 describe('integration test', () => {
   let root: Buffer
@@ -241,7 +226,7 @@ describe('integration test', () => {
       ).toBeTruthy()
     }, 40000)
 
-    it('submits a cosmwasm claim', async () => {
+    it('submits a terra claim', async () => {
       const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
         'terra',
         testWallets.terra[0].address()
@@ -274,7 +259,7 @@ describe('integration test', () => {
       const claimantFund = await mint.getAccountInfo(claimantFundPubkey)
 
       expect(
-        claimantFund.amount.eq(new anchor.BN(3000000 + 6000000))
+        claimantFund.amount.eq(new anchor.BN(3000000 + 7000000))
       ).toBeTruthy()
 
       const { txnEvents } =
@@ -301,7 +286,7 @@ describe('integration test', () => {
 
     it('submits multiple claims at once', async () => {
       const wallets = {
-        terra: testWallets.terra[0],
+        injective: testWallets.injective[0],
         osmosis: testWallets.osmosis[0],
       }
 
@@ -360,49 +345,10 @@ describe('integration test', () => {
 
       expect(
         claimantFund.amount.eq(
-          new anchor.BN(3000000 + 6000000 + 6100000 + 6200000)
+          new anchor.BN(3000000 + 7000000 + 8000000 + 9000000)
         )
       ).toBeTruthy()
     })
-
-    it('submits an injective claim', async () => {
-      const wallet = testWallets.injective[0]
-      const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
-        'injective',
-        wallet.address()
-      ))!
-      const signedMessage = await wallet.signMessage(
-        tokenDispenserProvider.generateAuthorizationPayload()
-      )
-
-      await Promise.all(
-        await tokenDispenserProvider.submitClaims(
-          [
-            {
-              claimInfo,
-              proofOfInclusion,
-              signedMessage,
-            },
-          ],
-          mockfetchFundTransaction
-        )
-      )
-
-      expect(
-        await tokenDispenserProvider.isClaimAlreadySubmitted(claimInfo)
-      ).toBeTruthy()
-
-      const claimantFundPubkey =
-        await tokenDispenserProvider.getClaimantFundAddress()
-
-      const claimantFund = await mint.getAccountInfo(claimantFundPubkey)
-
-      expect(
-        claimantFund.amount.eq(
-          new anchor.BN(3000000 + 6000000 + 6100000 + 6200000 + 7000000)
-        )
-      ).toBeTruthy()
-    }, 40000)
 
     it('submits an aptos claim', async () => {
       const wallet = testWallets.aptos[0]
@@ -438,9 +384,7 @@ describe('integration test', () => {
 
       expect(
         claimantFund.amount.eq(
-          new anchor.BN(
-            3000000 + 6000000 + 6100000 + 6200000 + 7000000 + 5000000
-          )
+          new anchor.BN(3000000 + 7000000 + 8000000 + 9000000 + 6000000)
         )
       ).toBeTruthy()
     })
@@ -484,13 +428,7 @@ describe('integration test', () => {
         expect(
           claimantFund.amount.eq(
             new anchor.BN(
-              3000000 +
-                6000000 +
-                6100000 +
-                6200000 +
-                7000000 +
-                5000000 +
-                1000000
+              3000000 + 7000000 + 8000000 + 9000000 + 6000000 + 1000000
             )
           )
         ).toBeTruthy()
@@ -530,14 +468,7 @@ describe('integration test', () => {
       expect(
         claimantFund.amount.eq(
           new anchor.BN(
-            3000000 +
-              6000000 +
-              6100000 +
-              6200000 +
-              7000000 +
-              5000000 +
-              1000000 +
-              2000000
+            3000000 + 7000000 + 8000000 + 9000000 + 6000000 + 1000000 + 2000000
           )
         )
       ).toBeTruthy()
@@ -579,11 +510,10 @@ describe('integration test', () => {
         claimantFund.amount.eq(
           new anchor.BN(
             3000000 +
-              6000000 +
-              6100000 +
-              6200000 +
               7000000 +
-              5000000 +
+              8000000 +
+              9000000 +
+              6000000 +
               1000000 +
               2000000 +
               4000000
@@ -591,6 +521,7 @@ describe('integration test', () => {
         )
       ).toBeTruthy()
     }, 40000)
+
     it('fails to submit a duplicate claim', async () => {
       const wallet = testWallets.sui[0]
       const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
@@ -615,6 +546,7 @@ describe('integration test', () => {
       )
       expect(JSON.stringify(res[0]).includes('InstructionError')).toBeTruthy()
     })
+
     it('eventSubscriber parses error transaction logs', async () => {
       const { txnEvents, failedTxnInfos } =
         await tokenDispenserEventSubscriber.parseTransactionLogs()

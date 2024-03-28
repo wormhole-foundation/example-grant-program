@@ -154,7 +154,7 @@ export function Disclaimer({ onAgree, showModal }: DisclaimerProps) {
             type={'primary'}
             disabled={!agreed}
           >
-            <span className="w-[90%]">{'agree and continue'}</span>
+            <span className="w-[90%]">{'Agree and continue'}</span>
           </Button>
         </div>
       </div>

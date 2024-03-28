@@ -45,10 +45,12 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
               )}
             </span>
           </h3>
-
+          <p className="mb-6">
+            Thank you for participating in this Wormhole airdrop.
+          </p>
           <p>
-            Follow us on our socials to stay updated on grant opportunities,
-            developer updates, and community events!
+            Stay in the loop with Wormhole updates by subscribing to the
+            newsletter.
           </p>
 
           <div className="mt-6 border border-light-25 bg-black bg-opacity-30 px-8 pt-8 pb-1">
