@@ -10,7 +10,6 @@ import { Keypair, VersionedTransaction } from '@solana/web3.js'
 import bs58 from 'bs58'
 import { HandlerError } from '../utils/errors'
 import { asJsonResponse } from '../utils/response'
-import { Instruction } from '@coral-xyz/anchor'
 
 export type FundTransactionRequest = Uint8Array[]
 
@@ -82,7 +81,10 @@ function getSignature(tx: VersionedTransaction): string {
 }
 
 function logSignatures(signedTransactions: VersionedTransaction[]) {
-  const sigs: { sig: string; instruction?: Instruction | null }[] = []
+  const sigs: {
+    sig: string
+    instruction?: ReturnType<typeof extractCallData>
+  }[] = []
   signedTransactions.forEach((tx) => {
     sigs.push({ sig: getSignature(tx), instruction: extractCallData(tx) })
   })

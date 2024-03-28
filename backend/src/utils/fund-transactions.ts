@@ -7,18 +7,15 @@ import {
   TransactionInstruction,
   VersionedTransaction
 } from '@solana/web3.js'
-import IDL from '../token-dispenser.json'
-import * as anchor from '@coral-xyz/anchor'
+import { TokenDispenser, coder } from '../token-dispenser'
 
 import config from '../config'
+import { IdlTypes } from '@coral-xyz/anchor'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
 const SET_COMPUTE_UNIT_PRICE_DISCRIMINANT = 3
 
 const MAX_COMPUTE_UNIT_PRICE = BigInt(1_000_000)
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const coder = new anchor.BorshCoder(IDL as any)
 
 export function deserializeTransactions(
   transactions: unknown
@@ -214,10 +211,12 @@ export async function checkTransactions(
   }
 }
 
+type ClaimCertificate = IdlTypes<TokenDispenser>['ClaimCertificate']
+
 export function extractCallData(
   versionedTx: VersionedTransaction,
   programId?: string
-) {
+): ClaimCertificate | null {
   const tokenDispenserPid = programId || config.tokenDispenserProgramId()
   if (!tokenDispenserPid) {
     console.error('Token dispenser program ID not set')
@@ -235,7 +234,12 @@ export function extractCallData(
       return null
     }
 
-    return coder.instruction.decode(Buffer.from(instruction.data), 'base58')
+    const decoded = coder.instruction.decode(
+      Buffer.from(instruction.data),
+      'base58'
+    )?.data as { claimCertificate: ClaimCertificate }
+
+    return decoded?.claimCertificate as ClaimCertificate
   } catch (err) {
     console.error('Failed to extract call data', err)
     return null
