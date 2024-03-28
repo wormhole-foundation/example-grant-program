@@ -175,7 +175,7 @@ describe('integration test', () => {
       )
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [
             {
               claimInfo,
@@ -184,7 +184,7 @@ describe('integration test', () => {
             },
           ],
           mockfetchFundTransaction
-        )
+        )).flat()
       )
 
       expect(
@@ -237,7 +237,7 @@ describe('integration test', () => {
       )
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [
             {
               claimInfo,
@@ -246,7 +246,7 @@ describe('integration test', () => {
             },
           ],
           mockfetchFundTransaction
-        )
+        )).flat()
       )
 
       expect(
@@ -320,10 +320,10 @@ describe('integration test', () => {
       ).toBeFalsy()
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           claims,
           mockfetchFundTransaction
-        )
+        )).flat()
       )
 
       expect(
@@ -361,7 +361,7 @@ describe('integration test', () => {
       )
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [
             {
               claimInfo,
@@ -370,7 +370,7 @@ describe('integration test', () => {
             },
           ],
           mockfetchFundTransaction
-        )
+        )).flat()
       )
 
       expect(
@@ -404,7 +404,7 @@ describe('integration test', () => {
         )
 
         await Promise.all(
-          await tokenDispenserProvider.submitClaims(
+          (await tokenDispenserProvider.submitClaims(
             [
               {
                 claimInfo,
@@ -413,7 +413,7 @@ describe('integration test', () => {
               },
             ],
             mockfetchFundTransaction
-          )
+          )).flat()
         )
 
         expect(
@@ -444,7 +444,7 @@ describe('integration test', () => {
       // No signing since claimant will sign the transaction
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [
             {
               claimInfo,
@@ -453,7 +453,7 @@ describe('integration test', () => {
             },
           ],
           mockfetchFundTransaction
-        )
+        )).flat()
       )
 
       expect(
@@ -485,7 +485,7 @@ describe('integration test', () => {
       )
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [
             {
               claimInfo,
@@ -494,7 +494,7 @@ describe('integration test', () => {
             },
           ],
           mockfetchFundTransaction
-        )
+        )).flat()
       )
 
       expect(
@@ -533,7 +533,7 @@ describe('integration test', () => {
       )
 
       const res = await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [
             {
               claimInfo,
@@ -542,7 +542,7 @@ describe('integration test', () => {
             },
           ],
           mockfetchFundTransaction
-        )
+        )).flat()
       )
       expect(JSON.stringify(res[0]).includes('InstructionError')).toBeTruthy()
     })
