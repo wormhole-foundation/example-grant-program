@@ -187,11 +187,11 @@ describe('integration test', () => {
       )
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction,
           getTestClaimPayers(treasury)
-        )
+        )).flat()
       )
 
       expect(
@@ -244,11 +244,11 @@ describe('integration test', () => {
       )
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction,
           getTestClaimPayers(treasury)
-        )
+        )).flat()
       )
 
       expect(
@@ -322,11 +322,11 @@ describe('integration test', () => {
       ).toBeFalsy()
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           claims,
           mockfetchFundTransaction,
           getTestClaimPayers(treasury)
-        )
+        )).flat()
       )
 
       expect(
@@ -364,11 +364,11 @@ describe('integration test', () => {
       )
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction,
           getTestClaimPayers(treasury)
-        )
+        )).flat()
       )
 
       expect(
@@ -402,11 +402,11 @@ describe('integration test', () => {
         )
 
         await Promise.all(
-          await tokenDispenserProvider.submitClaims(
+          (await tokenDispenserProvider.submitClaims(
             [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
             mockfetchFundTransaction,
             getTestClaimPayers(treasury)
-          )
+          )).flat()
         )
 
         expect(
@@ -437,11 +437,11 @@ describe('integration test', () => {
       // No signing since claimant will sign the transaction
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, undefined)],
           mockfetchFundTransaction,
           getTestClaimPayers(treasury)
-        )
+        )).flat()
       )
 
       expect(
@@ -473,11 +473,11 @@ describe('integration test', () => {
       )
 
       await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction,
           getTestClaimPayers(treasury)
-        )
+        )).flat()
       )
 
       expect(
@@ -516,11 +516,11 @@ describe('integration test', () => {
       )
 
       const res = await Promise.all(
-        await tokenDispenserProvider.submitClaims(
+        (await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction,
           getTestClaimPayers(treasury)
-        )
+        )).flat()
       )
       expect(JSON.stringify(res[0]).includes('InstructionError')).toBeTruthy()
     })
