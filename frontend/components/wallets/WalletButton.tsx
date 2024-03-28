@@ -96,7 +96,7 @@ export function WalletModalButton({ wallets }: WalletModalButtonProps) {
       >
         <span className="relative inline-flex items-center gap-1 whitespace-nowrap  sm:gap-2.5">
           <Wallet />
-          <span>connect wallet</span>
+          <span>Connect wallet</span>
         </span>
       </button>
       {modal && <WalletModal openModal={openModal} wallets={wallets} />}

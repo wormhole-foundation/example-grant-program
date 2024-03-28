@@ -9,6 +9,7 @@ import Twitter from '@images/twitter.inline.svg'
 import Link from 'next/link'
 import { resetLocalState } from 'utils/store'
 import { BoxTitle } from '@components/BoxTitle'
+import Subscribe from '@components/Subscribe'
 
 export type TokensReceivedProps = {
   totalCoinsClaimed: string | null
@@ -47,62 +48,13 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
           <p className="mb-6">
             Thank you for participating in this Wormhole airdrop.
           </p>
-
           <p>
             Stay in the loop with Wormhole updates by subscribing to the
             newsletter.
           </p>
 
-          <div
-            className="space-between mt-12 flex flex-wrap items-center justify-between
-           gap-4"
-          >
-            <div className="flex gap-2">
-              <Link
-                className="btn-square "
-                href={'https://x.com/PythNetwork'}
-                target="_blank"
-              >
-                <span className="relative inline-flex items-center whitespace-nowrap">
-                  <Twitter />
-                </span>
-              </Link>
-              <Link
-                className="btn-square "
-                href={'https://t.me/Pyth_Network'}
-                target="_blank"
-              >
-                <span className="relative inline-flex items-center whitespace-nowrap">
-                  <Telegram />
-                </span>
-              </Link>
-              <Link
-                className="btn-square "
-                href={'https://discord.gg/PythNetwork'}
-                target="_blank"
-              >
-                <span className="relative inline-flex items-center whitespace-nowrap">
-                  <Discord />
-                </span>
-              </Link>
-              <Link
-                className="btn-square "
-                href={'https://www.linkedin.com/company/pyth-network'}
-                target="_blank"
-              >
-                <span className="relative inline-flex items-center whitespace-nowrap">
-                  <Linkedin />
-                </span>
-              </Link>
-            </div>
-            <Button
-              onClick={() => {
-                window.location.href = 'https://staking.pyth.network/'
-              }}
-              type={'primary'}
-            >
-              explore governance
-            </Button>
+          <div className="mt-6 border border-light-25 bg-black bg-opacity-30 px-8 pt-8 pb-1">
+            <Subscribe />
           </div>
         </div>
       </Box>

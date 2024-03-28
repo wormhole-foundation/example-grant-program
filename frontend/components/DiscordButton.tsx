@@ -24,7 +24,7 @@ export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
 
     return {
       logo: <Discord />,
-      text: isConnecting ? 'Connecting ...' : 'sign in',
+      text: isConnecting ? 'Connecting ...' : 'Sign in',
     }
   }, [isConnecting, isAuthenticated, profile])
 
