@@ -111,14 +111,14 @@ describe('test fund transaction api', () => {
 
     const transactionOK1 = createTestTransactionFromInstructions([
       tokenDispenserInstruction,
-      computeBudgetUnitPrice
+      computeBudgetUnitPrice,
     ])
 
     const transactionOK2 = createTestTransactionFromInstructions([
       tokenDispenserInstruction,
       secp256k1ProgramInstruction,
       computeBudgetSetComputeUnits,
-      computeBudgetUnitPrice
+      computeBudgetUnitPrice,
     ])
 
     const transactionTooManySigs = createTestTransactionFromInstructions([

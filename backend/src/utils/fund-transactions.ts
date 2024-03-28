@@ -79,13 +79,10 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitLimit(
         ComputeBudgetProgram.programId
       )
     ) {
-
       // Note: We continue processing tx data because setComputeUnitPrice is mandatory to be set
-      if (ix.data[0] === SET_COMPUTE_UNIT_PRICE_DISCRIMINANT) continue;
+      if (ix.data[0] === SET_COMPUTE_UNIT_PRICE_DISCRIMINANT) continue
 
-      if (
-        ix.data[0] !== SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT
-      ) {
+      if (ix.data[0] !== SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT) {
         console.error('Compute unit limit discriminant does not match')
         return false
       }
