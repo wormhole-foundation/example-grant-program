@@ -106,10 +106,6 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     try {
       broadcastPromises = await tokenDispenser?.submitClaims(
         claims.map((claim) => ({
-          //TODO FIXME set funder for this claim
-          funder: tokenDispenser.getConfigPda()[0],
-          //TODO FIXME set treasury for this claim
-          treasury: tokenDispenser.getConfigPda()[0],
           ...claim,
         }))
       )

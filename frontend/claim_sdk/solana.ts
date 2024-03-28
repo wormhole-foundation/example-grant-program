@@ -27,6 +27,7 @@ import { TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
 import { SignedMessage } from './ecosystems/signatures'
 import { extractChainId } from './ecosystems/cosmos'
 import { fetchFundTransaction } from '../utils/api'
+import { getClaimPayers } from './treasury'
 
 export const ERROR_SIGNING_TX = 'error: signing transaction'
 export const ERROR_FUNDING_TX = 'error: funding transaction'
@@ -220,8 +221,6 @@ export class TokenDispenserProvider {
 
   public async submitClaims(
     claims: {
-      funder: PublicKey
-      treasury: PublicKey
       claimInfo: ClaimInfo
       proofOfInclusion: Uint8Array[]
       signedMessage: SignedMessage | undefined
@@ -230,29 +229,46 @@ export class TokenDispenserProvider {
       transactions: VersionedTransaction[]
     ) => Promise<VersionedTransaction[]> = fetchFundTransaction // This argument is only used for testing where we can't call the API
   ): Promise<Promise<TransactionError | null>[]> {
-    const txs: VersionedTransaction[] = []
+    const txs: {
+      tx: VersionedTransaction,
+      payers: [PublicKey, PublicKey],
+      index: number
+    }[] = []
 
     try {
       for (const claim of claims) {
+        const [funder, treasury] = getClaimPayers(claim.claimInfo);
+
         txs.push(
-          await this.generateClaimTransaction(
-            claim.funder,
-            claim.treasury,
+          {
+            tx: await this.generateClaimTransaction(
+            funder,
+            treasury,
             claim.claimInfo,
             claim.proofOfInclusion,
             claim.signedMessage
-          )
+          ),
+          payers: [funder, treasury],
+          index: claims.indexOf(claim),
+          }
         )
       }
     } catch (e) {
       throw new Error(ERROR_CRAFTING_TX)
     }
 
-    let txsSignedOnce
+    let txsSignedOnce: {
+      tx: VersionedTransaction,
+      payers: [PublicKey, PublicKey]
+    }[];
+
     try {
-      txsSignedOnce = await (
+      txsSignedOnce = (await (
         this.tokenDispenserProgram.provider as anchor.AnchorProvider
-      ).wallet.signAllTransactions(txs)
+      ).wallet.signAllTransactions(txs.map((tx) => tx.tx))).map((signed) => {
+        tx: signed,
+        payers: tx.payers
+      })
     } catch (e) {
       throw new Error(ERROR_SIGNING_TX)
     }
