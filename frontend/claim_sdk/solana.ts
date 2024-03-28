@@ -274,8 +274,9 @@ export class TokenDispenserProvider {
     }
 
     // send the txns. Associated token account will be created if needed.
-    const sendTxs = this.providers.map(({ connection }) => {
-      return txsSignedTwice.map(async (signedTx) => {
+    // Group by ecosystem and then by rpc provider
+    const sendTxs = txsSignedTwice.map((signedTx) => {
+      return this.providers.map(async ({ connection }) => {
         try {
           const signature = await connection.sendTransaction(signedTx, {
             skipPreflight: true,

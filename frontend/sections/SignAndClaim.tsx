@@ -69,6 +69,14 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     onProceed(totalCoinsClaimed())
   }, [onProceed, totalCoinsClaimed])
 
+  const getSuccessfulProviderSubmit = useCallback(async (ecosystemPromises: Promise<TransactionError | null>[]): Promise<TransactionError | null> => {
+    const resolvedProviderPromises = await Promise.all(ecosystemPromises);
+
+    // find the first rpc provider submit that is successful (i.e. null error)
+    // or grab the first one if all failed
+    return resolvedProviderPromises.find(error => error === null) || resolvedProviderPromises[0];
+  }, [])
+
   const submitTxs = useCallback(async () => {
     window.onbeforeunload = (e) => {
       e.preventDefault()
@@ -133,10 +141,13 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
 
     // NOTE: there is an implicit order restriction
     // Transaction Order should be same as Ecosystems array order
+    // Additionally, for each Ecosystem the transaction is submitted
+    // to multiple rpc providers, so we need to fetch the first successful
+    // of the broadcast attempt
     const allPromises = broadcastPromises.map(
       async (broadcastPromise, index) => {
         await Promise.race([
-          Promise.race(broadcastPromise),
+          getSuccessfulProviderSubmit(broadcastPromise),
           new Promise((_, reject) => {
             setTimeout(() => reject(), 10000)
           }),
