@@ -12,7 +12,7 @@ import { asJsonResponse } from '../utils/response'
 
 export type FundTransactionRequest = Uint8Array[]
 
-let funderWallets: Record<string, NodeWallet> = {}
+const funderWallets: Record<string, NodeWallet> = {}
 
 export const fundTransactions = async (
   event: APIGatewayProxyEvent
