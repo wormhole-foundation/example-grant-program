@@ -80,7 +80,7 @@ export type TokenDispenser = {
         {
           name: 'claimant'
           isMut: false
-          isSigner: true
+          isSigner: false
         },
         {
           name: 'claimantFund'
@@ -485,7 +485,13 @@ export type TokenDispenser = {
             ]
           },
           {
-            name: 'Solana'
+            name: 'Solana',
+            fields: [
+              {
+                name: 'verification_instruction_index'
+                type: 'u8'
+              }
+            ]
           },
           {
             name: 'Sui'
@@ -733,7 +739,7 @@ export const IDL: TokenDispenser = {
         {
           name: 'claimant',
           isMut: false,
-          isSigner: true,
+          isSigner: false,
         },
         {
           name: 'claimantFund',
@@ -1139,6 +1145,12 @@ export const IDL: TokenDispenser = {
           },
           {
             name: 'Solana',
+            fields: [
+              {
+                name: 'verification_instruction_index',
+                type: 'u8'
+              }
+            ]
           },
           {
             name: 'Sui',

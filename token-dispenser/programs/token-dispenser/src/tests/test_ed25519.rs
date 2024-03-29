@@ -10,6 +10,7 @@ use {
                 Ed25519TestMessage,
             },
             sui::SuiMessage,
+            solana::SolanaMessage,
         },
         tests::dispenser_simulator::DispenserSimulator,
         Identity,
@@ -137,6 +138,22 @@ impl Ed25519TestIdentityCertificate<DiscordMessage> {
     pub fn as_proof_of_identity(&self, verification_instruction_index: u8) -> IdentityCertificate {
         IdentityCertificate::Discord {
             username: self.message.get_username(),
+            verification_instruction_index,
+        }
+    }
+}
+
+impl From<Ed25519TestIdentityCertificate<SolanaMessage>> for Identity {
+    fn from(val: Ed25519TestIdentityCertificate<SolanaMessage>) -> Self {
+        Identity::Solana {
+            pubkey: Ed25519Pubkey::from(val.public_key.to_bytes()).into(),
+        }
+    }
+}
+
+impl Ed25519TestIdentityCertificate<SolanaMessage> {
+    pub fn as_proof_of_identity(&self, verification_instruction_index: u8) -> IdentityCertificate {
+        IdentityCertificate::Solana {
             verification_instruction_index,
         }
     }

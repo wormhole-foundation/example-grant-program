@@ -360,14 +360,15 @@ export class TokenDispenserProvider {
     claimInfo: ClaimInfo,
     signedMessage: SignedMessage | undefined
   ): IdlTypes<TokenDispenser>['IdentityCertificate'] {
-    if (claimInfo.ecosystem === 'solana') {
-      return {
-        solana: {},
-      }
-    }
 
     if (signedMessage) {
       switch (claimInfo.ecosystem) {
+        case 'solana':
+          return {
+            solana: {
+              verificationInstructionIndex: 0,
+            },
+          }
         case 'evm':
         case 'aptos':
         case 'sui':
@@ -416,10 +417,6 @@ export class TokenDispenserProvider {
     ecosystem: Ecosystem,
     signedMessage: SignedMessage | undefined
   ): anchor.web3.TransactionInstruction | undefined {
-    if (ecosystem === 'solana') {
-      return undefined
-    }
-
     if (signedMessage) {
       switch (ecosystem) {
         case 'evm':
@@ -435,6 +432,7 @@ export class TokenDispenserProvider {
         case 'terra': {
           return undefined
         }
+        case 'solana':
         case 'discord':
         case 'sui':
         case 'algorand':

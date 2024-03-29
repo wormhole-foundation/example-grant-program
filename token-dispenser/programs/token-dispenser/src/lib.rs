@@ -57,6 +57,7 @@ use {
             SuiAddress,
             SuiMessage,
         },
+        solana::SolanaMessage,
     },
     pythnet_sdk::{
         accumulators::merkle::{
@@ -209,7 +210,8 @@ pub struct Initialize<'info> {
 pub struct Claim<'info> {
     #[account(mut)]
     pub funder:                   Signer<'info>, // Funds the claimant_fund and the claim receipt account
-    pub claimant:                 Signer<'info>,
+    /// CHECK: Could just be instruction data but easier to keep it as an account
+    pub claimant:                 AccountInfo<'info>,
     /// Claimant's associated token account to receive the tokens
     /// Should be initialized outside of this program.
     #[account(
@@ -270,7 +272,10 @@ pub enum IdentityCertificate {
         pubkey:                         EvmPubkey,
         verification_instruction_index: u8,
     },
-    Solana,
+    Solana {
+        //pubkey is claimant
+        verification_instruction_index: u8,
+    },
     Sui {
         pubkey:                         Ed25519Pubkey,
         verification_instruction_index: u8,
@@ -506,9 +511,29 @@ impl IdentityCertificate {
                     address: Into::<SuiAddress>::into(pubkey.clone()),
                 })
             }
-            IdentityCertificate::Solana => Ok(Identity::Solana {
-                pubkey: Ed25519Pubkey::from(*claimant), // Solana verification relies on claimant signing the Solana transaction
-            }),
+            IdentityCertificate::Solana {
+                verification_instruction_index,
+            } => {
+                let signature_verification_instruction = load_instruction_at_checked(
+                    *verification_instruction_index as usize,
+                    sysvar_instruction,
+                )?;
+                let pubkey = (*claimant).into();
+                check_payload(
+                    SolanaMessage::parse(
+                        &Ed25519InstructionData::extract_message_and_check_signature(
+                            &signature_verification_instruction,
+                            &pubkey,
+                            verification_instruction_index,
+                        )?,
+                    )?
+                    .get_payload(),
+                    claimant,
+                )?;
+                Ok(Identity::Solana {
+                    pubkey,
+                })
+            }
             IdentityCertificate::Injective {
                 pubkey,
                 verification_instruction_index,

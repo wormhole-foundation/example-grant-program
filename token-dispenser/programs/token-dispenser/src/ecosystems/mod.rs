@@ -14,6 +14,7 @@ pub mod ed25519;
 pub mod evm;
 pub mod secp256k1;
 pub mod sui;
+pub mod solana;
 
 /**
  * Ecosystem agnostic authorization payload that the identity on the leaf needs to sign.
