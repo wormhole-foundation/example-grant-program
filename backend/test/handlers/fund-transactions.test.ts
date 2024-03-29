@@ -238,12 +238,14 @@ const givenDownstreamServicesWork = () => {
 
 const whenFundTransactionsCalled = async () => {
   response = await fundTransactions({
-    body: JSON.stringify(input.map((tx) => {
-      return {
-        tx: Buffer.from(tx.serialize()),
-        funder: FUNDER_KEY.publicKey,
-      }
-    }))
+    body: JSON.stringify(
+      input.map((tx) => {
+        return {
+          tx: Buffer.from(tx.serialize()),
+          funder: FUNDER_KEY.publicKey
+        }
+      })
+    )
   } as unknown as APIGatewayProxyEvent)
 }
 

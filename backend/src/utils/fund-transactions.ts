@@ -17,7 +17,7 @@ const MAX_COMPUTE_UNIT_PRICE = BigInt(1_000_000)
 
 export type TransactionWithFunder = {
   transaction: VersionedTransaction
-  funder: string;
+  funder: string
 }
 
 export type SerializedTransactionWithFunder = {
@@ -29,10 +29,12 @@ export function deserializeTransactions(
   transactions: unknown
 ): TransactionWithFunder[] {
   try {
-    return (transactions as SerializedTransactionWithFunder[]).map((serializedTx) =>
-      {
+    return (transactions as SerializedTransactionWithFunder[]).map(
+      (serializedTx) => {
         return {
-          transaction: VersionedTransaction.deserialize(Buffer.from(serializedTx.tx)),
+          transaction: VersionedTransaction.deserialize(
+            Buffer.from(serializedTx.tx)
+          ),
           funder: serializedTx.funder
         }
       }

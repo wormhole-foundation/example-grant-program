@@ -12,7 +12,7 @@ import { asJsonResponse } from '../utils/response'
 
 export type FundTransactionRequest = Uint8Array[]
 
-let funderWallets: Record<string, NodeWallet> = {};
+let funderWallets: Record<string, NodeWallet> = {}
 
 export const fundTransactions = async (
   event: APIGatewayProxyEvent
@@ -21,23 +21,27 @@ export const fundTransactions = async (
     const requestBody = JSON.parse(event.body!)
     validateFundTransactions(requestBody)
     const transactions = deserializeTransactions(requestBody)
-    const isTransactionsValid = await checkTransactions(transactions.map((txWithFunder) => txWithFunder.transaction));
+    const isTransactionsValid = await checkTransactions(
+      transactions.map((txWithFunder) => txWithFunder.transaction)
+    )
 
     if (!isTransactionsValid) {
       return asJsonResponse(403, { error: 'Unauthorized transactions' })
     }
 
-    const wallets = await loadFunderWallets();
+    const wallets = await loadFunderWallets()
 
-    const signedTransactions: VersionedTransaction[] = [];
+    const signedTransactions: VersionedTransaction[] = []
 
-    for(const txWithFunder of transactions){
-      const funderWallet = wallets[txWithFunder.funder];
-      if(!funderWallet){
+    for (const txWithFunder of transactions) {
+      const funderWallet = wallets[txWithFunder.funder]
+      if (!funderWallet) {
         return asJsonResponse(403, { error: 'Unauthorized funder' })
       }
 
-      signedTransactions.push(await funderWallet.signTransaction(txWithFunder.transaction));
+      signedTransactions.push(
+        await funderWallet.signTransaction(txWithFunder.transaction)
+      )
     }
 
     logSignatures(signedTransactions)
@@ -67,23 +71,28 @@ function validateFundTransactions(transactions: unknown) {
 }
 
 async function loadFunderWallets(): Promise<Record<string, NodeWallet>> {
-  if (Object.keys(funderWallets).length > 0){
-    return funderWallets;
+  if (Object.keys(funderWallets).length > 0) {
+    return funderWallets
   }
 
   const secretData = await getFundingKeys()
-  const funderWalletKeys = Object.values(secretData);
+  const funderWalletKeys = Object.values(secretData)
 
   const keypairs = funderWalletKeys.map((key) => {
-    const parsedKey = key.toString().replace("[","").replace("]","").split(",").map((l) => parseInt(l));
-    return Keypair.fromSecretKey(Uint8Array.from(parsedKey));
-  });
+    const parsedKey = key
+      .toString()
+      .replace('[', '')
+      .replace(']', '')
+      .split(',')
+      .map((l) => parseInt(l))
+    return Keypair.fromSecretKey(Uint8Array.from(parsedKey))
+  })
 
   keypairs.forEach((keypair) => {
     funderWallets[keypair.publicKey.toBase58()] = new NodeWallet(keypair)
   })
 
-  return funderWallets;
+  return funderWallets
 }
 
 function getSignature(tx: VersionedTransaction): string {

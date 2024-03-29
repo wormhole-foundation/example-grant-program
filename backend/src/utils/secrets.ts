@@ -19,20 +19,22 @@ export async function getDispenserKey() {
 }
 
 export async function getFundingKeys(): Promise<Record<string, Uint8Array>> {
-  let keys: Record<string, Uint8Array> = {};
+  let keys: Record<string, Uint8Array> = {}
   if (config.keys.funding.key) {
     console.log('Using funding key from config')
     // TODO: Is this ok??
-    const privKey = Uint8Array.from(config.keys.funding.key.split("").map((l) => l.charCodeAt(0)));
+    const privKey = Uint8Array.from(
+      config.keys.funding.key.split('').map((l) => l.charCodeAt(0))
+    )
     keys = {
       key: privKey
     }
 
-    return keys;
+    return keys
   }
 
   keys = await getSecret(config.keys.funding.secretName)
-  return keys;
+  return keys
 }
 
 export async function getSecretKey(secretName: string, keyName: string) {
