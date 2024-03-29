@@ -15,7 +15,7 @@ import {
 import dotenv from 'dotenv'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { ethers } from 'ethers'
-import { loadFunderWallet } from '../claim_sdk/testWallets'
+import { loadFunderWallets } from '../claim_sdk/testWallets'
 import { mockfetchFundTransaction } from './api'
 import {
   checkAllProgramsWhitelisted,
@@ -26,6 +26,7 @@ import {
   checkV0,
   countTotalSignatures,
 } from '../utils/verifyTransaction'
+import { treasuries } from '../claim_sdk/treasury'
 
 dotenv.config()
 const PROGRAM_ID = new PublicKey(process.env.PROGRAM_ID!)
@@ -37,7 +38,14 @@ const WHITELISTED_PROGRAMS: PublicKey[] = [
 ]
 
 const RANDOM_BLOCKHASH = 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
-const funderPubkey = loadFunderWallet().publicKey
+const funderWallets = loadFunderWallets();
+const funderPubkey = Object.entries(funderWallets)[0][1].publicKey;
+
+function getTestPayers(): [PublicKey, PublicKey] {
+  const wallets = loadFunderWallets();
+  const walletsArray = Object.entries(wallets);
+  return [walletsArray[0][1].publicKey, treasuries[0]];
+}
 
 function createTestTransactionFromInstructions(
   instructions: TransactionInstruction[]
@@ -162,18 +170,33 @@ describe('test fund transaction api', () => {
       }).compileToLegacyMessage()
     )
 
-    await mockfetchFundTransaction([transactionOK1])
+    await mockfetchFundTransaction([
+      {
+        tx: transactionOK1,
+        payers: getTestPayers(),
+      },
+    ])
     expect(
       checkTransactions([transactionOK1], PROGRAM_ID, WHITELISTED_PROGRAMS)
     ).toBe(true)
 
-    await mockfetchFundTransaction([transactionOK2])
+    await mockfetchFundTransaction([
+      {
+        tx: transactionOK2,
+        payers: getTestPayers(),
+      },
+    ])
     expect(
       checkTransactions([transactionOK2], PROGRAM_ID, WHITELISTED_PROGRAMS)
     ).toBe(true)
 
     await expect(
-      mockfetchFundTransaction([transactionTooManySigs]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionTooManySigs,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
@@ -184,7 +207,12 @@ describe('test fund transaction api', () => {
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionBadTransfer]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionBadTransfer,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
@@ -195,7 +223,12 @@ describe('test fund transaction api', () => {
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionBadNoTokenDispenser]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionBadNoTokenDispenser,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
@@ -206,7 +239,9 @@ describe('test fund transaction api', () => {
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionBadComputeHeap]).catch((e) => e)
+      mockfetchFundTransaction([
+        { tx: transactionBadComputeHeap, payers: getTestPayers() },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
@@ -217,7 +252,10 @@ describe('test fund transaction api', () => {
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionBadTransfer2]).catch((e) => e)
+      mockfetchFundTransaction([{
+        tx: transactionBadTransfer2,
+        payers: getTestPayers(),
+      }]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
@@ -228,7 +266,10 @@ describe('test fund transaction api', () => {
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionBadTransfer3]).catch((e) => e)
+      mockfetchFundTransaction([{
+        tx: transactionBadTransfer3,
+        payers: getTestPayers(),
+      }]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
@@ -239,7 +280,10 @@ describe('test fund transaction api', () => {
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionLegacy]).catch((e) => e)
+      mockfetchFundTransaction([{
+        tx: transactionLegacy,
+        payers: getTestPayers(),
+      }]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions([transactionLegacy], PROGRAM_ID, WHITELISTED_PROGRAMS)
@@ -402,7 +446,13 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionLegacy)).toBe(2)
 
     // Grouped transactions
-    await mockfetchFundTransaction([transactionOK1, transactionOK2])
+    await mockfetchFundTransaction([{
+      tx: transactionOK1,
+      payers: getTestPayers(),
+    }, {
+      tx: transactionOK2,
+      payers: getTestPayers(),
+    }])
     expect(
       checkTransactions(
         [transactionOK1, transactionOK2],
@@ -413,9 +463,18 @@ describe('test fund transaction api', () => {
 
     await expect(
       mockfetchFundTransaction([
-        transactionOK1,
-        transactionBadTransfer3,
-        transactionOK2,
+        {
+          tx: transactionOK1,
+          payers: getTestPayers(),
+        },
+        {
+          tx: transactionBadTransfer3,
+          payers: getTestPayers(),
+        },
+        {
+          tx: transactionOK2,
+          payers: getTestPayers(),
+        },
       ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
@@ -427,9 +486,18 @@ describe('test fund transaction api', () => {
     ).toBe(false)
     await expect(
       mockfetchFundTransaction([
-        transactionOK1,
-        transactionOK2,
-        transactionBadComputeHeap,
+        {
+          tx: transactionOK1,
+          payers: getTestPayers(),
+        },
+        {
+          tx: transactionOK2,
+          payers: getTestPayers(),
+        },
+        {
+          tx: transactionBadComputeHeap,
+          payers: getTestPayers(),
+        },
       ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(

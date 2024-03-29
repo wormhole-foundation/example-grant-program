@@ -15,8 +15,9 @@ import { TokenDispenserEventSubscriber } from '../claim_sdk/eventSubscriber'
 import {
   DiscordTestWallet,
   TestWallet,
+  getTestClaimPayers,
   loadAnchorWallet,
-  loadFunderWallet,
+  loadFunderWallets,
 } from '../claim_sdk/testWallets'
 import { loadTestWallets } from '../claim_sdk/testWallets'
 import { mockFetchAmountAndProof, mockfetchFundTransaction } from './api'
@@ -25,6 +26,7 @@ import {
   addTestWalletsToDatabase as addTestWalletsToInMemoryDb,
   clearInMemoryDb,
 } from './utils'
+import { funders } from 'claim_sdk/treasury'
 
 describe('integration test', () => {
   let root: Buffer
@@ -71,7 +73,7 @@ describe('integration test', () => {
 
   describe('token dispenser e2e', () => {
     const wallet = loadAnchorWallet()
-    const funderWallet = loadFunderWallet()
+    const funderWallet = Object.entries(loadFunderWallets())[0][1];
     const endpoint = 'http://127.0.0.1:8899'
     const tokenDispenserPid = new PublicKey(
       'WApA1JC9eJLaULc2Ximo5TffuqCESzf47JZsuhYvfzC'
@@ -188,7 +190,8 @@ describe('integration test', () => {
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
-          mockfetchFundTransaction
+          mockfetchFundTransaction,
+          getTestClaimPayers(treasury),
         )
       )
 
@@ -244,7 +247,8 @@ describe('integration test', () => {
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
-          mockfetchFundTransaction
+          mockfetchFundTransaction,
+          getTestClaimPayers(treasury)
         )
       )
 
@@ -321,7 +325,8 @@ describe('integration test', () => {
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
           claims,
-          mockfetchFundTransaction
+          mockfetchFundTransaction,
+          getTestClaimPayers(treasury)
         )
       )
 
@@ -362,7 +367,8 @@ describe('integration test', () => {
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
-          mockfetchFundTransaction
+          mockfetchFundTransaction,
+          getTestClaimPayers(treasury)
         )
       )
 
@@ -395,7 +401,8 @@ describe('integration test', () => {
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
-          mockfetchFundTransaction
+          mockfetchFundTransaction,
+          getTestClaimPayers(treasury)
         )
       )
 
@@ -432,7 +439,8 @@ describe('integration test', () => {
         await Promise.all(
           await tokenDispenserProvider.submitClaims(
             [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
-            mockfetchFundTransaction
+            mockfetchFundTransaction,
+            getTestClaimPayers(treasury)
           )
         )
 
@@ -466,7 +474,8 @@ describe('integration test', () => {
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, undefined)],
-          mockfetchFundTransaction
+          mockfetchFundTransaction,
+          getTestClaimPayers(treasury)
         )
       )
 
@@ -501,7 +510,8 @@ describe('integration test', () => {
       await Promise.all(
         await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
-          mockfetchFundTransaction
+          mockfetchFundTransaction,
+          getTestClaimPayers(treasury)
         )
       )
 
@@ -543,7 +553,8 @@ describe('integration test', () => {
       const res = await Promise.all(
         await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
-          mockfetchFundTransaction
+          mockfetchFundTransaction,
+          getTestClaimPayers(treasury)
         )
       )
       expect(JSON.stringify(res[0]).includes('InstructionError')).toBeTruthy()

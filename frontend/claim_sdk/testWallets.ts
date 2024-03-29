@@ -1,6 +1,6 @@
 import path from 'path'
 import dotenv from 'dotenv'
-import { Ecosystem } from './claim'
+import { ClaimInfo, Ecosystem } from './claim'
 import {
   SignedMessage,
   cosmwasmBuildSignedMessage,
@@ -25,6 +25,7 @@ import { getInjectiveAddress } from '../utils/getInjectiveAddress'
 import { algorandGetFullMessage } from './ecosystems/algorand'
 import { getAlgorandAddress } from '../utils/getAlgorandAddress'
 import nacl from 'tweetnacl'
+import { inspect } from 'util';
 
 dotenv.config() // Load environment variables from .env file
 
@@ -50,18 +51,36 @@ export function loadAnchorWallet(): NodeWallet {
   return new NodeWallet(keypair)
 }
 
-export function loadFunderWallet(): NodeWallet {
-  const keypair = Keypair.fromSecretKey(
-    new Uint8Array(
-      JSON.parse(
-        fs.readFileSync(
-          path.resolve(KEY_DIR, 'funder_private_key.json'),
-          'utf-8'
+export function loadFunderWallets(): Record<string, NodeWallet> {
+  const result: Record<string, NodeWallet> = {};
+  let keypair: Keypair;
+  if(process.env.FUNDER_KEYPAIR){
+    keypair = Keypair.fromSecretKey(
+      Uint8Array.from(process.env.FUNDER_KEYPAIR.replace("[", "").replace("]", "").split(",").map((x: string) => parseInt(x))
+    ));
+  } else {
+    keypair = Keypair.fromSecretKey(
+      new Uint8Array(
+        JSON.parse(
+          fs.readFileSync(
+            path.resolve(KEY_DIR, 'funder_private_key.json'),
+            'utf-8'
+          )
         )
       )
     )
-  )
-  return new NodeWallet(keypair)
+  }
+
+  result[keypair.publicKey.toBase58()] = new NodeWallet(keypair)
+
+  return result;
+}
+
+export function getTestClaimPayers(treasury: PublicKey) {
+ return function (claimInfo: ClaimInfo): [PublicKey, PublicKey]{
+   const funder = Keypair.fromSecretKey(Object.entries(loadFunderWallets())[0][1].payer.secretKey);
+   return [funder.publicKey, treasury]
+ }
 }
 
 export async function loadTestWallets(): Promise<

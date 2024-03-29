@@ -9,27 +9,19 @@ import {
 } from '@solana/web3.js'
 import { NextApiRequest, NextApiResponse } from 'next'
 import {
+  TransactionWithPayers,
   getFundTransactionRoute,
   handleAmountAndProofResponse,
   handleFundTransaction,
 } from '../utils/api'
 import { ClaimInfo, Ecosystem } from '../claim_sdk/claim'
-import { loadFunderWallet } from '../claim_sdk/testWallets'
+import { loadFunderWallets } from '../claim_sdk/testWallets'
 import { checkTransactions } from '../utils/verifyTransaction'
-import fs from 'fs'
-import path from 'path'
 import { getInMemoryDb } from './utils'
+import { inspect } from 'util'
+import { TransactionWithFunder } from '../../backend/src/utils/fund-transactions';
 
-//import handlerAmountAndProof from '../pages/api/grant/v1/amount_and_proof'
-//import handlerFundTransaction from '../pages/api/grant/v1/fund_transaction'
-
-const wallet = process.env.FUNDER_KEYPAIR
-  ? new NodeWallet(
-      Keypair.fromSecretKey(
-        Uint8Array.from(JSON.parse(process.env.FUNDER_KEYPAIR))
-      )
-    )
-  : loadFunderWallet()
+const wallets = loadFunderWallets()
 
 const PROGRAM_ID = new PublicKey(process.env.PROGRAM_ID!)
 
@@ -92,7 +84,7 @@ export default async function handlerFundTransaction(
   }
 
   const data = req.body
-  let transactions: VersionedTransaction[] = []
+  let transactions: TransactionWithFunder[] = []
   let signedTransactions: VersionedTransaction[] = []
 
   if (data.length >= 10) {
@@ -103,18 +95,30 @@ export default async function handlerFundTransaction(
 
   try {
     transactions = data.map((serializedTx: any) => {
-      return VersionedTransaction.deserialize(Buffer.from(serializedTx))
+      return {
+        transaction: VersionedTransaction.deserialize(Buffer.from(serializedTx.tx)),
+        funder: serializedTx.funder,
+      }
     })
-  } catch {
+  } catch(e) {
+    console.error(e)
     return res.status(400).json({
       error: 'Failed to deserialize transactions',
     })
   }
 
-  if (checkTransactions(transactions, PROGRAM_ID, WHITELISTED_PROGRAMS)) {
+  if (checkTransactions(transactions.map((tx) => tx.transaction), PROGRAM_ID, WHITELISTED_PROGRAMS)) {
     try {
-      signedTransactions = await wallet.signAllTransactions(transactions)
-    } catch {
+      for(const txWithFunder of transactions){
+        const wallet = wallets[txWithFunder.funder];
+        if(!wallet){
+          return res.status(403).json({ error: 'Unauthorized funder' })
+      }
+
+        signedTransactions.push(await wallet.signTransaction(txWithFunder.transaction));
+    }
+    } catch(e) {
+      console.error('Failed to sign transactions', e)
       return res.status(400).json({
         error:
           'Failed to sign transactions, make sure the transactions have the right funder',
@@ -145,7 +149,7 @@ export class NextApiResponseMock {
   }
 }
 export async function mockfetchFundTransaction(
-  transactions: VersionedTransaction[]
+  transactions: TransactionWithPayers[],
 ): Promise<VersionedTransaction[]> {
   const req: NextApiRequest = {
     url: getFundTransactionRoute(),
@@ -153,7 +157,12 @@ export async function mockfetchFundTransaction(
     headers: {
       'Content-Type': 'application/json',
     },
-    body: transactions.map((tx) => Buffer.from(tx.serialize())),
+    body: transactions.map((txWitPayers) => {
+      return {
+        tx: Buffer.from(txWitPayers.tx.serialize()),
+        funder: txWitPayers.payers[0].toBase58(),
+      }
+    }),
   } as unknown as NextApiRequest
   const res = new NextApiResponseMock()
   await handlerFundTransaction(req, res as unknown as NextApiResponse)

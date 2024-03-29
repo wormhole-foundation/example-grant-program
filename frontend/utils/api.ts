@@ -4,6 +4,7 @@ import { HASH_SIZE } from '../claim_sdk/merkleTree'
 import { PublicKey, VersionedTransaction } from '@solana/web3.js'
 import { SignedMessage } from '../claim_sdk/ecosystems/signatures'
 import { ECOSYSTEM_IDS } from './constants'
+import { inspect } from 'util'
 
 const MERKLE_PROOFS = process.env.NEXT_PUBLIC_MERKLE_PROOFS
 const BACKEND_API = process.env.NEXT_PUBLIC_BACKEND_API
@@ -150,7 +151,6 @@ export type TransactionWithPayers = {
 export async function fetchFundTransaction(
   transactions: TransactionWithPayers[]
 ): Promise<VersionedTransaction[]> {
-
   const response = await fetch(getFundTransactionRoute(), {
     method: 'POST',
     headers: {

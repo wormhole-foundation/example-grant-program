@@ -28,6 +28,7 @@ import { SignedMessage } from './ecosystems/signatures'
 import { extractChainId } from './ecosystems/cosmos'
 import { fetchFundTransaction } from '../utils/api'
 import { getClaimPayers } from './treasury'
+import { inspect } from 'util'
 
 export const ERROR_SIGNING_TX = 'error: signing transaction'
 export const ERROR_FUNDING_TX = 'error: funding transaction'
@@ -232,13 +233,14 @@ export class TokenDispenserProvider {
     }[],
     fetchFundTransactionFunction: (
       transactions: TransactionWithPayers[]
-    ) => Promise<VersionedTransaction[]> = fetchFundTransaction // This argument is only used for testing where we can't call the API
+    ) => Promise<VersionedTransaction[]> = fetchFundTransaction, // This argument is only used for testing where we can't call the API
+    getPayersForClaim: (claimInfo: ClaimInfo) => [anchor.web3.PublicKey, anchor.web3.PublicKey] = getClaimPayers,  // This argument is only used for testing where we can't call the API
   ): Promise<Promise<TransactionError | null>[]> {
     const txs: TransactionWithPayers[] = []
 
     try {
       for (const claim of claims) {
-        const [funder, treasury] = getClaimPayers(claim.claimInfo);
+        const [funder, treasury] = getPayersForClaim(claim.claimInfo);
 
         txs.push(
           {
@@ -254,7 +256,7 @@ export class TokenDispenserProvider {
         )
       }
     } catch (e) {
-      console.log(e)
+      console.error(e)
       throw new Error(ERROR_CRAFTING_TX)
     }
 
@@ -265,6 +267,7 @@ export class TokenDispenserProvider {
         this.tokenDispenserProgram.provider as anchor.AnchorProvider
       ).wallet.signAllTransactions(txs.map((tx) => tx.tx)));
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_SIGNING_TX)
     }
 
@@ -279,6 +282,7 @@ export class TokenDispenserProvider {
     try {
       txsSignedTwice = await fetchFundTransactionFunction(txsSignedOnceWithPayers)
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_FUNDING_TX)
     }
 
@@ -494,7 +498,7 @@ export class TokenDispenserProvider {
     mint: Token
     treasury: PublicKey
   }> {
-    const mintAuthority = anchor.web3.Keypair.generate()
+    const mintAuthority = anchor.web3.Keypair.generate();
 
     await airdrop(this.connection, LAMPORTS_PER_SOL, mintAuthority.publicKey)
     const mint = await Token.createMint(
