@@ -73,7 +73,7 @@ mod tests;
 
 mod ecosystems;
 
-declare_id!("WabZqXyytFA2XeXswf9DdQkQuSZuRiEgKdDmq7c5Mnp");
+declare_id!("WAPGu4AoTGCYbp1iXnZTpBn89VkJNJX3jY7uPuUZAv7");
 
 const CONFIG_SEED: &[u8] = b"config";
 const RECEIPT_SEED: &[u8] = b"receipt";
