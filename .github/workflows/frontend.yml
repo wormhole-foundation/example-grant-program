@@ -15,7 +15,7 @@ jobs:
         ENDPOINT: http://localhost:8899
 
     env:
-      PROGRAM_ID: WabZqXyytFA2XeXswf9DdQkQuSZuRiEgKdDmq7c5Mnp
+      PROGRAM_ID: WAPGu4AoTGCYbp1iXnZTpBn89VkJNJX3jY7uPuUZAv7
 
     defaults:
       run:
