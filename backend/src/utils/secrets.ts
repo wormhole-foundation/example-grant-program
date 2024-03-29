@@ -4,7 +4,6 @@ import {
   GetSecretValueCommand
 } from '@aws-sdk/client-secrets-manager'
 import config from '../config'
-import { PublicKey } from '@solana/web3.js';
 
 const client = new SecretsManagerClient({ region: config.aws.region })
 
@@ -19,17 +18,21 @@ export async function getDispenserKey() {
   return { key: JSON.parse(key) }
 }
 
-export async function getFundingKeys(): Promise<{ keys: Uint8Array[] }> {
-  let keys: Uint8Array[] = [];
+export async function getFundingKeys(): Promise<Record<string, Uint8Array>> {
+  let keys: Record<string, Uint8Array> = {};
   if (config.keys.funding.key) {
     console.log('Using funding key from config')
     // TODO: Is this ok??
     const privKey = Uint8Array.from(config.keys.funding.key.split("").map((l) => l.charCodeAt(0)));
-    keys = [privKey]
+    keys = {
+      key: privKey
+    }
+
+    return keys;
   }
 
   keys = await getSecret(config.keys.funding.secretName)
-  return { keys }
+  return keys;
 }
 
 export async function getSecretKey(secretName: string, keyName: string) {

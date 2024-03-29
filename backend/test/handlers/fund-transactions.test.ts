@@ -229,7 +229,7 @@ const givenDownstreamServicesWork = () => {
   server.use(
     http.all('https://secretsmanager.us-east-2.amazonaws.com', () => {
       return HttpResponse.json({
-        SecretString: JSON.stringify({ key: `[${[...FUNDER_KEY.secretKey]}]` })
+        SecretString: JSON.stringify({ keys: `[${[...FUNDER_KEY.secretKey]}]` })
       })
     })
   )
@@ -238,7 +238,12 @@ const givenDownstreamServicesWork = () => {
 
 const whenFundTransactionsCalled = async () => {
   response = await fundTransactions({
-    body: JSON.stringify(input.map((tx) => Buffer.from(tx.serialize())))
+    body: JSON.stringify(input.map((tx) => {
+      return {
+        tx: Buffer.from(tx.serialize()),
+        funder: FUNDER_KEY.publicKey,
+      }
+    }))
   } as unknown as APIGatewayProxyEvent)
 }
 

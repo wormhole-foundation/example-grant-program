@@ -12,7 +12,7 @@ import { asJsonResponse } from '../utils/response'
 
 export type FundTransactionRequest = Uint8Array[]
 
-let funderWallets: Record<string, NodeWallet>
+let funderWallets: Record<string, NodeWallet> = {};
 
 export const fundTransactions = async (
   event: APIGatewayProxyEvent
@@ -67,21 +67,22 @@ function validateFundTransactions(transactions: unknown) {
 }
 
 async function loadFunderWallets(): Promise<Record<string, NodeWallet>> {
-  if (funderWallets) {
+  if (Object.keys(funderWallets).length > 0){
     return funderWallets;
   }
 
   const secretData = await getFundingKeys()
-  const funderWalletKeys = secretData.keys;
+  const funderWalletKeys = Object.values(secretData);
 
-  const keypairs = funderWalletKeys.map((key) => Keypair.fromSecretKey(Uint8Array.from(key)));
+  const keypairs = funderWalletKeys.map((key) => {
+    const parsedKey = key.toString().replace("[","").replace("]","").split(",").map((l) => parseInt(l));
+    return Keypair.fromSecretKey(Uint8Array.from(parsedKey));
+  });
 
   keypairs.forEach((keypair) => {
-    console.log(`Loaded funder wallet: ${keypair.publicKey.toBase58()}`)
     funderWallets[keypair.publicKey.toBase58()] = new NodeWallet(keypair)
   })
 
-  console.log('Loaded funder wallets')
   return funderWallets;
 }
 
