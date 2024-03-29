@@ -106,6 +106,7 @@ export function EVMWalletButton({
         onSelect: () => onSelect(connector),
         icon: getIcon(connector.id as WalletIds),
       }))}
+      isEVM={true}
       walletConnectedButton={(address: string) => (
         <WalletConnectedButton
           onClick={disconnect}
