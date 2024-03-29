@@ -9,8 +9,8 @@ use {
                 Ed25519Pubkey,
                 Ed25519TestMessage,
             },
-            sui::SuiMessage,
             solana::SolanaMessage,
+            sui::SuiMessage,
         },
         tests::dispenser_simulator::DispenserSimulator,
         Identity,
@@ -146,7 +146,7 @@ impl Ed25519TestIdentityCertificate<DiscordMessage> {
 impl From<Ed25519TestIdentityCertificate<SolanaMessage>> for Identity {
     fn from(val: Ed25519TestIdentityCertificate<SolanaMessage>) -> Self {
         Identity::Solana {
-            pubkey: Ed25519Pubkey::from(val.public_key.to_bytes()).into(),
+            pubkey: Ed25519Pubkey::from(val.public_key.to_bytes()),
         }
     }
 }

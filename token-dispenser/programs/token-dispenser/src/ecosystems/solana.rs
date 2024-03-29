@@ -46,16 +46,16 @@ impl SolanaMessage {
     }
 
     pub fn parse(data: &[u8]) -> Result<Self> {
-      if let Some(payload) = data.strip_prefix(SOLANA_PREFIX) {
-        if payload.len() >= 2 {
-          let length = u16::from_le_bytes([payload[0], payload[1]]) as usize;
-          let message = &payload[2..];
-          if length == message.len() {
-            return Ok(SolanaMessage(message.to_vec()));
-          }
+        if let Some(payload) = data.strip_prefix(SOLANA_PREFIX) {
+            if payload.len() >= 2 {
+                let length = u16::from_le_bytes([payload[0], payload[1]]) as usize;
+                let message = &payload[2..];
+                if length == message.len() {
+                    return Ok(SolanaMessage(message.to_vec()));
+                }
+            }
         }
-      }
-      Err(ErrorCode::SignatureVerificationWrongPayloadMetadata.into())
+        Err(ErrorCode::SignatureVerificationWrongPayloadMetadata.into())
     }
 }
 

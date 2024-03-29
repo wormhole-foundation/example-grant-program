@@ -7,7 +7,12 @@ use {
     },
     crate::{
         ecosystems::{
-            aptos::AptosMessage, cosmos::CosmosMessage, discord::DiscordMessage, evm::EvmPrefixedMessage, solana::SolanaMessage, sui::SuiMessage
+            aptos::AptosMessage,
+            cosmos::CosmosMessage,
+            discord::DiscordMessage,
+            evm::EvmPrefixedMessage,
+            solana::SolanaMessage,
+            sui::SuiMessage,
         },
         get_config_pda,
         get_receipt_pda,

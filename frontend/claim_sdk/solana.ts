@@ -360,7 +360,6 @@ export class TokenDispenserProvider {
     claimInfo: ClaimInfo,
     signedMessage: SignedMessage | undefined
   ): IdlTypes<TokenDispenser>['IdentityCertificate'] {
-
     if (signedMessage) {
       switch (claimInfo.ecosystem) {
         case 'solana':

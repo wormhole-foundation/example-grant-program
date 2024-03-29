@@ -53,11 +53,11 @@ use {
             Secp256k1InstructionData,
             Secp256k1Signature,
         },
+        solana::SolanaMessage,
         sui::{
             SuiAddress,
             SuiMessage,
         },
-        solana::SolanaMessage,
     },
     pythnet_sdk::{
         accumulators::merkle::{
@@ -530,9 +530,7 @@ impl IdentityCertificate {
                     .get_payload(),
                     claimant,
                 )?;
-                Ok(Identity::Solana {
-                    pubkey,
-                })
+                Ok(Identity::Solana { pubkey})
             }
             IdentityCertificate::Injective {
                 pubkey,

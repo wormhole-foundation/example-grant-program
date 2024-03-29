@@ -485,7 +485,7 @@ export type TokenDispenser = {
             ]
           },
           {
-            name: 'Solana',
+            name: 'Solana'
             fields: [
               {
                 name: 'verification_instruction_index'
@@ -1148,9 +1148,9 @@ export const IDL: TokenDispenser = {
             fields: [
               {
                 name: 'verification_instruction_index',
-                type: 'u8'
-              }
-            ]
+                type: 'u8',
+              },
+            ],
           },
           {
             name: 'Sui',

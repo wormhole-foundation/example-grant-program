@@ -13,8 +13,8 @@ pub mod discord;
 pub mod ed25519;
 pub mod evm;
 pub mod secp256k1;
-pub mod sui;
 pub mod solana;
+pub mod sui;
 
 /**
  * Ecosystem agnostic authorization payload that the identity on the leaf needs to sign.
