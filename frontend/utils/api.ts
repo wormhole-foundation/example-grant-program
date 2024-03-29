@@ -144,8 +144,8 @@ export function handleFundTransaction(
 }
 
 export type TransactionWithPayers = {
-  tx: VersionedTransaction;
-  payers: [PublicKey, PublicKey];
+  tx: VersionedTransaction
+  payers: [PublicKey, PublicKey]
 }
 
 export async function fetchFundTransaction(
@@ -156,13 +156,15 @@ export async function fetchFundTransaction(
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(transactions.map((txWithPayers) => {
-      return {
-        tx: Buffer.from(txWithPayers.tx.serialize()),
-        funder: txWithPayers.payers[0].toBase58(),
-      }
-    })),
-  });
+    body: JSON.stringify(
+      transactions.map((txWithPayers) => {
+        return {
+          tx: Buffer.from(txWithPayers.tx.serialize()),
+          funder: txWithPayers.payers[0].toBase58(),
+        }
+      })
+    ),
+  })
 
   return handleFundTransaction(response.status, await response.json())
 }

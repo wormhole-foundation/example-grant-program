@@ -44,8 +44,8 @@ const AUTHORIZATION_PAYLOAD = [
 ]
 
 export type TransactionWithPayers = {
-  tx: VersionedTransaction;
-  payers: [PublicKey, PublicKey];
+  tx: VersionedTransaction
+  payers: [PublicKey, PublicKey]
 }
 
 /**
@@ -234,17 +234,18 @@ export class TokenDispenserProvider {
     fetchFundTransactionFunction: (
       transactions: TransactionWithPayers[]
     ) => Promise<VersionedTransaction[]> = fetchFundTransaction, // This argument is only used for testing where we can't call the API
-    getPayersForClaim: (claimInfo: ClaimInfo) => [anchor.web3.PublicKey, anchor.web3.PublicKey] = getClaimPayers,  // This argument is only used for testing where we can't call the API
+    getPayersForClaim: (
+      claimInfo: ClaimInfo
+    ) => [anchor.web3.PublicKey, anchor.web3.PublicKey] = getClaimPayers // This argument is only used for testing where we can't call the API
   ): Promise<Promise<TransactionError | null>[]> {
     const txs: TransactionWithPayers[] = []
 
     try {
       for (const claim of claims) {
-        const [funder, treasury] = getPayersForClaim(claim.claimInfo);
+        const [funder, treasury] = getPayersForClaim(claim.claimInfo)
 
-        txs.push(
-          {
-            tx: await this.generateClaimTransaction(
+        txs.push({
+          tx: await this.generateClaimTransaction(
             funder,
             treasury,
             claim.claimInfo,
@@ -252,8 +253,7 @@ export class TokenDispenserProvider {
             claim.signedMessage
           ),
           payers: [funder, treasury],
-          }
-        )
+        })
       }
     } catch (e) {
       console.error(e)
@@ -263,24 +263,28 @@ export class TokenDispenserProvider {
     let txsSignedOnce: VersionedTransaction[]
 
     try {
-      txsSignedOnce = (await (
+      txsSignedOnce = await (
         this.tokenDispenserProgram.provider as anchor.AnchorProvider
-      ).wallet.signAllTransactions(txs.map((tx) => tx.tx)));
+      ).wallet.signAllTransactions(txs.map((tx) => tx.tx))
     } catch (e) {
       console.error(e)
       throw new Error(ERROR_SIGNING_TX)
     }
 
-    const txsSignedOnceWithPayers: TransactionWithPayers[] = txsSignedOnce.map((tx, index) => {
-      return {
-        tx: tx,
-        payers: txs[index].payers,
+    const txsSignedOnceWithPayers: TransactionWithPayers[] = txsSignedOnce.map(
+      (tx, index) => {
+        return {
+          tx: tx,
+          payers: txs[index].payers,
+        }
       }
-    })
+    )
 
     let txsSignedTwice
     try {
-      txsSignedTwice = await fetchFundTransactionFunction(txsSignedOnceWithPayers)
+      txsSignedTwice = await fetchFundTransactionFunction(
+        txsSignedOnceWithPayers
+      )
     } catch (e) {
       console.error(e)
       throw new Error(ERROR_FUNDING_TX)
@@ -498,7 +502,7 @@ export class TokenDispenserProvider {
     mint: Token
     treasury: PublicKey
   }> {
-    const mintAuthority = anchor.web3.Keypair.generate();
+    const mintAuthority = anchor.web3.Keypair.generate()
 
     await airdrop(this.connection, LAMPORTS_PER_SOL, mintAuthority.publicKey)
     const mint = await Token.createMint(

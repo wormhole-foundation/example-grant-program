@@ -25,7 +25,7 @@ import { getInjectiveAddress } from '../utils/getInjectiveAddress'
 import { algorandGetFullMessage } from './ecosystems/algorand'
 import { getAlgorandAddress } from '../utils/getAlgorandAddress'
 import nacl from 'tweetnacl'
-import { inspect } from 'util';
+import { inspect } from 'util'
 
 dotenv.config() // Load environment variables from .env file
 
@@ -52,12 +52,17 @@ export function loadAnchorWallet(): NodeWallet {
 }
 
 export function loadFunderWallets(): Record<string, NodeWallet> {
-  const result: Record<string, NodeWallet> = {};
-  let keypair: Keypair;
-  if(process.env.FUNDER_KEYPAIR){
+  const result: Record<string, NodeWallet> = {}
+  let keypair: Keypair
+  if (process.env.FUNDER_KEYPAIR) {
     keypair = Keypair.fromSecretKey(
-      Uint8Array.from(process.env.FUNDER_KEYPAIR.replace("[", "").replace("]", "").split(",").map((x: string) => parseInt(x))
-    ));
+      Uint8Array.from(
+        process.env.FUNDER_KEYPAIR.replace('[', '')
+          .replace(']', '')
+          .split(',')
+          .map((x: string) => parseInt(x))
+      )
+    )
   } else {
     keypair = Keypair.fromSecretKey(
       new Uint8Array(
@@ -73,14 +78,16 @@ export function loadFunderWallets(): Record<string, NodeWallet> {
 
   result[keypair.publicKey.toBase58()] = new NodeWallet(keypair)
 
-  return result;
+  return result
 }
 
 export function getTestClaimPayers(treasury: PublicKey) {
- return function (claimInfo: ClaimInfo): [PublicKey, PublicKey]{
-   const funder = Keypair.fromSecretKey(Object.entries(loadFunderWallets())[0][1].payer.secretKey);
-   return [funder.publicKey, treasury]
- }
+  return function (claimInfo: ClaimInfo): [PublicKey, PublicKey] {
+    const funder = Keypair.fromSecretKey(
+      Object.entries(loadFunderWallets())[0][1].payer.secretKey
+    )
+    return [funder.publicKey, treasury]
+  }
 }
 
 export async function loadTestWallets(): Promise<

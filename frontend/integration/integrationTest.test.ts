@@ -72,7 +72,7 @@ describe('integration test', () => {
 
   describe('token dispenser e2e', () => {
     const wallet = loadAnchorWallet()
-    const funderWallet = Object.entries(loadFunderWallets())[0][1];
+    const funderWallet = Object.entries(loadFunderWallets())[0][1]
     const endpoint = 'http://127.0.0.1:8899'
     const tokenDispenserPid = new PublicKey(
       'WApA1JC9eJLaULc2Ximo5TffuqCESzf47JZsuhYvfzC'
@@ -190,7 +190,7 @@ describe('integration test', () => {
         await tokenDispenserProvider.submitClaims(
           [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
           mockfetchFundTransaction,
-          getTestClaimPayers(treasury),
+          getTestClaimPayers(treasury)
         )
       )
 

@@ -38,13 +38,13 @@ const WHITELISTED_PROGRAMS: PublicKey[] = [
 ]
 
 const RANDOM_BLOCKHASH = 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
-const funderWallets = loadFunderWallets();
-const funderPubkey = Object.entries(funderWallets)[0][1].publicKey;
+const funderWallets = loadFunderWallets()
+const funderPubkey = Object.entries(funderWallets)[0][1].publicKey
 
 function getTestPayers(): [PublicKey, PublicKey] {
-  const wallets = loadFunderWallets();
-  const walletsArray = Object.entries(wallets);
-  return [walletsArray[0][1].publicKey, treasuries[0]];
+  const wallets = loadFunderWallets()
+  const walletsArray = Object.entries(wallets)
+  return [walletsArray[0][1].publicKey, treasuries[0]]
 }
 
 function createTestTransactionFromInstructions(
@@ -252,10 +252,12 @@ describe('test fund transaction api', () => {
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([{
-        tx: transactionBadTransfer2,
-        payers: getTestPayers(),
-      }]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionBadTransfer2,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
@@ -266,10 +268,12 @@ describe('test fund transaction api', () => {
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([{
-        tx: transactionBadTransfer3,
-        payers: getTestPayers(),
-      }]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionBadTransfer3,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
@@ -280,10 +284,12 @@ describe('test fund transaction api', () => {
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([{
-        tx: transactionLegacy,
-        payers: getTestPayers(),
-      }]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionLegacy,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions([transactionLegacy], PROGRAM_ID, WHITELISTED_PROGRAMS)
@@ -446,13 +452,16 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionLegacy)).toBe(2)
 
     // Grouped transactions
-    await mockfetchFundTransaction([{
-      tx: transactionOK1,
-      payers: getTestPayers(),
-    }, {
-      tx: transactionOK2,
-      payers: getTestPayers(),
-    }])
+    await mockfetchFundTransaction([
+      {
+        tx: transactionOK1,
+        payers: getTestPayers(),
+      },
+      {
+        tx: transactionOK2,
+        payers: getTestPayers(),
+      },
+    ])
     expect(
       checkTransactions(
         [transactionOK1, transactionOK2],

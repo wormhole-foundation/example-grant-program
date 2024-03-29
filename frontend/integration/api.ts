@@ -19,7 +19,7 @@ import { loadFunderWallets } from '../claim_sdk/testWallets'
 import { checkTransactions } from '../utils/verifyTransaction'
 import { getInMemoryDb } from './utils'
 import { inspect } from 'util'
-import { TransactionWithFunder } from '../../backend/src/utils/fund-transactions';
+import { TransactionWithFunder } from '../../backend/src/utils/fund-transactions'
 
 const wallets = loadFunderWallets()
 
@@ -96,28 +96,38 @@ export default async function handlerFundTransaction(
   try {
     transactions = data.map((serializedTx: any) => {
       return {
-        transaction: VersionedTransaction.deserialize(Buffer.from(serializedTx.tx)),
+        transaction: VersionedTransaction.deserialize(
+          Buffer.from(serializedTx.tx)
+        ),
         funder: serializedTx.funder,
       }
     })
-  } catch(e) {
+  } catch (e) {
     console.error(e)
     return res.status(400).json({
       error: 'Failed to deserialize transactions',
     })
   }
 
-  if (checkTransactions(transactions.map((tx) => tx.transaction), PROGRAM_ID, WHITELISTED_PROGRAMS)) {
+  if (
+    checkTransactions(
+      transactions.map((tx) => tx.transaction),
+      PROGRAM_ID,
+      WHITELISTED_PROGRAMS
+    )
+  ) {
     try {
-      for(const txWithFunder of transactions){
-        const wallet = wallets[txWithFunder.funder];
-        if(!wallet){
+      for (const txWithFunder of transactions) {
+        const wallet = wallets[txWithFunder.funder]
+        if (!wallet) {
           return res.status(403).json({ error: 'Unauthorized funder' })
-      }
+        }
 
-        signedTransactions.push(await wallet.signTransaction(txWithFunder.transaction));
-    }
-    } catch(e) {
+        signedTransactions.push(
+          await wallet.signTransaction(txWithFunder.transaction)
+        )
+      }
+    } catch (e) {
       console.error('Failed to sign transactions', e)
       return res.status(400).json({
         error:
@@ -149,7 +159,7 @@ export class NextApiResponseMock {
   }
 }
 export async function mockfetchFundTransaction(
-  transactions: TransactionWithPayers[],
+  transactions: TransactionWithPayers[]
 ): Promise<VersionedTransaction[]> {
   const req: NextApiRequest = {
     url: getFundTransactionRoute(),
