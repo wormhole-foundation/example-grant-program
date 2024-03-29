@@ -1,6 +1,6 @@
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { getFundingKey } from '../utils/secrets'
+import { getFundingKeys } from '../utils/secrets'
 import {
   checkTransactions,
   deserializeTransactions
@@ -12,7 +12,7 @@ import { asJsonResponse } from '../utils/response'
 
 export type FundTransactionRequest = Uint8Array[]
 
-let funderWallet: NodeWallet
+let funderWallets: Record<string, NodeWallet>
 
 export const fundTransactions = async (
   event: APIGatewayProxyEvent
@@ -21,15 +21,25 @@ export const fundTransactions = async (
     const requestBody = JSON.parse(event.body!)
     validateFundTransactions(requestBody)
     const transactions = deserializeTransactions(requestBody)
-    const isTransactionsValid = await checkTransactions(transactions)
+    const isTransactionsValid = await checkTransactions(transactions.map((txWithFunder) => txWithFunder.transaction));
 
     if (!isTransactionsValid) {
       return asJsonResponse(403, { error: 'Unauthorized transactions' })
     }
 
-    const wallet = await loadFunderWallet()
+    const wallets = await loadFunderWallets();
 
-    const signedTransactions = await wallet.signAllTransactions(transactions)
+    const signedTransactions: VersionedTransaction[] = [];
+
+    for(const txWithFunder of transactions){
+      const funderWallet = wallets[txWithFunder.funder];
+      if(!funderWallet){
+        return asJsonResponse(403, { error: 'Unauthorized funder' })
+      }
+
+      signedTransactions.push(await funderWallet.signTransaction(txWithFunder.transaction));
+    }
+
     logSignatures(signedTransactions)
     return asJsonResponse(
       200,
@@ -56,19 +66,23 @@ function validateFundTransactions(transactions: unknown) {
   }
 }
 
-async function loadFunderWallet(): Promise<NodeWallet> {
-  if (funderWallet) {
-    return funderWallet
+async function loadFunderWallets(): Promise<Record<string, NodeWallet>> {
+  if (funderWallets) {
+    return funderWallets;
   }
 
-  const secretData = await getFundingKey()
-  const funderWalletKey = secretData.key
+  const secretData = await getFundingKeys()
+  const funderWalletKeys = secretData.keys;
 
-  const keypair = Keypair.fromSecretKey(Uint8Array.from(funderWalletKey))
+  const keypairs = funderWalletKeys.map((key) => Keypair.fromSecretKey(Uint8Array.from(key)));
 
-  funderWallet = new NodeWallet(keypair)
-  console.log('Loaded funder wallet')
-  return funderWallet
+  keypairs.forEach((keypair) => {
+    console.log(`Loaded funder wallet: ${keypair.publicKey.toBase58()}`)
+    funderWallets[keypair.publicKey.toBase58()] = new NodeWallet(keypair)
+  })
+
+  console.log('Loaded funder wallets')
+  return funderWallets;
 }
 
 function getSignature(tx: VersionedTransaction): string {
