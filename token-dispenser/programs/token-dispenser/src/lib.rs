@@ -169,7 +169,7 @@ pub mod token_dispenser {
 
         emit!(ClaimEvent {
             remaining_balance: treasury.amount,
-            treasury: *ctx.accounts.treasury.key,
+            treasury: ctx.accounts.treasury.key(),
             claimant: *ctx.accounts.claimant.key,
             claim_info,
         });
