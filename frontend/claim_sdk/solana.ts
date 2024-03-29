@@ -42,6 +42,11 @@ const AUTHORIZATION_PAYLOAD = [
   '\nto claim my W tokens.\n',
 ]
 
+export type TransactionWithPayers = {
+  tx: VersionedTransaction;
+  payers: [PublicKey, PublicKey];
+}
+
 /**
  * This class wraps the interaction with the TokenDispenser
  * program for a specific claimant. The claimant will be the
@@ -226,14 +231,10 @@ export class TokenDispenserProvider {
       signedMessage: SignedMessage | undefined
     }[],
     fetchFundTransactionFunction: (
-      transactions: VersionedTransaction[]
+      transactions: TransactionWithPayers[]
     ) => Promise<VersionedTransaction[]> = fetchFundTransaction // This argument is only used for testing where we can't call the API
   ): Promise<Promise<TransactionError | null>[]> {
-    const txs: {
-      tx: VersionedTransaction,
-      payers: [PublicKey, PublicKey],
-      index: number
-    }[] = []
+    const txs: TransactionWithPayers[] = []
 
     try {
       for (const claim of claims) {
@@ -249,33 +250,34 @@ export class TokenDispenserProvider {
             claim.signedMessage
           ),
           payers: [funder, treasury],
-          index: claims.indexOf(claim),
           }
         )
       }
     } catch (e) {
+      console.log(e)
       throw new Error(ERROR_CRAFTING_TX)
     }
 
-    let txsSignedOnce: {
-      tx: VersionedTransaction,
-      payers: [PublicKey, PublicKey]
-    }[];
+    let txsSignedOnce: VersionedTransaction[]
 
     try {
       txsSignedOnce = (await (
         this.tokenDispenserProgram.provider as anchor.AnchorProvider
-      ).wallet.signAllTransactions(txs.map((tx) => tx.tx))).map((signed) => {
-        tx: signed,
-        payers: tx.payers
-      })
+      ).wallet.signAllTransactions(txs.map((tx) => tx.tx)));
     } catch (e) {
       throw new Error(ERROR_SIGNING_TX)
     }
 
+    const txsSignedOnceWithPayers: TransactionWithPayers[] = txsSignedOnce.map((tx, index) => {
+      return {
+        tx: tx,
+        payers: txs[index].payers,
+      }
+    })
+
     let txsSignedTwice
     try {
-      txsSignedTwice = await fetchFundTransactionFunction(txsSignedOnce)
+      txsSignedTwice = await fetchFundTransactionFunction(txsSignedOnceWithPayers)
     } catch (e) {
       throw new Error(ERROR_FUNDING_TX)
     }
