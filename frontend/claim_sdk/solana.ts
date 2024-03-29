@@ -295,9 +295,7 @@ export class TokenDispenserProvider {
     signedMessage: SignedMessage | undefined
   ): Promise<VersionedTransaction> {
     const [receiptPda, receiptBump] = this.getReceiptPda(claimInfo)
-
     const { funder, mint, treasury } = await this.getConfig()
-
     //same as getClaimantFundAddress / getAssociatedTokenAddress but with bump
     const [claimantFund, claimaintFundBump] = PublicKey.findProgramAddressSync(
       [
@@ -307,13 +305,10 @@ export class TokenDispenserProvider {
       ],
       splToken.ASSOCIATED_TOKEN_PROGRAM_ID
     )
-
     const [claimantFundAccount, lookupTableAccount] = await Promise.all([
       this.connection.getAccountInfo(claimantFund),
       this.getLookupTableAccount(),
     ])
-
-    
     
     const ixs: anchor.web3.TransactionInstruction[] = []
 
@@ -331,7 +326,7 @@ export class TokenDispenserProvider {
           funder
         )
       )
-    
+
     // 2. add signatureVerification instruction if needed
     const signatureVerificationIx =
       this.generateSignatureVerificationInstruction(
@@ -407,7 +402,7 @@ export class TokenDispenserProvider {
         : ataCreationCost + pdaDerivationCosts(claimaintFundBump))
     ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
-    const microLamports = 500_000; //TODO determine true value
+    const microLamports = 500_000 //TODO determine true value
     ixs.push(ComputeBudgetProgram.setComputeUnitPrice({ microLamports }))
 
     // 5. build and return the transaction
