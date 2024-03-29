@@ -186,7 +186,7 @@ export function useDiscordSignMessage(): SignMessageFn {
 }
 
 // This hook returns a function to sign message for the Algorand wallet.
-export function useAlgorandSignMessage(nonce = 'nonce'): SignMessageFn {
+export function useAlgorandSignMessage(): SignMessageFn {
   const { signMessage, connected, account } = useAlgorandWallet()
 
   const signMessageCb = useCallback(
@@ -201,7 +201,7 @@ export function useAlgorandSignMessage(nonce = 'nonce'): SignMessageFn {
         console.error(e)
       }
     },
-    [connected, account, signMessage, nonce]
+    [connected, account, signMessage]
   )
   return signMessageCb
 }
@@ -210,6 +210,7 @@ export function useAlgorandSignMessage(nonce = 'nonce'): SignMessageFn {
 export function useSignMessage(ecosystem: Ecosystem): SignMessageFn {
   const aptosSignMessageFn = useAptosSignMessage()
   const evmSignMessageFn = useEVMSignMessage()
+  const injectiveSignMessageFn = useCosmosSignMessage('injective')
   const osmosisSignMessageFn = useCosmosSignMessage('osmosis')
   const terraSignMessageFn = useCosmosSignMessage('terra')
   const suiSignMessageFn = useSuiSignMessage()
@@ -223,7 +224,7 @@ export function useSignMessage(ecosystem: Ecosystem): SignMessageFn {
     case Ecosystem.EVM:
       return evmSignMessageFn
     case Ecosystem.INJECTIVE:
-      return evmSignMessageFn
+      return injectiveSignMessageFn
     case Ecosystem.TERRA:
       return terraSignMessageFn
     case Ecosystem.OSMOSIS:
