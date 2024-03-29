@@ -294,26 +294,6 @@ export class TokenDispenserProvider {
     proofOfInclusion: Uint8Array[],
     signedMessage: SignedMessage | undefined
   ): Promise<VersionedTransaction> {
-    // 1. generate claim certificate
-    //    a. create proofOfIdentity
-    const proofOfIdentity = this.createProofOfIdentity(claimInfo, signedMessage)
-
-    const claimCert: IdlTypes<TokenDispenser>['ClaimCertificate'] = {
-      amount: claimInfo.amount,
-      proofOfIdentity,
-      proofOfInclusion,
-    }
-
-    const ixs: anchor.web3.TransactionInstruction[] = []
-
-    // 2. generate signature verification instruction if needed
-    const signatureVerificationIx =
-      this.generateSignatureVerificationInstruction(
-        claimInfo.ecosystem,
-        signedMessage
-      )
-
-    // 3. derive receipt pda
     const [receiptPda, receiptBump] = this.getReceiptPda(claimInfo)
 
     const { funder, mint, treasury } = await this.getConfig()
@@ -333,6 +313,11 @@ export class TokenDispenserProvider {
       this.getLookupTableAccount(),
     ])
 
+    
+    
+    const ixs: anchor.web3.TransactionInstruction[] = []
+
+    // 1. add create ATA instruction if needed
     const claimantFundExists = claimantFundAccount !== null
 
     if (!claimantFundExists)
@@ -346,8 +331,28 @@ export class TokenDispenserProvider {
           funder
         )
       )
+    
+    // 2. add signatureVerification instruction if needed
+    const signatureVerificationIx =
+      this.generateSignatureVerificationInstruction(
+        claimInfo.ecosystem,
+        signedMessage
+      )
 
     if (signatureVerificationIx) ixs.push(signatureVerificationIx)
+
+    // 3. add claim instruction
+    const proofOfIdentity = this.createProofOfIdentity(
+      claimInfo,
+      signedMessage,
+      ixs.length - 1
+    )
+
+    const claimCert: IdlTypes<TokenDispenser>['ClaimCertificate'] = {
+      amount: claimInfo.amount,
+      proofOfIdentity,
+      proofOfInclusion,
+    }
 
     ixs.push(
       await this.tokenDispenserProgram.methods
@@ -374,6 +379,7 @@ export class TokenDispenserProvider {
         .instruction()
     )
 
+    // 4. add Compute Unit instructions
     const pdaDerivationCosts = (bump: number) => {
       const maxBump = 255
       const cusPerPdaDerivation = 1500
@@ -401,23 +407,23 @@ export class TokenDispenserProvider {
         : ataCreationCost + pdaDerivationCosts(claimaintFundBump))
     ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
-    const microLamports = 1 //TODO determine true value
+    const microLamports = 500_000; //TODO determine true value
     ixs.push(ComputeBudgetProgram.setComputeUnitPrice({ microLamports }))
 
-    const claimTx = new VersionedTransaction(
+    // 5. build and return the transaction
+    return new VersionedTransaction(
       new TransactionMessage({
         instructions: ixs,
         payerKey: funder,
         recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
       }).compileToV0Message([lookupTableAccount!])
     )
-
-    return claimTx
   }
 
   private createProofOfIdentity(
     claimInfo: ClaimInfo,
-    signedMessage: SignedMessage | undefined
+    signedMessage: SignedMessage | undefined,
+    verificationInstructionIndex: number
   ): IdlTypes<TokenDispenser>['IdentityCertificate'] {
     if (claimInfo.ecosystem === 'solana') {
       return {
@@ -435,7 +441,7 @@ export class TokenDispenserProvider {
           return {
             [claimInfo.ecosystem]: {
               pubkey: Array.from(signedMessage.publicKey),
-              verificationInstructionIndex: 0,
+              verificationInstructionIndex,
             },
           }
         }
@@ -455,7 +461,7 @@ export class TokenDispenserProvider {
           return {
             discord: {
               username: claimInfo.identity,
-              verificationInstructionIndex: 0,
+              verificationInstructionIndex,
             },
           }
         }
