@@ -88,7 +88,7 @@ export class ClaimInfo {
       case 'algorand': {
         identityStruct = {
           algorand: {
-            address: base32decode(this.identity),
+            pubkey: base32decode(this.identity).subarray(0, 32),
           },
         }
         break
