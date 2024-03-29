@@ -35,7 +35,7 @@ use {
 //   https://docs.solanalabs.com/cli/examples/sign-offchain-message#protocol-specification
 //   https://github.com/solana-labs/solana/blob/master/docs/src/proposals/off-chain-message-signing.md#message-format
 //   https://github.com/solana-labs/solana/blob/master/sdk/src/offchain_message.rs
-pub const SOLANA_PREFIX: &[u8] = b"\xffsolana offline\0\0";
+pub const SOLANA_PREFIX: &[u8] = b"\xffsolana offchain\0\0";
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone)]
 pub struct SolanaMessage(Vec<u8>);
