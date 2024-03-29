@@ -22,5 +22,12 @@ export default {
         process.env.FUNDER_WALLET_KEY_SECRET_NAME ??
         'xli-test-secret-funder-wallet'
     }
+  },
+  influx: {
+    url: process.env.INFLUXDB_URL ?? 'http://localhost:8086',
+    org: process.env.INFLUXDB_ORG ?? 'xl',
+    bucket: process.env.INFLUXDB_BUCKET ?? 'ad',
+    token: process.env.INFLUXDB_TOKEN ?? '',
+    timeout: parseInt(process.env.INFLUXDB_TIMEOUT_MS ?? '2_500')
   }
 }

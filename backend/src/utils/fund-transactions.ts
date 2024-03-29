@@ -7,10 +7,10 @@ import {
   TransactionInstruction,
   VersionedTransaction
 } from '@solana/web3.js'
-import { TokenDispenser, coder } from '../token-dispenser'
+import { coder } from '../token-dispenser'
 
 import config from '../config'
-import { IdlTypes } from '@coral-xyz/anchor'
+import { ClaimCertificate } from '../types'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
 const SET_COMPUTE_UNIT_PRICE_DISCRIMINANT = 3
@@ -210,8 +210,6 @@ export async function checkTransactions(
     return false
   }
 }
-
-type ClaimCertificate = IdlTypes<TokenDispenser>['ClaimCertificate']
 
 export function extractCallData(
   versionedTx: VersionedTransaction,
