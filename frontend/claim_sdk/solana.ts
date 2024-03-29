@@ -14,6 +14,7 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
   Secp256k1Program,
+  SignatureStatus,
   SystemProgram,
   SYSVAR_INSTRUCTIONS_PUBKEY,
   TransactionError,
@@ -28,7 +29,7 @@ import { SignedMessage } from './ecosystems/signatures'
 import { extractChainId } from './ecosystems/cosmos'
 import { fetchFundTransaction } from '../utils/api'
 import { getClaimPayers } from './treasury'
-import { inspect } from 'util'
+import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes'
 
 export const ERROR_SIGNING_TX = 'error: signing transaction'
 export const ERROR_FUNDING_TX = 'error: funding transaction'
@@ -300,31 +301,24 @@ export class TokenDispenserProvider {
     }
 
     // send the txns. Associated token account will be created if needed.
-    // Group by ecosystem and then by rpc provider
-    const sendTxs = txsSignedTwice.map((signedTx) => {
-      return this.providers.map(async ({ connection }) => {
-        try {
-          const signature = await connection.sendTransaction(signedTx, {
-            skipPreflight: true,
-          })
-          const latestBlockHash = await connection.getLatestBlockhash()
-          const result = await connection.confirmTransaction(
-            {
-              signature,
-              blockhash: latestBlockHash.blockhash,
-              lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-            },
-            'confirmed'
-          )
+    const sendTxs = await this.multiBroadcastTransactions(txsSignedTwice)
 
-          return result.value.err
-        } catch {
-          throw new Error(ERROR_RPC_CONNECTION)
-        }
-      })
+    const mapToOutput = sendTxs.map((tx) => {
+      // if the transaction comes back null this is actually an error
+      if (tx === null) {
+        //return as a promise
+        return Promise.resolve('Transaction failed to broadcast')
+      }
+      // if the transaction errored we will also have to handle that
+      if (tx.err) {
+        return Promise.resolve(tx.err)
+      }
+      //otherwise we are fine, return null
+      return Promise.resolve(null)
     })
 
-    return sendTxs
+    //Pack into another array for typechecking
+    return [mapToOutput]
   }
 
   public async generateClaimTransaction(
@@ -602,7 +596,141 @@ export class TokenDispenserProvider {
     )
     return { mint, treasury }
   }
+
+  private async multiBroadcastTransactions(
+    transactions: VersionedTransaction[]
+  ): Promise<(anchor.web3.SignatureStatus | null)[]> {
+    const output: (anchor.web3.SignatureStatus | null)[] = []
+    if (this.providers.length === 0) {
+      throw new Error('No valid endpoints to broadcast transactions')
+    }
+    const redundantBroadcasts = new Map<
+      VersionedTransaction,
+      Promise<anchor.web3.SignatureStatus | null>[]
+    >()
+
+    try {
+      for (const transaction of transactions) {
+        redundantBroadcasts.set(transaction, [])
+        //Cancellation token closure
+        let cancelled = false
+        const getCancellationSignal = () => cancelled
+        for (const endpoint of this.providers.map(
+          (provider) => provider.connection.rpcEndpoint
+        )) {
+          redundantBroadcasts.get(transaction)!.push(
+            this.broadcastTransaction(
+              transaction,
+              endpoint,
+              getCancellationSignal
+            ).then(
+              //call the cancellation only if the transaction signature is successful
+              (result) => {
+                if (
+                  result != null &&
+                  result.confirmations &&
+                  result.confirmations > 0
+                ) {
+                  cancelled = true
+                }
+                return result
+              }
+            )
+          )
+        }
+      }
+
+      for (const transaction of transactions) {
+        const allSettledPromises = await Promise.allSettled(
+          redundantBroadcasts.get(transaction)!
+        )
+        const successfulResults = allSettledPromises
+          .filter(
+            (result) =>
+              result.status === 'fulfilled' &&
+              result.value != null &&
+              result.value.confirmations &&
+              result.value.confirmations > 0
+          )
+          .map((result) =>
+            result.status === 'fulfilled' ? result.value : null
+          )
+
+        if (successfulResults.length >= 1) {
+          output.push(successfulResults[0])
+        } else {
+          output.push(successfulResults[0])
+        }
+      }
+
+      return output
+    } catch (e) {
+      //This should never hit
+      throw new Error('Top level error broadcasting transactions: ', e)
+    }
+  }
+
+  private async broadcastTransaction(
+    transaction: VersionedTransaction,
+    endpoint: string,
+    getCancellationSignal: () => boolean
+  ): Promise<anchor.web3.SignatureStatus | null> {
+    //Noting the time at start so that we can't inifinte loop in the event of a halted thread or dead rpc.
+    const timeStart = Date.now()
+    // 35 seconds
+    const maxTimeout = 35 * 1000
+    const connection = new Connection(endpoint)
+    let shouldRetry = getCancellationSignal()
+    //TODO check that this is really the txId
+    const txId = bs58.encode(transaction.signatures[0])
+
+    while (shouldRetry) {
+      //first send the transaction raw
+      try {
+        await connection.sendRawTransaction(transaction.serialize(), {
+          skipPreflight: true,
+          maxRetries: 0,
+        })
+      } catch (e) {
+        //just swallow it if it fails for now.
+      }
+
+      //Pull the signature status
+      try {
+        const status = await connection.getSignatureStatus(txId)
+        if (
+          status.value?.confirmationStatus === 'confirmed' ||
+          status.value?.confirmationStatus === 'finalized'
+          //Intentionally omitting processed, confirmed means 66% of stake voted on it
+        ) {
+          //If the transaction is confirmed or finalized we're all done.
+          return status.value
+          //Multibroadcast function should invoke the cancel token to cancel the other parallel broadcasts
+        }
+      } catch (e) {
+        //This means the status call actually rejected, which we can't really do anything about
+      }
+
+      //If we're here, we need to check the time and see if we should retry.
+      const timeEnd = Date.now()
+      //This should only trigger after we are sufficiently sure the blockhash will have expired.
+      if (timeEnd - timeStart > maxTimeout) {
+        return null
+      }
+
+      //wait 1.8 seconds so as to not murder the RPC
+      await wait(1800)
+
+      shouldRetry = getCancellationSignal()
+    }
+
+    //This means we got manually cancelled.
+    return null
+  }
 }
+
+const wait = (milliseconds: number) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds))
 
 export async function airdrop(
   connection: Connection,
