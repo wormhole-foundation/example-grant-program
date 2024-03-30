@@ -14,13 +14,13 @@ cluster = "devnet"
 wallet = "../frontend/integration/keys/funder_private_key.json"
 
 [programs.localnet]
-token_dispenser = "Wapg5wZgUZUj8UrLKiruTiC2LwT68g2i93UrrJ2poga"
+token_dispenser = "WApA1JC9eJLaULc2Ximo5TffuqCESzf47JZsuhYvfzC"
 
 [programs.mainnet]
-token_dispenser = "Wapg5wZgUZUj8UrLKiruTiC2LwT68g2i93UrrJ2poga"
+token_dispenser = "WApA1JC9eJLaULc2Ximo5TffuqCESzf47JZsuhYvfzC"
 
 [programs.devnet]
-token_dispenser = "Wapg5wZgUZUj8UrLKiruTiC2LwT68g2i93UrrJ2poga"
+token_dispenser = "WApA1JC9eJLaULc2Ximo5TffuqCESzf47JZsuhYvfzC"
 
 [scripts]
 test = "cargo test-bpf"
