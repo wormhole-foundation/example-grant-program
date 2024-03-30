@@ -104,9 +104,6 @@ type InitConfig = {
     maxTransfer: config.maxTransfer,
   });
 
-  console.log("Initialize instruction created");
-  console.log(initializeIx);
-
   const result = await ledgerSignAndSend([initializeIx], []);
 
   console.log("Dispenser initialized. Signature: ", result);
