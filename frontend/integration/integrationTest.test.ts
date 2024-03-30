@@ -74,7 +74,7 @@ describe('integration test', () => {
     const funderWallet = loadFunderWallet()
     const endpoint = 'http://127.0.0.1:8899'
     const tokenDispenserPid = new PublicKey(
-      'WabZqXyytFA2XeXswf9DdQkQuSZuRiEgKdDmq7c5Mnp'
+      'Wapg5wZgUZUj8UrLKiruTiC2LwT68g2i93UrrJ2poga'
     )
 
     const confirmOpts: anchor.web3.ConfirmOptions = {

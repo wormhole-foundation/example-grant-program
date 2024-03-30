@@ -21,18 +21,7 @@
         {
           "name": "mint",
           "isMut": false,
-          "isSigner": false,
-          "docs": ["Mint of the treasury"]
-        },
-        {
-          "name": "treasury",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "Treasury token account. This is an externally owned token account and",
-            "the owner of this account will approve the config as a delegate using the",
-            "solana CLI command `spl-token approve <treasury_account_address> <approve_amount> <config_address>`"
-          ]
+          "isSigner": false
         },
         {
           "name": "systemProgram",
@@ -49,15 +38,14 @@
         {
           "name": "merkleRoot",
           "type": {
-            "array": ["u8", 20]
+            "array": [
+              "u8",
+              20
+            ]
           }
         },
         {
           "name": "dispenserGuard",
-          "type": "publicKey"
-        },
-        {
-          "name": "funder",
           "type": "publicKey"
         },
         {
@@ -153,7 +141,10 @@
           {
             "name": "merkleRoot",
             "type": {
-              "array": ["u8", 20]
+              "array": [
+                "u8",
+                20
+              ]
             }
           },
           {
@@ -165,15 +156,7 @@
             "type": "publicKey"
           },
           {
-            "name": "treasury",
-            "type": "publicKey"
-          },
-          {
             "name": "addressLookupTable",
-            "type": "publicKey"
-          },
-          {
-            "name": "funder",
             "type": "publicKey"
           },
           {
@@ -351,7 +334,10 @@
             "name": "proofOfInclusion",
             "type": {
               "vec": {
-                "array": ["u8", 20]
+                "array": [
+                  "u8",
+                  20
+                ]
               }
             }
           }
@@ -381,7 +367,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 32]
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               }
             ]
@@ -392,7 +381,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 20]
+                  "array": [
+                    "u8",
+                    20
+                  ]
                 }
               }
             ]
@@ -403,7 +395,10 @@
               {
                 "name": "address",
                 "type": {
-                  "array": ["u8", 32]
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               }
             ]
@@ -414,7 +409,10 @@
               {
                 "name": "address",
                 "type": {
-                  "array": ["u8", 32]
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               }
             ]
@@ -443,7 +441,10 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 32]
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               }
             ]
@@ -464,7 +465,7 @@
                 "type": "string"
               },
               {
-                "name": "verificationInstructionIndex",
+                "name": "verification_instruction_index",
                 "type": "u8"
               }
             ]
@@ -475,11 +476,14 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 20]
+                  "array": [
+                    "u8",
+                    20
+                  ]
                 }
               },
               {
-                "name": "verificationInstructionIndex",
+                "name": "verification_instruction_index",
                 "type": "u8"
               }
             ]
@@ -493,11 +497,14 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 32]
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               },
               {
-                "name": "verificationInstructionIndex",
+                "name": "verification_instruction_index",
                 "type": "u8"
               }
             ]
@@ -508,11 +515,14 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 32]
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               },
               {
-                "name": "verificationInstructionIndex",
+                "name": "verification_instruction_index",
                 "type": "u8"
               }
             ]
@@ -521,23 +531,29 @@
             "name": "Cosmwasm",
             "fields": [
               {
-                "name": "chainId",
+                "name": "chain_id",
                 "type": "string"
               },
               {
                 "name": "signature",
                 "type": {
-                  "array": ["u8", 64]
+                  "array": [
+                    "u8",
+                    64
+                  ]
                 }
               },
               {
-                "name": "recoveryId",
+                "name": "recovery_id",
                 "type": "u8"
               },
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 65]
+                  "array": [
+                    "u8",
+                    65
+                  ]
                 }
               },
               {
@@ -552,11 +568,14 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 20]
+                  "array": [
+                    "u8",
+                    20
+                  ]
                 }
               },
               {
-                "name": "verificationInstructionIndex",
+                "name": "verification_instruction_index",
                 "type": "u8"
               }
             ]
@@ -567,11 +586,14 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": ["u8", 32]
+                  "array": [
+                    "u8",
+                    32
+                  ]
                 }
               },
               {
-                "name": "verificationInstructionIndex",
+                "name": "verification_instruction_index",
                 "type": "u8"
               }
             ]
@@ -584,6 +606,11 @@
     {
       "name": "ClaimEvent",
       "fields": [
+        {
+          "name": "treasury",
+          "type": "publicKey",
+          "index": false
+        },
         {
           "name": "remainingBalance",
           "type": "u64",
