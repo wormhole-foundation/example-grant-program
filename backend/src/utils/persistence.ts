@@ -1,8 +1,16 @@
 import { InfluxDB, Point } from '@influxdata/influxdb-client'
 import base32 from 'hi-base32'
+import { rawSecp256k1PubkeyToRawAddress } from "@cosmjs/amino";
+import { Secp256k1 } from "@cosmjs/crypto";
+import { toBech32 } from "@cosmjs/encoding";
 import config from '../config'
 import { ClaimSignature } from '../types'
 import { PublicKey } from '@solana/web3.js'
+
+const OSMOSIS_ADDRESS_PREFIX = "osmo";
+const EVM_WALLET_ADDRESS_PREFIX = "0x";
+const TERRA_ADDRESS_PREFIX = "terra";
+const INJECTIVE_ADDRESS_PREFIX = "inj";
 
 export async function saveSignedTransactions(
   claimSignatures: ClaimSignature[]
@@ -55,25 +63,25 @@ function mapIdentity(claimSignature: ClaimSignature) {
     }
     case 'evm': {
       identity =
-        '0x' +
+      EVM_WALLET_ADDRESS_PREFIX +
         Buffer.from(
           claimSignature.instruction?.proofOfIdentity?.evm?.pubkey ?? []
         ).toString('hex')
       break
     }
-    // TODO: validate correct parsing
     case 'osmosis': {
-      identity =
-        '0x' +
-        Buffer.from(
-          claimSignature.instruction?.proofOfIdentity?.cosmwasm?.pubkey ?? []
-        ).toString('hex')
+      const pubkey = claimSignature.instruction?.proofOfIdentity?.cosmwasm?.pubkey as unknown as Uint8Array
+      const compressed = Secp256k1.compressPubkey(pubkey);
+
+      identity = toBech32(OSMOSIS_ADDRESS_PREFIX, rawSecp256k1PubkeyToRawAddress(compressed));
+
       subEcosystem = 'osmosis'
       break
     }
     case 'terra': {
+      // DONE but still need to verify
       identity =
-        '0x' +
+      TERRA_ADDRESS_PREFIX +
         Buffer.from(
           claimSignature.instruction?.proofOfIdentity?.cosmwasm?.pubkey ?? []
         ).toString('hex')
@@ -81,8 +89,9 @@ function mapIdentity(claimSignature: ClaimSignature) {
       break
     }
     case 'injective': {
+      // TODO: DONE but still need to verify
       identity =
-        '0x' +
+      INJECTIVE_ADDRESS_PREFIX +
         Buffer.from(
           claimSignature.instruction?.proofOfIdentity?.injective?.pubkey ?? []
         ).toString('hex')
