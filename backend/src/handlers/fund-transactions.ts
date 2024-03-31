@@ -33,7 +33,7 @@ export const fundTransactions = async (
     const wallet = await loadFunderWallet()
 
     const signedTransactions = await wallet.signAllTransactions(transactions)
-    saveSignedTransactions(getSignatures(signedTransactions))
+    await saveSignedTransactions(getSignatures(signedTransactions))
 
     return asJsonResponse(
       200,

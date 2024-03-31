@@ -9,23 +9,20 @@ export async function saveSignedTransactions(
 ) {
   try {
     const influxWriter = new InfluxDB({
-      url: config.influx.url,
-      token: config.influx.token,
-      timeout: config.influx.timeout,
-      writeOptions: {}
-    }).getWriteApi(config.influx.org, config.influx.bucket)
+      url: config.influx.url(),
+      token: config.influx.token(),
+      timeout: config.influx.timeout()
+    }).getWriteApi(config.influx.org(), config.influx.bucket())
 
     const points = claimSignatures.map((claimSignature) => {
       const { ecosystem, subEcosystem, identity } = mapIdentity(claimSignature)
-      const point = new Point('ad_signatures')
-        .stringField('type', 'transaction_signed')
+      return new Point('ad_signatures')
+        .tag('type', 'transaction_signed')
+        .tag('ecosystem', ecosystem)
+        .tag('subecosystem', subEcosystem)
         .stringField('sig', claimSignature.sig)
-        .stringField('ecosystem', ecosystem)
-        .stringField('subecosystem', subEcosystem)
         .stringField('identity', identity)
         .floatField('amount', claimSignature.instruction?.amount?.toNumber())
-
-      return point
     })
 
     influxWriter.writePoints(points)

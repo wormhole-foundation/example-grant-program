@@ -12,20 +12,22 @@ export async function getDispenserKey() {
   if (config.keys.dispenserGuard.key) {
     console.log('Using dispenser guard key from config')
     key = config.keys.dispenserGuard.key
+  } else {
+    key = await getSecretKey(config.keys.dispenserGuard.secretName, 'key')
   }
 
-  key = await getSecretKey(config.keys.dispenserGuard.secretName, 'key')
   return { key: JSON.parse(key) }
 }
 
 export async function getFundingKey(): Promise<{ key: Uint8Array }> {
   let key: string
-  if (config.keys.funding.key) {
+  if (config.keys.funding.key()) {
     console.log('Using funding key from config')
-    key = config.keys.funding.key
+    key = config.keys.funding.key()!
+  } else {
+    key = await getSecretKey(config.keys.funding.secretName, 'key')
   }
 
-  key = await getSecretKey(config.keys.funding.secretName, 'key')
   return { key: JSON.parse(key) }
 }
 

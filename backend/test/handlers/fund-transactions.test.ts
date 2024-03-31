@@ -19,19 +19,48 @@ import { AnchorProvider, IdlTypes, Program, BN } from '@coral-xyz/anchor'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { IDL, TokenDispenser } from '../../src/token-dispenser'
 import { fundTransactions } from '../../src/handlers/fund-transactions'
+import { GenericContainer, StartedTestContainer, Wait } from 'testcontainers'
+import { InfluxDB } from '@influxdata/influxdb-client'
 
 const RANDOM_BLOCKHASH = 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
+const INFLUX_TOKEN =
+  'jsNTEHNBohEjgKqWj1fR8fJjYlBvcYaRTY68-iQ5Y55X_Qr3VKGSvqJz78g4jV8mPiUTQLPYq2tLs_Dy8M--nw=='
 const PROGRAM_ID = new PublicKey('Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS')
 const FUNDER_KEY = new Keypair()
 const server = setupServer()
+const influx = new GenericContainer('influxdb')
+
 let input: VersionedTransaction[]
 let response: APIGatewayProxyResult
 
 describe('fundTransactions integration test', () => {
-  beforeAll(() => {
-    process.env.AWS_ACCESS_KEY_ID = 'key'
-    process.env.AWS_SECRET_ACCESS_KEY = 'secret'
+  let startedInflux: StartedTestContainer
+
+  beforeAll(async () => {
+    startedInflux = await influx
+      .withExposedPorts(8086)
+      .withEnvironment({
+        DOCKER_INFLUXDB_INIT_MODE: 'setup',
+        DOCKER_INFLUXDB_INIT_USERNAME: 'admin',
+        DOCKER_INFLUXDB_INIT_PASSWORD: 'password',
+        DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: INFLUX_TOKEN,
+        DOCKER_INFLUXDB_INIT_ORG: 'xl',
+        DOCKER_INFLUXDB_INIT_BUCKET: 'ad'
+      })
+      .start()
+    process.env.INFLUXDB_ORG = 'xl'
+    process.env.INFLUXDB_BUCKET = 'ad'
+    process.env.INFLUXDB_TOKEN = INFLUX_TOKEN
+    process.env.INFLUXDB_URL = `http://${startedInflux.getHost()}:${startedInflux.getMappedPort(
+      8086
+    )}`
+
+    process.env.FUNDING_WALLET_KEY = `[${FUNDER_KEY.secretKey}]`
     process.env.TOKEN_DISPENSER_PROGRAM_ID = PROGRAM_ID.toString()
+  }, 15_000)
+
+  afterAll(async () => {
+    await startedInflux.stop()
   })
 
   afterEach(() => {
@@ -40,18 +69,7 @@ describe('fundTransactions integration test', () => {
 
   test('should pass if all required instructions included', async () => {
     givenDownstreamServicesWork()
-
-    const tokenDispenserInstruction =
-      await createTokenDispenserProgramInstruction()
-
-    const instructions = [
-      tokenDispenserInstruction,
-      createComputeUnitLimitInstruction(200),
-      createComputeUnitPriceInstruction(BigInt(5000)),
-      createSecp256k1ProgramInstruction()
-    ]
-
-    input = [createTestTransactionFromInstructions(instructions)]
+    await givenCorrectTransaction()
 
     await whenFundTransactionsCalled()
 
@@ -234,6 +252,16 @@ describe('fundTransactions integration test', () => {
     expect(callData?.proofOfInclusion).toBeDefined()
     expect(callData?.proofOfIdentity.discord?.username).toBe('username')
   })
+
+  test('should persist signed claims', async () => {
+    givenDownstreamServicesWork()
+    await givenCorrectTransaction()
+
+    await whenFundTransactionsCalled()
+
+    thenResponseIsSuccessful()
+    await thenDataIsAvailable()
+  })
 })
 
 /**
@@ -247,7 +275,21 @@ const givenDownstreamServicesWork = () => {
       })
     })
   )
-  server.listen()
+  server.listen({ onUnhandledRequest: 'bypass' })
+}
+
+const givenCorrectTransaction = async () => {
+  const tokenDispenserInstruction =
+    await createTokenDispenserProgramInstruction()
+
+  const instructions = [
+    tokenDispenserInstruction,
+    createComputeUnitLimitInstruction(200),
+    createComputeUnitPriceInstruction(BigInt(5000)),
+    createSecp256k1ProgramInstruction()
+  ]
+
+  input = [createTestTransactionFromInstructions(instructions)]
 }
 
 const whenFundTransactionsCalled = async () => {
@@ -262,6 +304,26 @@ const thenResponseIsSuccessful = () => {
   expect(signedTxs).toHaveLength(1)
   const tx = VersionedTransaction.deserialize(Buffer.from(signedTxs[0]))
   expect(tx.message.recentBlockhash).toBe(input[0].message.recentBlockhash)
+}
+
+const thenDataIsAvailable = async () => {
+  let found = 0
+  const reader = new InfluxDB({
+    url: process.env.INFLUXDB_URL!,
+    token: process.env.INFLUXDB_TOKEN!
+  }).getQueryApi(process.env.INFLUXDB_ORG!)
+  for await (const { values, tableMeta } of reader.iterateRows(
+    'from(bucket: "ad") |> range(start:0) |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")'
+  )) {
+    const row = tableMeta.toObject(values)
+    expect(row).toHaveProperty('amount', 3000000)
+    expect(row).toHaveProperty('type', 'transaction_signed')
+    expect(row).toHaveProperty('ecosystem', 'discord')
+    expect(row).toHaveProperty('subecosystem', 'discord')
+    expect(row).toHaveProperty('sig', expect.any(String))
+    found++
+  }
+  expect(found).toBeGreaterThan(1)
 }
 
 const createTestTransactionFromInstructions = (

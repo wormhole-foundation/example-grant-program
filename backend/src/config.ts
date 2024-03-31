@@ -16,7 +16,7 @@ export default {
     },
     funding: {
       /** optional. mostly for local testing */
-      key: process.env.FUNDING_WALLET_KEY,
+      key: () => process.env.FUNDING_WALLET_KEY,
       /** required. with a default value and used when when key not set */
       secretName:
         process.env.FUNDER_WALLET_KEY_SECRET_NAME ??
@@ -24,10 +24,10 @@ export default {
     }
   },
   influx: {
-    url: process.env.INFLUXDB_URL ?? 'http://localhost:8086',
-    org: process.env.INFLUXDB_ORG ?? 'xl',
-    bucket: process.env.INFLUXDB_BUCKET ?? 'ad',
-    token: process.env.INFLUXDB_TOKEN ?? '',
-    timeout: parseInt(process.env.INFLUXDB_TIMEOUT_MS ?? '2_500')
+    url: () => process.env.INFLUXDB_URL ?? 'http://localhost:8086',
+    org: () => process.env.INFLUXDB_ORG ?? 'xl',
+    bucket: () => process.env.INFLUXDB_BUCKET ?? 'ad',
+    token: () => process.env.INFLUXDB_TOKEN ?? 'token',
+    timeout: () => parseInt(process.env.INFLUXDB_TIMEOUT_MS ?? '20500')
   }
 }
