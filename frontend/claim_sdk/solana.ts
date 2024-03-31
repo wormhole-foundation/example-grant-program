@@ -247,7 +247,7 @@ export class TokenDispenserProvider {
     getPayersForClaim: (
       claimInfo: ClaimInfo
     ) => [anchor.web3.PublicKey, anchor.web3.PublicKey] = getClaimPayers // This argument is only used for testing where we can't call the API
-  ): Promise<Promise<TransactionError | null>[][]> {
+  ): Promise<Promise<TransactionError | null>[]> {
     const txs: TransactionWithPayers[] = []
 
     try {
@@ -317,8 +317,7 @@ export class TokenDispenserProvider {
       return Promise.resolve(null)
     })
 
-    //Pack into another array for typechecking
-    return [mapToOutput]
+    return mapToOutput
   }
 
   public async generateClaimTransaction(

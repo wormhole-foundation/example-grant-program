@@ -69,22 +69,6 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     onProceed(totalCoinsClaimed())
   }, [onProceed, totalCoinsClaimed])
 
-  const getSuccessfulProviderSubmit = useCallback(
-    async (
-      ecosystemPromises: Promise<TransactionError | null>[]
-    ): Promise<TransactionError | null> => {
-      const resolvedProviderPromises = await Promise.all(ecosystemPromises)
-
-      // find the first rpc provider submit that is successful (i.e. null error)
-      // or grab the first one if all failed
-      return (
-        resolvedProviderPromises.find((error) => error === null) ||
-        resolvedProviderPromises[0]
-      )
-    },
-    []
-  )
-
   const submitTxs = useCallback(async () => {
     window.onbeforeunload = (e) => {
       e.preventDefault()
@@ -119,7 +103,7 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     setEcosystemsClaimState(stateObj)
 
     let totalCoinsClaimed = new BN(0)
-    let broadcastPromises: Promise<TransactionError | null>[][]
+    let broadcastPromises: Promise<TransactionError | null>[]
     try {
       broadcastPromises = await tokenDispenser?.submitClaims(
         claims.map((claim) => ({
@@ -159,7 +143,7 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     const allPromises = broadcastPromises.map(
       async (broadcastPromise, index) => {
         await Promise.race([
-          getSuccessfulProviderSubmit(broadcastPromise),
+          broadcastPromise,
           new Promise((_, reject) => {
             setTimeout(() => reject(), 10000)
           }),
