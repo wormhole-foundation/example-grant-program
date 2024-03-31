@@ -380,20 +380,23 @@ export class TokenDispenserProvider {
       const cusPerPdaDerivation = 1500
       return (maxBump - bump) * cusPerPdaDerivation
     }
+    const safetyMargin = 1000
     const ataCreationCost = 20460
+    //determined experimentally:
     const ecosystemCUs = {
-      solana: 80000, //TODO determine true value
-      evm: 80000, //TODO determine true value
-      sui: 80000, //TODO determine true value
-      algorand: 80000, //TODO determine true value
-      aptos: 80000, //TODO determine true value
-      terra: 80000, //TODO determine true value
-      osmosis: 80000, //TODO determine true value
-      injective: 80000, //TODO determine true value
-      discord: 80000, //TODO determine true value
+      discord: 44200,
+      solana: 40450,
+      evm: 66600,
+      sui: 79200,
+      aptos: 78800,
+      terra: 113500,
+      osmosis: 113200,
+      injective: 71700,
+      algorand: 70700,
     }
 
     const units =
+      safetyMargin +
       ecosystemCUs[claimInfo.ecosystem] +
       pdaDerivationCosts(claimaintFundBump) +
       pdaDerivationCosts(receiptBump) +
@@ -402,7 +405,7 @@ export class TokenDispenserProvider {
         : ataCreationCost + pdaDerivationCosts(claimaintFundBump))
     ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
-    const microLamports = 500_000 //TODO determine true value
+    const microLamports = 1_000_000 //somewhat arbitrary choice
     ixs.push(ComputeBudgetProgram.setComputeUnitPrice({ microLamports }))
 
     // 5. build and return the transaction
