@@ -15,6 +15,9 @@
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.535.0",
     "@coral-xyz/anchor": "^0.29.0",
+    "@cosmjs/amino": "^0.32.3",
+    "@cosmjs/crypto": "^0.32.3",
+    "@cosmjs/encoding": "^0.32.3",
     "@influxdata/influxdb-client": "^1.33.2",
     "@solana/web3.js": "^1.91.1",
     "bs58": "^5.0.0",
