@@ -309,7 +309,7 @@ export class TokenDispenserProvider {
       this.connection.getAccountInfo(claimantFund),
       this.getLookupTableAccount(),
     ])
-    
+
     const ixs: anchor.web3.TransactionInstruction[] = []
 
     // 1. add create ATA instruction if needed
