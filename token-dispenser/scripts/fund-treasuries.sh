@@ -18,5 +18,3 @@ while IFS= read -r TREASURY; do
     --fee-payer usb://ledger?key=$LEDGER_CLI_DERIVATION_PATH \
     --mint-authority usb://ledger?key=$LEDGER_CLI_DERIVATION_PATH
 done < "$(dirname "$0")/treasuries"
-
-

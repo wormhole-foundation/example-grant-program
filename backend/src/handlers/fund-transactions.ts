@@ -6,7 +6,7 @@ import {
   deserializeTransactions,
   extractCallData
 } from '../utils/fund-transactions'
-import { Keypair, VersionedTransaction } from '@solana/web3.js'
+import { VersionedTransaction } from '@solana/web3.js'
 import bs58 from 'bs58'
 import { HandlerError } from '../utils/errors'
 import { asJsonResponse } from '../utils/response'
