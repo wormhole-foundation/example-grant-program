@@ -21,10 +21,11 @@ import { IDL, TokenDispenser } from '../../src/token-dispenser'
 import { fundTransactions } from '../../src/handlers/fund-transactions'
 import { GenericContainer, StartedTestContainer } from 'testcontainers'
 import { InfluxDB } from '@influxdata/influxdb-client'
-import { tokenDispenserProgramId } from '../../../token-dispenser/ts/scripts/config'
+import config from '../../src/config'
 
 const RANDOM_BLOCKHASH = 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
-const TokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
+const tokenDispenserProgramId = config.tokenDispenserProgramId()
+const TokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId);
 const INFLUX_TOKEN =
   'jsNTEHNBohEjgKqWj1fR8fJjYlBvcYaRTY68-iQ5Y55X_Qr3VKGSvqJz78g4jV8mPiUTQLPYq2tLs_Dy8M--nw=='
 const FUNDER_KEY = new Keypair()
