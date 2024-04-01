@@ -25,7 +25,7 @@ import config from '../../src/config'
 
 const RANDOM_BLOCKHASH = 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
 const tokenDispenserProgramId = config.tokenDispenserProgramId()
-const TokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId);
+const TokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
 const INFLUX_TOKEN =
   'jsNTEHNBohEjgKqWj1fR8fJjYlBvcYaRTY68-iQ5Y55X_Qr3VKGSvqJz78g4jV8mPiUTQLPYq2tLs_Dy8M--nw=='
 const FUNDER_KEY = new Keypair()

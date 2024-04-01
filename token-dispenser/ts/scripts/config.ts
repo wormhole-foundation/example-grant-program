@@ -6,7 +6,7 @@ export const treasuries = [
   new PublicKey("wAtMcoqwHb7obEL2USNXPqxg1CmJDSjjjsNcEm9bzCZ"),
   new PublicKey("Wats1sM7W4UvxUuQPevGxexgcaFiaXMXxActKUmcvHx"),
   new PublicKey("waTtgLt1WVRgoWYNZh97AYAUqoU4nN98jVThPdYQVwj"),
-  new PublicKey("WaTxa5w4TjYHRdHwG2zaN9ynA1c9z4J9TswsBCmzy4N")
+  new PublicKey("WaTxa5w4TjYHRdHwG2zaN9ynA1c9z4J9TswsBCmzy4N"),
 ];
 
 export const funders = [
