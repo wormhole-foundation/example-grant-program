@@ -132,7 +132,7 @@ export function WalletModal({ isEVM, openModal, wallets }: WalletModalProps) {
             <SingleWalletView
               wallet={wallet}
               onSelect={() => openModal(false)}
-              key={wallet.icon}
+              key={wallet.name}
             />
           )
         })}
