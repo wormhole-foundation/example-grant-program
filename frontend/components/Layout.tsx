@@ -46,7 +46,7 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
 
   return (
     <>
-      <header className="absolute left-0 top-0 z-40 w-full py-3 px-1 transition-all lg:py-6 lg:px-10">
+      <header className="absolute left-0 top-0 z-40 w-full py-3 transition-all  lg:py-6 xl:px-10">
         {banner && (
           <div className="relative px-4 lg:px-10 ">
             <div className="relative mb-2 flex justify-between gap-4 border border-light  border-opacity-60 bg-[#BA4A62] bg-opacity-40 px-2 py-2 leading-snug sm:px-4 md:px-[29px] ">
@@ -80,7 +80,7 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
           </div>
         </div>
       </header>
-      <div className="relative min-h-[calc(100vh-80px)] px-4 pb-32 pt-32 lg:pt-40">
+      <div className="relative min-h-[calc(100vh-80px)] px-4 pb-32 pt-40">
         <div className="mx-auto max-w-[997px] items-start justify-between gap-2.5 lg:flex">
           <ul
             className={classNames(
