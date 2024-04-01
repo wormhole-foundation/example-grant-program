@@ -1,8 +1,7 @@
 import { Button } from '@components/buttons/Button'
 import { ModalWrapper } from '@components/modal/ModalWrapper'
-import { useState } from 'react'
 
-export function ErrorModal() {
+export function ErrorModal({ showModal }: { showModal: Function }) {
   return (
     <ModalWrapper>
       <div className="w-full max-w-[600px] divide-y divide-white divide-opacity-25 border  border-white border-opacity-25 bg-black bg-opacity-50 text-center">
@@ -16,7 +15,7 @@ export function ErrorModal() {
           </p>
         </div>
         <div className="bg-black bg-opacity-50 px-10 py-8">
-          <Button type={'primary'} onClick={() => {}}>
+          <Button type={'primary'} onClick={() => showModal(false)}>
             <span className="flex  items-center gap-2">
               Try again
               <svg

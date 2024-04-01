@@ -14,6 +14,7 @@ import { Box } from '@components/Box'
 import Tooltip from '@components/Tooltip'
 import { TotalAllocationRow } from '@components/table/TotalAllocationRow'
 import { BoxTitle } from '@components/BoxTitle'
+import { ErrorModal } from '@components/modal/ErrorModal'
 
 export const ClaimStatus = ({
   onProceed,
@@ -26,14 +27,17 @@ export const ClaimStatus = ({
   const totalGrantedCoins = useTotalGrantedCoins()
   const [isProceedDisabled, setIsProceedDisabled] = useState(true)
   const [proceedTooltipContent, setProceedTooltipContent] = useState<string>()
+  const [modal, showModal] = useState(false)
 
   // disable proceed
   useEffect(() => {
     if (ecosystemsClaimState !== undefined) {
       let isAnyProccessing = false
+      let hasErrors = false
       // if a claim submission is still proceesing
       Object.values(ecosystemsClaimState).forEach((ecosystemClaimState) => {
         if (ecosystemClaimState.error === undefined) isAnyProccessing = true
+        else if (ecosystemClaimState.error) hasErrors = true
       })
 
       if (isAnyProccessing) {
@@ -43,38 +47,45 @@ export const ClaimStatus = ({
         setIsProceedDisabled(false)
         setProceedTooltipContent(undefined)
       }
+
+      if (hasErrors) {
+        showModal(true)
+      }
     }
   }, [ecosystemsClaimState])
 
   return (
-    <Box>
-      <BoxTitle>
-        <div className="flex items-center justify-between ">
-          <h4 className=" text-[20px] sm:text-[28px]">Sign and Claim</h4>
-          <div className="flex gap-4">
-            <ProceedButton
-              onProceed={onProceed}
-              disabled={isProceedDisabled}
-              tooltipContent={proceedTooltipContent}
-            />
+    <>
+      <Box>
+        <BoxTitle>
+          <div className="flex items-center justify-between ">
+            <h4 className=" text-[20px] sm:text-[28px]">Sign and Claim</h4>
+            <div className="flex gap-4">
+              <ProceedButton
+                onProceed={onProceed}
+                disabled={isProceedDisabled}
+                tooltipContent={proceedTooltipContent}
+              />
+            </div>
           </div>
-        </div>
-      </BoxTitle>
-      <table className="">
-        <tbody>
-          {Object.values(Ecosystem).map((ecosystem) => (
-            <SignAndClaimRowLayout ecosystem={ecosystem} key={ecosystem}>
-              {ecosystemsClaimState?.[ecosystem] !== undefined && (
-                <ClaimState
-                  ecosystemClaimState={ecosystemsClaimState?.[ecosystem]!}
-                />
-              )}
-            </SignAndClaimRowLayout>
-          ))}
-          <TotalAllocationRow totalGrantedCoins={totalGrantedCoins} />
-        </tbody>
-      </table>
-    </Box>
+        </BoxTitle>
+        <table className="">
+          <tbody>
+            {Object.values(Ecosystem).map((ecosystem) => (
+              <SignAndClaimRowLayout ecosystem={ecosystem} key={ecosystem}>
+                {ecosystemsClaimState?.[ecosystem] !== undefined && (
+                  <ClaimState
+                    ecosystemClaimState={ecosystemsClaimState?.[ecosystem]!}
+                  />
+                )}
+              </SignAndClaimRowLayout>
+            ))}
+            <TotalAllocationRow totalGrantedCoins={totalGrantedCoins} />
+          </tbody>
+        </table>
+      </Box>
+      {modal && <ErrorModal showModal={showModal} />}
+    </>
   )
 }
 
@@ -102,8 +113,9 @@ function ClaimState({
     if (error === null) return 'Successfully claimed'
     if (error)
       return (
-        error.message ??
-        'There was some error while claiming. Please refresh the page and try again.'
+        // error.message ??
+        // 'There was some error while claiming. Please refresh the page and try again.'
+        'Solana is currently experiencing congestion and was unable to include your transaction. Please try again in a few minutes.'
       )
   }, [error])
 
