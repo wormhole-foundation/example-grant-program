@@ -1,6 +1,5 @@
 import { Button } from '@components/buttons/Button'
 import { ModalWrapper } from '@components/modal/ModalWrapper'
-import Link from 'next/link'
 import { useState } from 'react'
 
 export function ErrorModal() {

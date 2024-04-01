@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
+import Close from '@images/close.inline.svg'
+import Warn from '@images/warning.inline.svg'
 
 import { useRouter } from 'next/router'
 import { WELCOME_METADATA } from 'pages'
@@ -24,6 +26,7 @@ type LayoutProps = {
 export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
   const pathname = usePathname()
   const router = useRouter()
+  const [banner, setBanner] = useState(true)
 
   const disableSideNav = process.env.NODE_ENV === 'production'
 
@@ -43,8 +46,21 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
 
   return (
     <>
-      <header className="absolute left-0 top-0 z-40 w-full px-1 transition-all lg:px-10">
-        <div className=" relative flex items-center justify-between  gap-2 px-4 py-3 lg:px-10 lg:py-6">
+      <header className="absolute left-0 top-0 z-40 w-full py-3 px-1 transition-all lg:py-6 lg:px-10">
+        {banner && (
+          <div className="relative px-4 lg:px-10 ">
+            <div className="relative mb-2 flex justify-between gap-4 border  border-light border-opacity-60 bg-[#BA4A62] bg-opacity-40 py-2 leading-snug sm:px-4 md:pl-[29px] md:pr-4">
+              <span className="flex items-center gap-2">
+                <Warn />
+                We expect that this airdrop will cause congestion on solana!
+              </span>
+              <button onClick={() => setBanner(false)}>
+                <Close />
+              </button>
+            </div>
+          </div>
+        )}
+        <div className=" relative flex items-center justify-between  gap-2 px-4  lg:px-10 ">
           <Link
             href="/"
             className="flex items-center justify-center  border-light border-opacity-60 outline-none sm:h-12 sm:border sm:px-4 md:px-[29px]"
@@ -60,7 +76,7 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
           </div>
         </div>
       </header>
-      <div className="relative min-h-[calc(100vh-80px)] px-4 pb-32 pt-20 sm:pt-28 lg:pt-40">
+      <div className="relative min-h-[calc(100vh-80px)] px-4 pb-32 pt-32 lg:pt-40">
         <div className="mx-auto max-w-[997px] items-start justify-between gap-2.5 lg:flex">
           <ul
             className={classNames(
