@@ -101,6 +101,7 @@ describe('integration test', () => {
       endpoint,
       tokenDispenserPid,
       tenMinTimeWindow,
+      undefined,
       50,
       confirmOpts
     )
