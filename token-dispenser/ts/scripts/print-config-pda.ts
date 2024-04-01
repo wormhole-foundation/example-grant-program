@@ -4,7 +4,6 @@ import { TokenDispenserSdk } from "../sdk";
 import { connection, getSigner } from "./env";
 import { tokenDispenserProgramId } from "./config";
 
-
 type InitConfig = {
   // Account Addresses (base58 encoded):
   tokenDispenser: string;
