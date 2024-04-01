@@ -52,7 +52,8 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
             <div className="relative mb-2 flex justify-between gap-4 border border-light  border-opacity-60 bg-[#BA4A62] bg-opacity-40 px-2 py-2 leading-snug sm:px-4 md:px-[29px] ">
               <span className="flex items-center gap-2">
                 <Warn className="flex-shrink-0" />
-                We expect that this airdrop will cause congestion on solana!
+                We expect that this airdrop will cause congestion on Solana.
+                Please try again if your claim does not go through.
               </span>
               <button
                 onClick={() => setBanner(false)}

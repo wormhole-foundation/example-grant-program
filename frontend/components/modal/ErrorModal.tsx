@@ -11,11 +11,8 @@ export function ErrorModal() {
         </h3>
         <div className="p-6">
           <p className="mx-auto max-w-[350px] text-[15px] tracking-[.3px]">
-            Please check back later
-          </p>
-          <p className="mx-auto mt-6 max-w-[350px]  font-mono text-xs">
-            WalletSendTransactionError. failed to send transactions.
-            Transactions simulation failed. Error processing instruction
+            Solana is currently experiencing congestion and was unable to
+            include your transaction. Please try again in a few minutes
           </p>
         </div>
         <div className="bg-black bg-opacity-50 px-10 py-8">
