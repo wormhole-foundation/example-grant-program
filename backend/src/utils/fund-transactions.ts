@@ -17,12 +17,29 @@ const SET_COMPUTE_UNIT_PRICE_DISCRIMINANT = 3
 
 const MAX_COMPUTE_UNIT_PRICE = BigInt(1_000_000)
 
+export type TransactionWithFunder = {
+  transaction: VersionedTransaction
+  funder: string
+}
+
+export type SerializedTransactionWithFunder = {
+  tx: Uint8Array
+  funder: string
+}
+
 export function deserializeTransactions(
   transactions: unknown
-): VersionedTransaction[] {
+): TransactionWithFunder[] {
   try {
-    return (transactions as Uint8Array[]).map((serializedTx) =>
-      VersionedTransaction.deserialize(Buffer.from(serializedTx))
+    return (transactions as SerializedTransactionWithFunder[]).map(
+      (serializedTx) => {
+        return {
+          transaction: VersionedTransaction.deserialize(
+            Buffer.from(serializedTx.tx)
+          ),
+          funder: serializedTx.funder
+        }
+      }
     )
   } catch (err) {
     console.error('Failed to deserialize transactions', err)
@@ -31,14 +48,14 @@ export function deserializeTransactions(
 }
 
 async function loadWhitelistedProgramIds(): Promise<PublicKey[]> {
-  const programId = config.tokenDispenserProgramId()
-  if (!programId) {
+  const tokenDispenserProgramId = config.tokenDispenserProgramId()
+  if (!tokenDispenserProgramId) {
     throw new Error('Token dispenser program ID not set')
   }
 
-  const PROGRAM_ID = new PublicKey(programId)
+  const tokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
   return [
-    PROGRAM_ID,
+    tokenDispenserPublicKey,
     Secp256k1Program.programId,
     Ed25519Program.programId,
     ComputeBudgetProgram.programId

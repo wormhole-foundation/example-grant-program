@@ -4,6 +4,7 @@ import { HASH_SIZE } from '../claim_sdk/merkleTree'
 import { PublicKey, VersionedTransaction } from '@solana/web3.js'
 import { SignedMessage } from '../claim_sdk/ecosystems/signatures'
 import { ECOSYSTEM_IDS } from './constants'
+import { inspect } from 'util'
 
 const MERKLE_PROOFS = process.env.NEXT_PUBLIC_MERKLE_PROOFS
 const BACKEND_API = process.env.NEXT_PUBLIC_BACKEND_API
@@ -142,15 +143,27 @@ export function handleFundTransaction(
   }
 }
 
+export type TransactionWithPayers = {
+  tx: VersionedTransaction
+  payers: [PublicKey, PublicKey]
+}
+
 export async function fetchFundTransaction(
-  transactions: VersionedTransaction[]
+  transactions: TransactionWithPayers[]
 ): Promise<VersionedTransaction[]> {
   const response = await fetch(getFundTransactionRoute(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(transactions.map((tx) => Buffer.from(tx.serialize()))),
+    body: JSON.stringify(
+      transactions.map((txWithPayers) => {
+        return {
+          tx: Buffer.from(txWithPayers.tx.serialize()),
+          funder: txWithPayers.payers[0].toBase58(),
+        }
+      })
+    ),
   })
 
   return handleFundTransaction(response.status, await response.json())
