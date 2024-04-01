@@ -8,7 +8,7 @@ import {
 import { TokenDispenserSdk } from "../sdk";
 import { ledgerSignAndSend, ledgerSignAndSendV0 } from "./helpers";
 import { connection, getSigner, getEnv } from "./env";
-import { funders, treasuries } from "./config";
+import { funders, tokenDispenserProgramId, treasuries } from "./config";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
@@ -25,7 +25,7 @@ type InitConfig = {
 
 (async () => {
   const config: InitConfig = {
-    tokenDispenser: getEnv("PROGRAM_ID"),
+    tokenDispenser: tokenDispenserProgramId,
     mint: getEnv("MINT"),
     dispenserGuard: getEnv("DISPENSER_GUARD"),
     merkleRoot: Buffer.from(getEnv("MERKLE_ROOT"), "hex"),
@@ -51,7 +51,6 @@ type InitConfig = {
       recentSlot: await connection.getSlot(),
     });
 
-  
   console.log("Config PDA: ", configPda.toBase58());
 
   const extendAddressLooupTableIx = AddressLookupTableProgram.extendLookupTable(
@@ -66,7 +65,6 @@ type InitConfig = {
         SystemProgram.programId,
         SYSVAR_INSTRUCTIONS_PUBKEY,
         ASSOCIATED_TOKEN_PROGRAM_ID,
-
       ],
     }
   );
@@ -82,17 +80,11 @@ type InitConfig = {
       payer: signerPk,
       authority: signerPk,
       lookupTable,
-      addresses: [
-        ...funders,
-        ...treasuries,
-      ],
+      addresses: [...funders, ...treasuries],
     }
   );
 
-  await ledgerSignAndSendV0(
-    [addFundersAndTreasuriesIx],
-    []
-  );
+  await ledgerSignAndSendV0([addFundersAndTreasuriesIx], []);
   console.log("Funders and Treasuries added to lookup table");
 
   const initializeIx = await tokenDispenser.createInitializeInstruction({

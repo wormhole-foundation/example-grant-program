@@ -27,6 +27,8 @@ import { TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
 import { SignedMessage } from './ecosystems/signatures'
 import { extractChainId } from './ecosystems/cosmos'
 import { fetchFundTransaction } from '../utils/api'
+import { getClaimPayers } from './treasury'
+import { inspect } from 'util'
 
 export const ERROR_SIGNING_TX = 'error: signing transaction'
 export const ERROR_FUNDING_TX = 'error: funding transaction'
@@ -40,6 +42,11 @@ const AUTHORIZATION_PAYLOAD = [
   '\nI authorize Solana wallet\n',
   '\nto claim my W tokens.\n',
 ]
+
+export type TransactionWithPayers = {
+  tx: VersionedTransaction
+  payers: [PublicKey, PublicKey]
+}
 
 /**
  * This class wraps the interaction with the TokenDispenser
@@ -220,47 +227,66 @@ export class TokenDispenserProvider {
 
   public async submitClaims(
     claims: {
-      funder: PublicKey
-      treasury: PublicKey
       claimInfo: ClaimInfo
       proofOfInclusion: Uint8Array[]
       signedMessage: SignedMessage | undefined
     }[],
     fetchFundTransactionFunction: (
-      transactions: VersionedTransaction[]
-    ) => Promise<VersionedTransaction[]> = fetchFundTransaction // This argument is only used for testing where we can't call the API
+      transactions: TransactionWithPayers[]
+    ) => Promise<VersionedTransaction[]> = fetchFundTransaction, // This argument is only used for testing where we can't call the API
+    getPayersForClaim: (
+      claimInfo: ClaimInfo
+    ) => [anchor.web3.PublicKey, anchor.web3.PublicKey] = getClaimPayers // This argument is only used for testing where we can't call the API
   ): Promise<Promise<TransactionError | null>[]> {
-    const txs: VersionedTransaction[] = []
+    const txs: TransactionWithPayers[] = []
 
     try {
       for (const claim of claims) {
-        txs.push(
-          await this.generateClaimTransaction(
-            claim.funder,
-            claim.treasury,
+        const [funder, treasury] = getPayersForClaim(claim.claimInfo)
+
+        txs.push({
+          tx: await this.generateClaimTransaction(
+            funder,
+            treasury,
             claim.claimInfo,
             claim.proofOfInclusion,
             claim.signedMessage
-          )
-        )
+          ),
+          payers: [funder, treasury],
+        })
       }
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_CRAFTING_TX)
     }
 
-    let txsSignedOnce
+    let txsSignedOnce: VersionedTransaction[]
+
     try {
       txsSignedOnce = await (
         this.tokenDispenserProgram.provider as anchor.AnchorProvider
-      ).wallet.signAllTransactions(txs)
+      ).wallet.signAllTransactions(txs.map((tx) => tx.tx))
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_SIGNING_TX)
     }
 
+    const txsSignedOnceWithPayers: TransactionWithPayers[] = txsSignedOnce.map(
+      (tx, index) => {
+        return {
+          tx: tx,
+          payers: txs[index].payers,
+        }
+      }
+    )
+
     let txsSignedTwice
     try {
-      txsSignedTwice = await fetchFundTransactionFunction(txsSignedOnce)
+      txsSignedTwice = await fetchFundTransactionFunction(
+        txsSignedOnceWithPayers
+      )
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_FUNDING_TX)
     }
 

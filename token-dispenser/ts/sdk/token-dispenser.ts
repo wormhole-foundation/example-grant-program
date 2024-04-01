@@ -1,7 +1,7 @@
 import { Program, BN, Address, web3, AnchorProvider } from "@coral-xyz/anchor";
 import { TokenDispenser } from "./idl/token_dispenser";
 import IDL from "./idl/token_dispenser.json";
-import { PublicKey, Connection } from '@solana/web3.js';
+import { PublicKey, Connection } from "@solana/web3.js";
 
 import { derivePda } from "./utils";
 
@@ -15,19 +15,19 @@ export class TokenDispenserSdk {
     connection: Connection,
     args: {
       programId: string;
-      payer: PublicKey,
+      payer: PublicKey;
     }
   ) {
     const wallet = {
       publicKey: args.payer,
-      signTransaction: async function () : Promise<any> {
+      signTransaction: async function (): Promise<any> {
         throw new Error("ilegal call");
       },
       signAllTransactions: async function (...args: any[]): Promise<any> {
         throw new Error("ilegal call");
       },
       // payer: args.payer,
-    }
+    };
     const provider = new AnchorProvider(
       connection,
       wallet,
@@ -35,7 +35,11 @@ export class TokenDispenserSdk {
     );
 
     // this.program = new Program(IDL as any, new PublicKey(args.programId), provider);
-    this.program = new Program(IDL as any, new PublicKey(args.programId), provider);
+    this.program = new Program(
+      IDL as any,
+      new PublicKey(args.programId),
+      provider
+    );
   }
 
   // Acounts:
@@ -56,7 +60,7 @@ export class TokenDispenserSdk {
       .initialize(
         Array.from(args.merkleRoot),
         args.dispenserGuard,
-        new BN(args.maxTransfer.toString()),
+        new BN(args.maxTransfer.toString())
       )
       .accounts({
         config: new PublicKey(this.configAccountAddress()),

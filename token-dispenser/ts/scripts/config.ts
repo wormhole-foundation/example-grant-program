@@ -1,12 +1,12 @@
 import { PublicKey } from "@solana/web3.js";
 
 export const treasuries = [
-  new PublicKey("WAT5qnYC6k6UUyRx5nH1sFpSHA7k9jjJ2QNKytwpprG"),
-  new PublicKey("WAt8sFNiekVbH1ssH2dqoCEaXUU1ZD2vs1F8V4y1nVh"),
-  new PublicKey("WaTaaPXBpshpGyAcctT4JatEicmavMqv8JR93gRtYeQ"),
-  new PublicKey("WaTUZowJtRjyiUnxLy2nwNij9G9EuGpfiQGrNM8st1B"),
-  new PublicKey("WaTyrB78jtyZun9JcAF2psWUFhurzxotckJr9J96ksS"),
-  new PublicKey("wAtZcn6ZeL3pxtDJJ19LJ5qRb5YewtUdr6CTYRjLfZL")
+  new PublicKey("waTh9vNmRz8hHxQv1zW81ExKQ7fwaa1TR6tQT5fTkjg"),
+  new PublicKey("waTirsbdRyyxm8DFxH9Z9P5Pyrj74jJ7E74zqhmGX1k"),
+  new PublicKey("wAtMcoqwHb7obEL2USNXPqxg1CmJDSjjjsNcEm9bzCZ"),
+  new PublicKey("Wats1sM7W4UvxUuQPevGxexgcaFiaXMXxActKUmcvHx"),
+  new PublicKey("waTtgLt1WVRgoWYNZh97AYAUqoU4nN98jVThPdYQVwj"),
+  new PublicKey("WaTxa5w4TjYHRdHwG2zaN9ynA1c9z4J9TswsBCmzy4N"),
 ];
 
 export const funders = [
@@ -15,10 +15,8 @@ export const funders = [
   new PublicKey("wAfmKAiAgtfywPhfRdLQ7uMeS2RW3kN57kodaRabX6V"),
   new PublicKey("WAfN8P3NdYeTnnvFPKYUiveyqZSZtBboxUyrMSAzQc1"),
   new PublicKey("wafydZpGcTLk3FYEQ5Q4wwSKJXMy3EMTngxeVEXG45e"),
-  new PublicKey("WafzGQMEqwABhMdNHH86yDRqzZQvK5rELK5Nrto97Va")
+  new PublicKey("WafzGQMEqwABhMdNHH86yDRqzZQvK5rELK5Nrto97Va"),
 ];
 
-
-
-
-
+export const tokenDispenserProgramId =
+  "WapFw9mSyHh8trDDRy7AamUn1V7QiGaVvtouj5AucQA";

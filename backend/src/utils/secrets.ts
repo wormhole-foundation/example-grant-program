@@ -4,8 +4,13 @@ import {
   GetSecretValueCommand
 } from '@aws-sdk/client-secrets-manager'
 import config from '../config'
+import { Keypair } from '@solana/web3.js'
 
 const client = new SecretsManagerClient({ region: config.aws.region })
+
+interface SecretPrivateKeys {
+  keys: string
+}
 
 export async function getDispenserKey() {
   let key: string
@@ -19,16 +24,12 @@ export async function getDispenserKey() {
   return { key: JSON.parse(key) }
 }
 
-export async function getFundingKey(): Promise<{ key: Uint8Array }> {
-  let key: string
-  if (config.secrets.funding.key()) {
-    console.log('Using funding key from config')
-    key = config.secrets.funding.key()!
-  } else {
-    key = await getSecretKey(config.secrets.funding.secretName, 'key')
-  }
-
-  return { key: JSON.parse(key) }
+export async function getFundingKeys(): Promise<Keypair[]> {
+  const secret = (await getSecret(
+    config.secrets.funding.secretName
+  )) as SecretPrivateKeys
+  const keys = JSON.parse(secret.keys) as number[][]
+  return keys.map((key) => Keypair.fromSecretKey(Uint8Array.from(key)))
 }
 
 export async function getInfluxToken(): Promise<string> {
