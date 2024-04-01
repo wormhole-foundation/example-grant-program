@@ -39,3 +39,6 @@ export const EVM_CHAINS = [
 ] as const
 
 export type EvmChains = typeof EVM_CHAINS[number]
+
+export const tokenDispenserProgramId =
+  'WapFw9mSyHh8trDDRy7AamUn1V7QiGaVvtouj5AucQA'

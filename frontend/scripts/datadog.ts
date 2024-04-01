@@ -20,9 +20,9 @@ import {
 } from '@datadog/datadog-api-client/dist/packages/datadog-api-client-v1/models/EventAlertType'
 import { envOrErr } from '../claim_sdk'
 import { BN } from '@coral-xyz/anchor'
+import { tokenDispenserProgramId } from '../utils/constants'
 
 const ENDPOINT = envOrErr('ENDPOINT')
-const PROGRAM_ID = envOrErr('PROGRAM_ID')
 const CLUSTER = envOrErr('CLUSTER')
 const TIME_WINDOW_SECS = Number.parseInt(envOrErr('TIME_WINDOW_SECS'), 10)
 const CHUNK_SIZE = Number.parseInt(envOrErr('CHUNK_SIZE'), 10)
@@ -41,7 +41,7 @@ const MAX_AMOUNT_PER_ECOSYSTEM = new Map<string, BN>([
 async function main() {
   const tokenDispenserEventSubscriber = new TokenDispenserEventSubscriber(
     ENDPOINT,
-    new anchor.web3.PublicKey(PROGRAM_ID),
+    new anchor.web3.PublicKey(tokenDispenserProgramId),
     TIME_WINDOW_SECS,
     CHUNK_SIZE,
     {

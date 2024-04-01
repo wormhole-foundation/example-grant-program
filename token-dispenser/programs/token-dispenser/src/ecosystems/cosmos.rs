@@ -46,41 +46,41 @@ pub struct CosmosMessage {
 }
 
 impl CosmosMessage {
-    pub fn parse(data: &[u8], signer: &CosmosBech32Address) -> Result<Self> {
-        let sign_doc: CosmosStdSignDoc = serde_json::from_slice(data)
-            .map_err(|_| error!(ErrorCode::SignatureVerificationWrongPayloadMetadata))?;
+    // pub fn parse(data: &[u8], signer: &CosmosBech32Address) -> Result<Self> {
+    //     let sign_doc: CosmosStdSignDoc = serde_json::from_slice(data)
+    //         .map_err(|_| error!(ErrorCode::SignatureVerificationWrongPayloadMetadata))?;
 
-        if !(sign_doc.account_number == "0"
-            && sign_doc.chain_id.is_empty()
-            && sign_doc.fee.amount.is_empty()
-            && sign_doc.fee.gas == "0"
-            && sign_doc.memo.is_empty()
-            && sign_doc.msgs.len() == 1
-            && sign_doc.sequence == "0")
-        {
-            return err!(ErrorCode::SignatureVerificationWrongPayloadMetadata);
-        }
+    //     if !(sign_doc.account_number == "0"
+    //         && sign_doc.chain_id.is_empty()
+    //         && sign_doc.fee.amount.is_empty()
+    //         && sign_doc.fee.gas == "0"
+    //         && sign_doc.memo.is_empty()
+    //         && sign_doc.msgs.len() == 1
+    //         && sign_doc.sequence == "0")
+    //     {
+    //         return err!(ErrorCode::SignatureVerificationWrongPayloadMetadata);
+    //     }
 
-        if sign_doc.msgs[0].r#type != EXPECTED_COSMOS_MESSAGE_TYPE {
-            return err!(ErrorCode::SignatureVerificationWrongPayloadMetadata);
-        }
+    //     if sign_doc.msgs[0].r#type != EXPECTED_COSMOS_MESSAGE_TYPE {
+    //         return err!(ErrorCode::SignatureVerificationWrongPayloadMetadata);
+    //     }
 
-        if sign_doc.msgs[0].value.signer != signer.0 {
-            return err!(ErrorCode::SignatureVerificationWrongPayloadMetadata);
-        }
+    //     if sign_doc.msgs[0].value.signer != signer.0 {
+    //         return err!(ErrorCode::SignatureVerificationWrongPayloadMetadata);
+    //     }
 
-        Ok(CosmosMessage {
-            payload: base64_standard_engine
-                .decode(sign_doc.msgs[0].value.data.as_bytes())
-                .map_err(|_| error!(ErrorCode::SignatureVerificationWrongPayloadMetadata))?,
-            signer:  CosmosBech32Address(sign_doc.msgs[0].value.signer.clone()),
-        })
-    }
+    //     Ok(CosmosMessage {
+    //         payload: base64_standard_engine
+    //             .decode(sign_doc.msgs[0].value.data.as_bytes())
+    //             .map_err(|_| error!(ErrorCode::SignatureVerificationWrongPayloadMetadata))?,
+    //         signer:  CosmosBech32Address(sign_doc.msgs[0].value.signer.clone()),
+    //     })
+    // }
 
 
-    pub fn get_payload(&self) -> &[u8] {
-        self.payload.as_slice()
-    }
+    // pub fn get_payload(&self) -> &[u8] {
+    //     self.payload.as_slice()
+    // }
 
     pub fn build_message(payload: &[u8], signer: &CosmosBech32Address) -> Vec<u8> {
         let sign_doc: CosmosStdSignDoc = CosmosStdSignDoc {

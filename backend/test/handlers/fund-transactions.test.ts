@@ -21,11 +21,13 @@ import { IDL, TokenDispenser } from '../../src/token-dispenser'
 import { fundTransactions } from '../../src/handlers/fund-transactions'
 import { GenericContainer, StartedTestContainer } from 'testcontainers'
 import { InfluxDB } from '@influxdata/influxdb-client'
+import config from '../../src/config'
 
 const RANDOM_BLOCKHASH = 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
+const tokenDispenserProgramId = config.tokenDispenserProgramId()
+const TokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
 const INFLUX_TOKEN =
   'jsNTEHNBohEjgKqWj1fR8fJjYlBvcYaRTY68-iQ5Y55X_Qr3VKGSvqJz78g4jV8mPiUTQLPYq2tLs_Dy8M--nw=='
-const PROGRAM_ID = new PublicKey('Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS')
 const FUNDER_KEY = new Keypair()
 const server = setupServer()
 const influx = new GenericContainer('influxdb')
@@ -55,9 +57,9 @@ describe('fundTransactions integration test', () => {
       8086
     )}`
     process.env.INFLUXDB_FLUSH_ENABLED = 'true'
-
+    process.env.AWS_ACCESS_KEY_ID = 'key'
+    process.env.AWS_SECRET_ACCESS_KEY = 'secret'
     process.env.FUNDING_WALLET_KEY = `[${FUNDER_KEY.secretKey}]`
-    process.env.TOKEN_DISPENSER_PROGRAM_ID = PROGRAM_ID.toString()
   }, 20_000)
 
   afterAll(async () => {
@@ -230,7 +232,7 @@ describe('fundTransactions integration test', () => {
     const instructions = [
       tokenDispenserInstruction,
       createComputeUnitLimitInstruction(200),
-      createComputeUnitPriceInstruction(BigInt(10000000)),
+      createComputeUnitPriceInstruction(BigInt(10_000_000)),
       createSecp256k1ProgramInstruction()
     ]
 
@@ -246,7 +248,7 @@ describe('fundTransactions integration test', () => {
       await createTokenDispenserProgramInstruction()
     ])
 
-    const callData = extractCallData(versionedTx, PROGRAM_ID.toBase58())
+    const callData = extractCallData(versionedTx, tokenDispenserProgramId)
 
     expect(callData).not.toBeNull()
     expect(callData?.amount.toNumber()).toBe(3000000)
@@ -272,7 +274,9 @@ const givenDownstreamServicesWork = () => {
   server.use(
     http.all('https://secretsmanager.us-east-2.amazonaws.com', () => {
       return HttpResponse.json({
-        SecretString: JSON.stringify({ key: `[${[...FUNDER_KEY.secretKey]}]` })
+        SecretString: JSON.stringify({
+          keys: JSON.stringify([[...FUNDER_KEY.secretKey]])
+        })
       })
     })
   )
@@ -295,7 +299,14 @@ const givenCorrectTransaction = async () => {
 
 const whenFundTransactionsCalled = async () => {
   response = await fundTransactions({
-    body: JSON.stringify(input.map((tx) => Buffer.from(tx.serialize())))
+    body: JSON.stringify(
+      input.map((tx) => {
+        return {
+          tx: Buffer.from(tx.serialize()),
+          funder: FUNDER_KEY.publicKey
+        }
+      })
+    )
   } as unknown as APIGatewayProxyEvent)
 }
 
@@ -354,7 +365,7 @@ const createTestLegacyTransactionFromInstructions = (
 const createTokenDispenserProgramInstruction = async () => {
   const tokenDispenser = new Program(
     IDL,
-    PROGRAM_ID,
+    TokenDispenserPublicKey,
     new AnchorProvider(
       new Connection('http://localhost:8899'),
       new NodeWallet(new Keypair()),

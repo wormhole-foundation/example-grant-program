@@ -27,6 +27,8 @@ import { TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
 import { SignedMessage } from './ecosystems/signatures'
 import { extractChainId } from './ecosystems/cosmos'
 import { fetchFundTransaction } from '../utils/api'
+import { getClaimPayers } from './treasury'
+import { inspect } from 'util'
 
 export const ERROR_SIGNING_TX = 'error: signing transaction'
 export const ERROR_FUNDING_TX = 'error: funding transaction'
@@ -40,6 +42,11 @@ const AUTHORIZATION_PAYLOAD = [
   '\nI authorize Solana wallet\n',
   '\nto claim my W tokens.\n',
 ]
+
+export type TransactionWithPayers = {
+  tx: VersionedTransaction
+  payers: [PublicKey, PublicKey]
+}
 
 /**
  * This class wraps the interaction with the TokenDispenser
@@ -71,7 +78,10 @@ export class TokenDispenserProvider {
       provider
     ) as unknown as Program<TokenDispenser>
 
-    this.configPda = this.getConfigPda()
+    this.configPda = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from('config')],
+      this.programId
+    )
   }
 
   get programId(): anchor.web3.PublicKey {
@@ -91,13 +101,7 @@ export class TokenDispenserProvider {
   }
 
   public getConfigPda(): [anchor.web3.PublicKey, bump] {
-    return (
-      this.configPda ??
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from('config')],
-        this.programId
-      )
-    )
+    return this.configPda
   }
 
   public async getConfig(): Promise<IdlAccounts<TokenDispenser>['Config']> {
@@ -141,36 +145,35 @@ export class TokenDispenserProvider {
   public async initialize(
     root: Buffer,
     mint: anchor.web3.PublicKey,
-    treasury: anchor.web3.PublicKey,
     dispenserGuard: anchor.web3.PublicKey,
-    funder: anchor.web3.PublicKey,
+    treasuries: readonly anchor.web3.PublicKey[],
+    funders: readonly anchor.web3.PublicKey[],
     maxTransfer: anchor.BN
   ): Promise<TransactionSignature> {
     const addressLookupTable = await this.initAddressLookupTable(
       mint,
-      treasury,
-      funder
+      treasuries,
+      funders
     )
 
     return this.tokenDispenserProgram.methods
-      .initialize(Array.from(root), dispenserGuard, funder, maxTransfer)
+      .initialize(Array.from(root), dispenserGuard, maxTransfer)
       .accounts({
         config: this.getConfigPda()[0],
         mint,
-        treasury,
         systemProgram: anchor.web3.SystemProgram.programId,
         addressLookupTable,
       })
       .rpc()
   }
 
-  private async initAddressLookupTable(
+  async initAddressLookupTable(
     mint: anchor.web3.PublicKey,
-    treasury: anchor.web3.PublicKey,
-    funder: anchor.web3.PublicKey
+    treasuries: readonly anchor.web3.PublicKey[],
+    funders: readonly anchor.web3.PublicKey[]
   ): Promise<anchor.web3.PublicKey> {
     const recentSlot = await this.provider.connection.getSlot()
-    const [loookupTableInstruction, lookupTableAddress] =
+    const [lookupTableInstruction, lookupTableAddress] =
       AddressLookupTableProgram.createLookupTable({
         authority: this.provider.publicKey!,
         payer: this.provider.publicKey!,
@@ -183,17 +186,17 @@ export class TokenDispenserProvider {
       addresses: [
         this.configPda[0],
         mint,
-        treasury,
         TOKEN_PROGRAM_ID,
         SystemProgram.programId,
         SYSVAR_INSTRUCTIONS_PUBKEY,
         splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
-        funder,
+        ...treasuries,
+        ...funders,
       ],
     })
     let createLookupTableTx = new VersionedTransaction(
       new TransactionMessage({
-        instructions: [loookupTableInstruction, extendInstruction],
+        instructions: [lookupTableInstruction, extendInstruction],
         payerKey: this.provider.publicKey!,
         recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
       }).compileToV0Message()
@@ -229,38 +232,61 @@ export class TokenDispenserProvider {
       signedMessage: SignedMessage | undefined
     }[],
     fetchFundTransactionFunction: (
-      transactions: VersionedTransaction[]
-    ) => Promise<VersionedTransaction[]> = fetchFundTransaction // This argument is only used for testing where we can't call the API
+      transactions: TransactionWithPayers[]
+    ) => Promise<VersionedTransaction[]> = fetchFundTransaction, // This argument is only used for testing where we can't call the API
+    getPayersForClaim: (
+      claimInfo: ClaimInfo
+    ) => [anchor.web3.PublicKey, anchor.web3.PublicKey] = getClaimPayers // This argument is only used for testing where we can't call the API
   ): Promise<Promise<TransactionError | null>[]> {
-    const txs: VersionedTransaction[] = []
+    const txs: TransactionWithPayers[] = []
 
     try {
       for (const claim of claims) {
-        txs.push(
-          await this.generateClaimTransaction(
+        const [funder, treasury] = getPayersForClaim(claim.claimInfo)
+
+        txs.push({
+          tx: await this.generateClaimTransaction(
+            funder,
+            treasury,
             claim.claimInfo,
             claim.proofOfInclusion,
             claim.signedMessage
-          )
-        )
+          ),
+          payers: [funder, treasury],
+        })
       }
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_CRAFTING_TX)
     }
 
-    let txsSignedOnce
+    let txsSignedOnce: VersionedTransaction[]
+
     try {
       txsSignedOnce = await (
         this.tokenDispenserProgram.provider as anchor.AnchorProvider
-      ).wallet.signAllTransactions(txs)
+      ).wallet.signAllTransactions(txs.map((tx) => tx.tx))
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_SIGNING_TX)
     }
 
+    const txsSignedOnceWithPayers: TransactionWithPayers[] = txsSignedOnce.map(
+      (tx, index) => {
+        return {
+          tx: tx,
+          payers: txs[index].payers,
+        }
+      }
+    )
+
     let txsSignedTwice
     try {
-      txsSignedTwice = await fetchFundTransactionFunction(txsSignedOnce)
+      txsSignedTwice = await fetchFundTransactionFunction(
+        txsSignedOnceWithPayers
+      )
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_FUNDING_TX)
     }
 
@@ -290,12 +316,14 @@ export class TokenDispenserProvider {
   }
 
   public async generateClaimTransaction(
+    funder: PublicKey,
+    treasury: PublicKey,
     claimInfo: ClaimInfo,
     proofOfInclusion: Uint8Array[],
     signedMessage: SignedMessage | undefined
   ): Promise<VersionedTransaction> {
     const [receiptPda, receiptBump] = this.getReceiptPda(claimInfo)
-    const { funder, mint, treasury } = await this.getConfig()
+    const { mint } = await this.getConfig()
     //same as getClaimantFundAddress / getAssociatedTokenAddress but with bump
     const [claimantFund, claimaintFundBump] = PublicKey.findProgramAddressSync(
       [
@@ -522,6 +550,7 @@ export class TokenDispenserProvider {
       )
     }
   }
+
   public async getClaimantFundAddress(): Promise<PublicKey> {
     const config = await this.getConfig()
     const associatedTokenAccount =

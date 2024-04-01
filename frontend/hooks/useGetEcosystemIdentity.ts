@@ -18,14 +18,13 @@ import useDiscordAuth from './useDiscordAuth'
 export function useGetEcosystemIdentity() {
   const aptosAddress = useAptosAddress()
   const evmAddress = useEVMAddress()
+  const injectiveAddress = useCosmosAddress('injective')
   const osmosisAddress = useCosmosAddress('osmosis')
   const terraAddress = useCosmosAddress('terra')
   const solanaAddress = useSolanaAddress()
   const suiAddress = useSuiAddress()
   const algorandAddress = useAlgorandAddress()
-  // TODO update logic to get discord data from lambda function execution
-  // const { data } = useSession()
-  const data = {} as any
+
   const { profile } = useDiscordAuth()
 
   return useCallback(
@@ -38,7 +37,7 @@ export function useGetEcosystemIdentity() {
           return evmAddress
 
         case Ecosystem.INJECTIVE:
-          return evmAddress ? getInjectiveAddress(evmAddress) : undefined
+          return injectiveAddress
 
         case Ecosystem.OSMOSIS:
           return osmosisAddress
@@ -64,6 +63,7 @@ export function useGetEcosystemIdentity() {
       profile,
       evmAddress,
       osmosisAddress,
+      injectiveAddress,
       terraAddress,
       solanaAddress,
       suiAddress,

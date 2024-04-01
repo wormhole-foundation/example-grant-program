@@ -24,9 +24,9 @@ export function EcosystemConnectButton({
       return <EVMWalletButton disableOnConnect={disableOnConnect} />
     case Ecosystem.INJECTIVE:
       return (
-        <EVMWalletButton
+        <CosmosWalletButton
+          chainName="injective"
           disableOnConnect={disableOnConnect}
-          isInjective={true}
         />
       )
     case Ecosystem.TERRA:

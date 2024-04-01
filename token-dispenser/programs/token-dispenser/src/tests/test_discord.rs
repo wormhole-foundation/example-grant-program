@@ -53,7 +53,6 @@ pub async fn test_discord() {
             address_lookup_table,
             None,
             None,
-            None,
         )
         .await
         .unwrap();

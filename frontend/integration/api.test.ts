@@ -16,7 +16,7 @@ import {
 import dotenv from 'dotenv'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { ethers } from 'ethers'
-import { loadFunderWallet } from '../claim_sdk/testWallets'
+import { loadFunderWallets } from '../claim_sdk/testWallets'
 import { mockfetchFundTransaction } from './api'
 import {
   checkAllProgramsWhitelisted,
@@ -27,19 +27,28 @@ import {
   checkV0,
   countTotalSignatures,
 } from '../utils/verifyTransaction'
+import { treasuries } from '../claim_sdk/treasury'
+import { tokenDispenserProgramId } from '../utils/constants'
 
 dotenv.config()
-const PROGRAM_ID = new PublicKey(process.env.PROGRAM_ID!)
+const tokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
 const WHITELISTED_PROGRAMS: PublicKey[] = [
-  PROGRAM_ID,
   splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+  tokenDispenserPublicKey,
   Secp256k1Program.programId,
   Ed25519Program.programId,
   ComputeBudgetProgram.programId,
 ]
 
 const RANDOM_BLOCKHASH = 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
-const funderPubkey = loadFunderWallet().publicKey
+const funderWallets = loadFunderWallets()
+const funderPubkey = Object.entries(funderWallets)[0][1].publicKey
+
+function getTestPayers(): [PublicKey, PublicKey] {
+  const wallets = loadFunderWallets()
+  const walletsArray = Object.entries(wallets)
+  return [walletsArray[0][1].publicKey, treasuries[0]]
+}
 
 function createTestTransactionFromInstructions(
   instructions: TransactionInstruction[]
@@ -57,7 +66,7 @@ describe('test fund transaction api', () => {
   it('tests the api', async () => {
     const tokenDispenser = new Program(
       IDL as any,
-      PROGRAM_ID,
+      tokenDispenserPublicKey,
       new AnchorProvider(
         new Connection('http://localhost:8899'),
         new NodeWallet(new Keypair()),
@@ -164,94 +173,154 @@ describe('test fund transaction api', () => {
       }).compileToLegacyMessage()
     )
 
-    await mockfetchFundTransaction([transactionOK1])
+    await mockfetchFundTransaction([
+      {
+        tx: transactionOK1,
+        payers: getTestPayers(),
+      },
+    ])
     expect(
-      checkTransactions([transactionOK1], PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransactions(
+        [transactionOK1],
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(true)
 
-    await mockfetchFundTransaction([transactionOK2])
+    await mockfetchFundTransaction([
+      {
+        tx: transactionOK2,
+        payers: getTestPayers(),
+      },
+    ])
     expect(
-      checkTransactions([transactionOK2], PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransactions(
+        [transactionOK2],
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(true)
 
     await expect(
-      mockfetchFundTransaction([transactionTooManySigs]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionTooManySigs,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
         [transactionTooManySigs],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionBadTransfer]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionBadTransfer,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
         [transactionBadTransfer],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionBadNoTokenDispenser]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionBadNoTokenDispenser,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
         [transactionBadNoTokenDispenser],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionBadComputeHeap]).catch((e) => e)
+      mockfetchFundTransaction([
+        { tx: transactionBadComputeHeap, payers: getTestPayers() },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
         [transactionBadComputeHeap],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionBadTransfer2]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionBadTransfer2,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
         [transactionBadTransfer2],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionBadTransfer3]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionBadTransfer3,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
         [transactionBadTransfer3],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
 
     await expect(
-      mockfetchFundTransaction([transactionLegacy]).catch((e) => e)
+      mockfetchFundTransaction([
+        {
+          tx: transactionLegacy,
+          payers: getTestPayers(),
+        },
+      ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
-      checkTransactions([transactionLegacy], PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransactions(
+        [transactionLegacy],
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(false)
 
     // More granular tests
     expect(
-      checkTransaction(transactionOK1, PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransaction(
+        transactionOK1,
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(true)
-    expect(checkProgramAppears(transactionOK1, PROGRAM_ID)).toBe(true)
+    expect(checkProgramAppears(transactionOK1, tokenDispenserPublicKey)).toBe(
+      true
+    )
     expect(
       checkAllProgramsWhitelisted(transactionOK1, WHITELISTED_PROGRAMS)
     ).toBe(true)
@@ -262,9 +331,15 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionOK1)).toBe(2)
 
     expect(
-      checkTransaction(transactionOK2, PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransaction(
+        transactionOK2,
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(true)
-    expect(checkProgramAppears(transactionOK2, PROGRAM_ID)).toBe(true)
+    expect(checkProgramAppears(transactionOK2, tokenDispenserPublicKey)).toBe(
+      true
+    )
     expect(
       checkAllProgramsWhitelisted(transactionOK2, WHITELISTED_PROGRAMS)
     ).toBe(true)
@@ -275,9 +350,15 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionOK2)).toBe(3)
 
     expect(
-      checkTransaction(transactionTooManySigs, PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransaction(
+        transactionTooManySigs,
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(false)
-    expect(checkProgramAppears(transactionTooManySigs, PROGRAM_ID)).toBe(true)
+    expect(
+      checkProgramAppears(transactionTooManySigs, tokenDispenserPublicKey)
+    ).toBe(true)
     expect(
       checkAllProgramsWhitelisted(transactionTooManySigs, WHITELISTED_PROGRAMS)
     ).toBe(true)
@@ -290,9 +371,15 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionTooManySigs)).toBe(4)
 
     expect(
-      checkTransaction(transactionBadTransfer, PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransaction(
+        transactionBadTransfer,
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(false)
-    expect(checkProgramAppears(transactionBadTransfer, PROGRAM_ID)).toBe(false)
+    expect(
+      checkProgramAppears(transactionBadTransfer, tokenDispenserPublicKey)
+    ).toBe(false)
     expect(
       checkAllProgramsWhitelisted(transactionBadTransfer, WHITELISTED_PROGRAMS)
     ).toBe(false)
@@ -307,12 +394,15 @@ describe('test fund transaction api', () => {
     expect(
       checkTransaction(
         transactionBadNoTokenDispenser,
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
     expect(
-      checkProgramAppears(transactionBadNoTokenDispenser, PROGRAM_ID)
+      checkProgramAppears(
+        transactionBadNoTokenDispenser,
+        tokenDispenserPublicKey
+      )
     ).toBe(false)
     expect(
       checkAllProgramsWhitelisted(
@@ -331,13 +421,13 @@ describe('test fund transaction api', () => {
     expect(
       checkTransaction(
         transactionBadComputeHeap,
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
-    expect(checkProgramAppears(transactionBadComputeHeap, PROGRAM_ID)).toBe(
-      true
-    )
+    expect(
+      checkProgramAppears(transactionBadComputeHeap, tokenDispenserPublicKey)
+    ).toBe(true)
     expect(
       checkAllProgramsWhitelisted(
         transactionBadComputeHeap,
@@ -355,11 +445,13 @@ describe('test fund transaction api', () => {
     expect(
       checkTransaction(
         transactionBadTransfer2,
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
-    expect(checkProgramAppears(transactionBadTransfer2, PROGRAM_ID)).toBe(true)
+    expect(
+      checkProgramAppears(transactionBadTransfer2, tokenDispenserPublicKey)
+    ).toBe(true)
     expect(
       checkAllProgramsWhitelisted(transactionBadTransfer2, WHITELISTED_PROGRAMS)
     ).toBe(false)
@@ -374,11 +466,13 @@ describe('test fund transaction api', () => {
     expect(
       checkTransaction(
         transactionBadTransfer3,
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
-    expect(checkProgramAppears(transactionBadTransfer3, PROGRAM_ID)).toBe(true)
+    expect(
+      checkProgramAppears(transactionBadTransfer3, tokenDispenserPublicKey)
+    ).toBe(true)
     expect(
       checkAllProgramsWhitelisted(transactionBadTransfer3, WHITELISTED_PROGRAMS)
     ).toBe(false)
@@ -391,9 +485,15 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionBadTransfer3)).toBe(3)
 
     expect(
-      checkTransaction(transactionLegacy, PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransaction(
+        transactionLegacy,
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(false)
-    expect(checkProgramAppears(transactionLegacy, PROGRAM_ID)).toBe(true)
+    expect(
+      checkProgramAppears(transactionLegacy, tokenDispenserPublicKey)
+    ).toBe(true)
     expect(
       checkAllProgramsWhitelisted(transactionLegacy, WHITELISTED_PROGRAMS)
     ).toBe(true)
@@ -404,40 +504,67 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionLegacy)).toBe(2)
 
     // Grouped transactions
-    await mockfetchFundTransaction([transactionOK1, transactionOK2])
+    await mockfetchFundTransaction([
+      {
+        tx: transactionOK1,
+        payers: getTestPayers(),
+      },
+      {
+        tx: transactionOK2,
+        payers: getTestPayers(),
+      },
+    ])
     expect(
       checkTransactions(
         [transactionOK1, transactionOK2],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(true)
 
     await expect(
       mockfetchFundTransaction([
-        transactionOK1,
-        transactionBadTransfer3,
-        transactionOK2,
+        {
+          tx: transactionOK1,
+          payers: getTestPayers(),
+        },
+        {
+          tx: transactionBadTransfer3,
+          payers: getTestPayers(),
+        },
+        {
+          tx: transactionOK2,
+          payers: getTestPayers(),
+        },
       ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
         [transactionOK1, transactionBadTransfer3, transactionOK2],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
     await expect(
       mockfetchFundTransaction([
-        transactionOK1,
-        transactionOK2,
-        transactionBadComputeHeap,
+        {
+          tx: transactionOK1,
+          payers: getTestPayers(),
+        },
+        {
+          tx: transactionOK2,
+          payers: getTestPayers(),
+        },
+        {
+          tx: transactionBadComputeHeap,
+          payers: getTestPayers(),
+        },
       ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
       checkTransactions(
         [transactionOK1, transactionOK2, transactionBadComputeHeap],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)

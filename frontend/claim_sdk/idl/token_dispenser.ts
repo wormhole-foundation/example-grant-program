@@ -22,17 +22,6 @@ export type TokenDispenser = {
           name: 'mint'
           isMut: false
           isSigner: false
-          docs: ['Mint of the treasury']
-        },
-        {
-          name: 'treasury'
-          isMut: false
-          isSigner: false
-          docs: [
-            'Treasury token account. This is an externally owned token account and',
-            'the owner of this account will approve the config as a delegate using the',
-            'solana CLI command `spl-token approve <treasury_account_address> <approve_amount> <config_address>`'
-          ]
         },
         {
           name: 'systemProgram'
@@ -54,10 +43,6 @@ export type TokenDispenser = {
         },
         {
           name: 'dispenserGuard'
-          type: 'publicKey'
-        },
-        {
-          name: 'funder'
           type: 'publicKey'
         },
         {
@@ -165,15 +150,7 @@ export type TokenDispenser = {
             type: 'publicKey'
           },
           {
-            name: 'treasury'
-            type: 'publicKey'
-          },
-          {
             name: 'addressLookupTable'
-            type: 'publicKey'
-          },
-          {
-            name: 'funder'
             type: 'publicKey'
           },
           {
@@ -585,6 +562,11 @@ export type TokenDispenser = {
       name: 'ClaimEvent'
       fields: [
         {
+          name: 'treasury'
+          type: 'publicKey'
+          index: false
+        },
+        {
           name: 'remainingBalance'
           type: 'u64'
           index: false
@@ -675,17 +657,6 @@ export const IDL: TokenDispenser = {
           name: 'mint',
           isMut: false,
           isSigner: false,
-          docs: ['Mint of the treasury'],
-        },
-        {
-          name: 'treasury',
-          isMut: false,
-          isSigner: false,
-          docs: [
-            'Treasury token account. This is an externally owned token account and',
-            'the owner of this account will approve the config as a delegate using the',
-            'solana CLI command `spl-token approve <treasury_account_address> <approve_amount> <config_address>`',
-          ],
         },
         {
           name: 'systemProgram',
@@ -707,10 +678,6 @@ export const IDL: TokenDispenser = {
         },
         {
           name: 'dispenserGuard',
-          type: 'publicKey',
-        },
-        {
-          name: 'funder',
           type: 'publicKey',
         },
         {
@@ -818,15 +785,7 @@ export const IDL: TokenDispenser = {
             type: 'publicKey',
           },
           {
-            name: 'treasury',
-            type: 'publicKey',
-          },
-          {
             name: 'addressLookupTable',
-            type: 'publicKey',
-          },
-          {
-            name: 'funder',
             type: 'publicKey',
           },
           {
@@ -1237,6 +1196,11 @@ export const IDL: TokenDispenser = {
     {
       name: 'ClaimEvent',
       fields: [
+        {
+          name: 'treasury',
+          type: 'publicKey',
+          index: false,
+        },
         {
           name: 'remainingBalance',
           type: 'u64',

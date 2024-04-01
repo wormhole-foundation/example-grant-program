@@ -104,7 +104,11 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
     let totalCoinsClaimed = new BN(0)
     let broadcastPromises
     try {
-      broadcastPromises = await tokenDispenser?.submitClaims(claims)
+      broadcastPromises = await tokenDispenser?.submitClaims(
+        claims.map((claim) => ({
+          ...claim,
+        }))
+      )
     } catch (e) {
       const err = e as Error
       let message: string
