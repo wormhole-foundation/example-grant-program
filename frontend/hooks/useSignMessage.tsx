@@ -71,14 +71,26 @@ export function useInjectiveSignMessage(): SignMessageFn {
     'injective',
     'keplr-extension'
   )
-  const signMessageCb = useCallback(async (payload: string) => {
-    if (address === undefined || isWalletConnected === false) return
-    const account = await getAccount()
-    const uncompressedPublicKey = getUncompressedPubkey(account.pubkey)
-    const evmPubkey = uncompressedToEvmPubkey(uncompressedPublicKey)
-    const signature = await (window as any).keplr.signEthereum('injective-1', address, payload, 'message');
-    return injectiveBuildSignedMessage(Buffer.from(evmPubkey), signature, payload)
-  }, [address, getAccount, isWalletConnected])
+  const signMessageCb = useCallback(
+    async (payload: string) => {
+      if (address === undefined || isWalletConnected === false) return
+      const account = await getAccount()
+      const uncompressedPublicKey = getUncompressedPubkey(account.pubkey)
+      const evmPubkey = uncompressedToEvmPubkey(uncompressedPublicKey)
+      const signature = await (window as any).keplr.signEthereum(
+        'injective-1',
+        address,
+        payload,
+        'message'
+      )
+      return injectiveBuildSignedMessage(
+        Buffer.from(evmPubkey),
+        signature,
+        payload
+      )
+    },
+    [address, getAccount, isWalletConnected]
+  )
   return signMessageCb
 }
 
