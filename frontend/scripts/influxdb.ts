@@ -2,7 +2,9 @@
  * Post an event returns "OK" response
  *
  * To Run:
- * DD_SITE="datadoghq.com" DD_API_KEY="<DD_API_KEY>" ts-node ./scripts/datadog.ts
+ * copy .env.sample .env
+ * Then update the parameters in .env accordingly
+ * source .env ts-node ./scripts/influxdb.ts
  */
 
 import {
