@@ -49,12 +49,15 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
       <header className="absolute left-0 top-0 z-40 w-full py-3 px-1 transition-all lg:py-6 lg:px-10">
         {banner && (
           <div className="relative px-4 lg:px-10 ">
-            <div className="relative mb-2 flex justify-between gap-4 border  border-light border-opacity-60 bg-[#BA4A62] bg-opacity-40 py-2 leading-snug sm:px-4 md:pl-[29px] md:pr-4">
+            <div className="relative mb-2 flex justify-between gap-4 border border-light  border-opacity-60 bg-[#BA4A62] bg-opacity-40 px-2 py-2 leading-snug sm:px-4 md:pl-[29px] md:pr-4">
               <span className="flex items-center gap-2">
-                <Warn />
+                <Warn className="flex-shrink-0" />
                 We expect that this airdrop will cause congestion on solana!
               </span>
-              <button onClick={() => setBanner(false)}>
+              <button
+                onClick={() => setBanner(false)}
+                className="flex-shrink-0"
+              >
                 <Close />
               </button>
             </div>
