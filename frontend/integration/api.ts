@@ -16,8 +16,12 @@ import { ClaimInfo, Ecosystem } from '../claim_sdk/claim'
 import { loadFunderWallets } from '../claim_sdk/testWallets'
 import { checkTransactions } from '../utils/verifyTransaction'
 import { getInMemoryDb } from './utils'
-import { TransactionWithFunder } from '../../backend/src/utils/fund-transactions'
 import { tokenDispenserProgramId } from '../utils/constants'
+
+export type TransactionWithFunder = {
+  transaction: VersionedTransaction
+  funder: string
+}
 
 const wallets = loadFunderWallets()
 
