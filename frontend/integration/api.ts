@@ -116,7 +116,6 @@ export default async function handlerFundTransaction(
   ) {
     try {
       for (const txWithFunder of transactions) {
-        console.log(`About to send (backend) with funder: ${txWithFunder.funder}`);
         const wallet = wallets[txWithFunder.funder]
         if (!wallet) {
           return res.status(403).json({ error: 'Unauthorized funder' })
