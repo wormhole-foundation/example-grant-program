@@ -4,12 +4,12 @@ import {
   GetSecretValueCommand
 } from '@aws-sdk/client-secrets-manager'
 import config from '../config'
-import { Keypair } from '@solana/web3.js';
+import { Keypair } from '@solana/web3.js'
 
 const client = new SecretsManagerClient({ region: config.aws.region })
 
 interface SecretPrivateKeys {
-  keys: string;
+  keys: string
 }
 
 export async function getDispenserKey() {
@@ -24,9 +24,11 @@ export async function getDispenserKey() {
 }
 
 export async function getFundingKeys(): Promise<Keypair[]> {
-  const secret = await getSecret(config.keys.funding.secretName) as SecretPrivateKeys
+  const secret = (await getSecret(
+    config.keys.funding.secretName
+  )) as SecretPrivateKeys
   const keys = JSON.parse(secret.keys) as number[][]
-  return keys.map((key => Keypair.fromSecretKey(Uint8Array.from(key))))
+  return keys.map((key) => Keypair.fromSecretKey(Uint8Array.from(key)))
 }
 
 export async function getSecretKey(secretName: string, keyName: string) {
