@@ -1,4 +1,5 @@
 import { AnchorProvider, Program } from '@coral-xyz/anchor'
+import * as splToken from '@solana/spl-token'
 import IDL from '../claim_sdk/idl/token_dispenser.json'
 import {
   ComputeBudgetProgram,
@@ -32,6 +33,7 @@ import { tokenDispenserProgramId } from '../utils/constants'
 dotenv.config()
 const tokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
 const WHITELISTED_PROGRAMS: PublicKey[] = [
+  splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
   tokenDispenserPublicKey,
   Secp256k1Program.programId,
   Ed25519Program.programId,

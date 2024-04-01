@@ -88,7 +88,7 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitPrice(
         const priorityFee = ComputeBudgetInstruction.decodeSetComputeUnitPrice(
           legacTransactionInstruction
         )
-        if (priorityFee.microLamports >= MAX_COMPUTE_UNIT_PRICE) {
+        if (priorityFee.microLamports > MAX_COMPUTE_UNIT_PRICE) {
           return false
         }
       }

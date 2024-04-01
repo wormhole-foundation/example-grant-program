@@ -322,9 +322,54 @@ export class TokenDispenserProvider {
     proofOfInclusion: Uint8Array[],
     signedMessage: SignedMessage | undefined
   ): Promise<VersionedTransaction> {
-    // 1. generate claim certificate
-    //    a. create proofOfIdentity
-    const proofOfIdentity = this.createProofOfIdentity(claimInfo, signedMessage)
+    const [receiptPda, receiptBump] = this.getReceiptPda(claimInfo)
+    const { mint } = await this.getConfig()
+    //same as getClaimantFundAddress / getAssociatedTokenAddress but with bump
+    const [claimantFund, claimaintFundBump] = PublicKey.findProgramAddressSync(
+      [
+        this.claimant.toBytes(),
+        splToken.TOKEN_PROGRAM_ID.toBytes(),
+        mint.toBytes(),
+      ],
+      splToken.ASSOCIATED_TOKEN_PROGRAM_ID
+    )
+    const [claimantFundAccount, lookupTableAccount] = await Promise.all([
+      this.connection.getAccountInfo(claimantFund),
+      this.getLookupTableAccount(),
+    ])
+
+    const ixs: anchor.web3.TransactionInstruction[] = []
+
+    // 1. add signatureVerification instruction if needed
+    const signatureVerificationIx =
+      this.generateSignatureVerificationInstruction(
+        claimInfo.ecosystem,
+        signedMessage
+      )
+
+    if (signatureVerificationIx) ixs.push(signatureVerificationIx)
+
+    // 2. add create ATA instruction if needed
+    const claimantFundExists = claimantFundAccount !== null
+
+    if (!claimantFundExists)
+      ixs.push(
+        splToken.Token.createAssociatedTokenAccountInstruction(
+          splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+          splToken.TOKEN_PROGRAM_ID,
+          mint,
+          claimantFund,
+          this.claimant,
+          funder
+        )
+      )
+
+    // 3. add claim instruction
+    const proofOfIdentity = this.createProofOfIdentity(
+      claimInfo,
+      signedMessage,
+      0
+    )
 
     const claimCert: IdlTypes<TokenDispenser>['ClaimCertificate'] = {
       amount: claimInfo.amount,
@@ -332,61 +377,79 @@ export class TokenDispenserProvider {
       proofOfInclusion,
     }
 
-    // 2. generate signature verification instruction if needed
-    const signatureVerificationIx =
-      this.generateSignatureVerificationInstruction(
-        claimInfo.ecosystem,
-        signedMessage
-      )
+    ixs.push(
+      await this.tokenDispenserProgram.methods
+        .claim(claimCert)
+        .accounts({
+          funder,
+          claimant: this.claimant,
+          claimantFund,
+          config: this.getConfigPda()[0],
+          mint,
+          treasury,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: anchor.web3.SystemProgram.programId,
+          sysvarInstruction: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+          associatedTokenProgram: splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+        })
+        .remainingAccounts([
+          {
+            pubkey: receiptPda,
+            isWritable: true,
+            isSigner: false,
+          },
+        ])
+        .instruction()
+    )
 
-    // 3. derive receipt pda
-    const receiptPda = this.getReceiptPda(claimInfo)[0]
+    // 4. add Compute Unit instructions
+    const pdaDerivationCosts = (bump: number) => {
+      const maxBump = 255
+      const cusPerPdaDerivation = 1500
+      return (maxBump - bump) * cusPerPdaDerivation
+    }
+    const safetyMargin = 1000
+    const ataCreationCost = 20460
+    //determined experimentally:
+    const ecosystemCUs = {
+      discord: 44200,
+      solana: 40450,
+      evm: 66600,
+      sui: 79200,
+      aptos: 78800,
+      terra: 113500,
+      osmosis: 113200,
+      injective: 71700,
+      algorand: 70700,
+    }
 
-    const lookupTableAccount = await this.getLookupTableAccount()
+    const units =
+      safetyMargin +
+      ecosystemCUs[claimInfo.ecosystem] +
+      pdaDerivationCosts(claimaintFundBump) +
+      pdaDerivationCosts(receiptBump) +
+      (claimantFundExists
+        ? 0
+        : ataCreationCost + pdaDerivationCosts(claimaintFundBump))
+    ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
-    const ixs = signatureVerificationIx ? [signatureVerificationIx] : []
-    const claim_ix = await this.tokenDispenserProgram.methods
-      .claim(claimCert)
-      .accounts({
-        funder,
-        claimant: this.claimant,
-        claimantFund: await this.getClaimantFundAddress(),
-        config: this.getConfigPda()[0],
-        mint: (await this.getConfig()).mint,
-        treasury,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId,
-        sysvarInstruction: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
-        associatedTokenProgram: splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
-      })
-      .remainingAccounts([
-        {
-          pubkey: receiptPda,
-          isWritable: true,
-          isSigner: false,
-        },
-      ])
-      .instruction()
-    ixs.push(claim_ix)
-    ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }))
-
-    const microLamports = 1 //TODO determine true value
+    const microLamports = 1_000_000 //somewhat arbitrary choice
     ixs.push(ComputeBudgetProgram.setComputeUnitPrice({ microLamports }))
 
-    const claimTx = new VersionedTransaction(
+    // 5. build and return the transaction
+    return new VersionedTransaction(
       new TransactionMessage({
         instructions: ixs,
         payerKey: funder,
         recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
       }).compileToV0Message([lookupTableAccount!])
     )
-
-    return claimTx
   }
 
   private createProofOfIdentity(
     claimInfo: ClaimInfo,
-    signedMessage: SignedMessage | undefined
+    signedMessage: SignedMessage | undefined,
+    verificationInstructionIndex: number
   ): IdlTypes<TokenDispenser>['IdentityCertificate'] {
     if (claimInfo.ecosystem === 'solana') {
       return {
@@ -404,7 +467,7 @@ export class TokenDispenserProvider {
           return {
             [claimInfo.ecosystem]: {
               pubkey: Array.from(signedMessage.publicKey),
-              verificationInstructionIndex: 0,
+              verificationInstructionIndex,
             },
           }
         }
@@ -424,7 +487,7 @@ export class TokenDispenserProvider {
           return {
             discord: {
               username: claimInfo.identity,
-              verificationInstructionIndex: 0,
+              verificationInstructionIndex,
             },
           }
         }
@@ -442,7 +505,8 @@ export class TokenDispenserProvider {
 
   private generateSignatureVerificationInstruction(
     ecosystem: Ecosystem,
-    signedMessage: SignedMessage | undefined
+    signedMessage: SignedMessage | undefined,
+    instructionIndex: number = 0
   ): anchor.web3.TransactionInstruction | undefined {
     if (ecosystem === 'solana') {
       return undefined
@@ -457,6 +521,7 @@ export class TokenDispenserProvider {
             message: signedMessage.fullMessage,
             signature: signedMessage.signature,
             recoveryId: signedMessage.recoveryId!,
+            instructionIndex,
           })
         }
         case 'osmosis':
@@ -471,7 +536,7 @@ export class TokenDispenserProvider {
             publicKey: signedMessage.publicKey,
             message: signedMessage.fullMessage,
             signature: signedMessage.signature,
-            instructionIndex: 0,
+            instructionIndex,
           })
         }
         default: {

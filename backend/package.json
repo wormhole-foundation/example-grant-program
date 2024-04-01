@@ -19,6 +19,7 @@
     "@cosmjs/crypto": "^0.32.3",
     "@cosmjs/encoding": "^0.32.3",
     "@influxdata/influxdb-client": "^1.33.2",
+    "@solana/spl-token": "^0.4.3",
     "@solana/web3.js": "^1.91.1",
     "bs58": "^5.0.0",
     "hi-base32": "^0.5.1",

@@ -5,6 +5,7 @@ import {
   Secp256k1Program,
   VersionedTransaction,
 } from '@solana/web3.js'
+import * as splToken from '@solana/spl-token'
 import { NextApiRequest, NextApiResponse } from 'next'
 import {
   TransactionWithPayers,
@@ -28,6 +29,7 @@ const wallets = loadFunderWallets()
 const tokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
 
 const WHITELISTED_PROGRAMS: PublicKey[] = [
+  splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
   tokenDispenserPublicKey,
   Secp256k1Program.programId,
   Ed25519Program.programId,
