@@ -10,11 +10,11 @@ export const Ecosystems = [
   'solana',
   'evm',
   'sui',
+  'algorand',
   'aptos',
   'terra',
   'osmosis',
   'injective',
-  'algorand',
 ] as const
 export type Ecosystem = typeof Ecosystems[number]
 

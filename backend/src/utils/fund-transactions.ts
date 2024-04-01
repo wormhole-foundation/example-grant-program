@@ -7,6 +7,7 @@ import {
   TransactionInstruction,
   VersionedTransaction
 } from '@solana/web3.js'
+import * as splToken from '@solana/spl-token'
 import { coder } from '../token-dispenser'
 
 import config from '../config'
@@ -39,6 +40,7 @@ async function loadWhitelistedProgramIds(): Promise<PublicKey[]> {
   const PROGRAM_ID = new PublicKey(programId)
   return [
     PROGRAM_ID,
+    splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
     Secp256k1Program.programId,
     Ed25519Program.programId,
     ComputeBudgetProgram.programId
@@ -123,7 +125,7 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitPrice(
         const priorityFee = ComputeBudgetInstruction.decodeSetComputeUnitPrice(
           legacTransactionInstruction
         )
-        if (priorityFee.microLamports >= MAX_COMPUTE_UNIT_PRICE) {
+        if (priorityFee.microLamports > MAX_COMPUTE_UNIT_PRICE) {
           console.error('Priority fee set is too high')
           return false
         }

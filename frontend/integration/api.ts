@@ -7,6 +7,7 @@ import {
   Secp256k1Program,
   VersionedTransaction,
 } from '@solana/web3.js'
+import * as splToken from '@solana/spl-token'
 import { NextApiRequest, NextApiResponse } from 'next'
 import {
   getFundTransactionRoute,
@@ -35,6 +36,7 @@ const PROGRAM_ID = new PublicKey(process.env.PROGRAM_ID!)
 
 const WHITELISTED_PROGRAMS: PublicKey[] = [
   PROGRAM_ID,
+  splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
   Secp256k1Program.programId,
   Ed25519Program.programId,
   ComputeBudgetProgram.programId,
