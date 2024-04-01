@@ -136,7 +136,7 @@ function createTxnEventPoints(
       .stringField('signature', signature)
       .intField('amount', amountValue)
       .stringField('eventDetails', JSON.stringify(formattedEvent))
-      .timestamp(new Date().toISOString());
+      .timestamp(new Date(formattedEvent.blockTime * 1000).toISOString());
 
     return point;
   });
@@ -166,6 +166,12 @@ function createDoubleClaimPoint(
       const [claimInfoKey, txnEventInfosSet] = entry.value
       const [ecosystem, address] = claimInfoKey.split('-')
       const txnEventInfos = Array.from(txnEventInfosSet)
+      let blockTime = 0;
+      for (const txnEventInfo of txnEventInfos) {
+        if (txnEventInfo.blockTime > blockTime) {
+          blockTime = txnEventInfo.blockTime;
+        }
+      }
 
       const point = new Point('double_claim_event')
         .tag('ecosystem', ecosystem)
@@ -173,7 +179,7 @@ function createDoubleClaimPoint(
         .tag('network', CLUSTER)
         .tag('service', 'token-dispenser-event-subscriber')
         .stringField('details', JSON.stringify(txnEventInfos))
-        .timestamp(new Date().toISOString());
+        .timestamp(new Date(blockTime * 1000).toISOString());
       doubleClaimPoints.push(point);
     }
     entry = entryGen.next()
@@ -191,7 +197,7 @@ function createFailedTxnEventPoints(
       .tag('network', CLUSTER)
       .tag('service', 'token-dispenser-event-subscriber')
       .stringField('errorDetails', JSON.stringify(errorLog))
-      .timestamp(new Date().toISOString());
+      .timestamp(new Date(errorLog.blockTime * 1000).toISOString());
     return point;
   });
 }
@@ -215,7 +221,7 @@ function createLowBalanceEventPoint(
       .tag('service', 'token-dispenser-event-subscriber')
       .intField('remainingBalance', parseInt(mostRecentEvent.remainingBalance, 10))
       .stringField('eventDetails', JSON.stringify(mostRecentEvent))
-      .timestamp(new Date().toISOString());
+      .timestamp(new Date(mostRecentEvent.blockTime * 1000).toISOString());
     return point;
   }
 
