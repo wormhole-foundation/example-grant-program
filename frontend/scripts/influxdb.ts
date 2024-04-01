@@ -22,10 +22,10 @@ import { InfluxDB, Point } from '@influxdata/influxdb-client'
 const ENDPOINT = envOrErr('ENDPOINT')
 const PROGRAM_ID = envOrErr('PROGRAM_ID')
 const CLUSTER = envOrErr('CLUSTER')
-const INFLUX_URL = envOrErr('INFLUX_URL');
-const INFLUX_TOKEN = envOrErr('INFLUX_TOKEN');
-const INFLUX_ORG = envOrErr('INFLUX_ORG');
-const INFLUX_BUCKET = envOrErr('INFLUX_BUCKET');
+const INFLUX_URL = envOrErr('INFLUX_URL')
+const INFLUX_TOKEN = envOrErr('INFLUX_TOKEN')
+const INFLUX_ORG = envOrErr('INFLUX_ORG')
+const INFLUX_BUCKET = envOrErr('INFLUX_BUCKET')
 const TIME_WINDOW_SECS = Number.parseInt(envOrErr('TIME_WINDOW_SECS'), 10)
 const CHUNK_SIZE = Number.parseInt(envOrErr('CHUNK_SIZE'), 10)
 const LOW_BALANCE_THRESHOLD = envOrErr('LOW_BALANCE_THRESHOLD')
@@ -45,7 +45,7 @@ async function main() {
   console.log('Node:', ENDPOINT)
   console.log('Time Window Secs:', TIME_WINDOW_SECS)
   console.log('Chunk Size:', CHUNK_SIZE)
-  
+
   const tokenDispenserEventSubscriber = new TokenDispenserEventSubscriber(
     ENDPOINT,
     new anchor.web3.PublicKey(PROGRAM_ID),
@@ -129,7 +129,7 @@ async function main() {
     .then(() => {
       console.log('Finished writing points')
     })
-    .catch(e => {
+    .catch((e) => {
       console.error(e)
       console.log('\nFinished with error')
     })
