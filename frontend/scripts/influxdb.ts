@@ -17,7 +17,7 @@ import * as anchor from '@coral-xyz/anchor'
 import { envOrErr } from '../claim_sdk'
 import { BN } from '@coral-xyz/anchor'
 import { inspect } from 'util'
-import { InfluxDB, Point } from '@influxdata/influxdb-client'
+import { InfluxDB, Point, QueryApi } from '@influxdata/influxdb-client'
 
 const ENDPOINT = envOrErr('ENDPOINT')
 const PROGRAM_ID = envOrErr('PROGRAM_ID')
@@ -46,21 +46,40 @@ async function main() {
   console.log('Time Window Secs:', TIME_WINDOW_SECS)
   console.log('Chunk Size:', CHUNK_SIZE)
 
+  const influxDB = new InfluxDB({ url: INFLUX_URL, token: INFLUX_TOKEN })
+  const writeApi = influxDB.getWriteApi(INFLUX_ORG, INFLUX_BUCKET)
+  const readApi = influxDB.getQueryApi(INFLUX_ORG)
+
+  let latestTxBlockTime = 0
+  let latestSignature = await getLatestTxSignature(INFLUX_BUCKET, CLUSTER, readApi)
+
+  console.log("LATEST SIGNATURE AT START:", latestSignature);
   const tokenDispenserEventSubscriber = new TokenDispenserEventSubscriber(
     ENDPOINT,
     new anchor.web3.PublicKey(PROGRAM_ID),
     TIME_WINDOW_SECS,
+    latestSignature,
     CHUNK_SIZE,
     {
       commitment: 'confirmed',
     }
   )
 
-  const influxDB = new InfluxDB({ url: INFLUX_URL, token: INFLUX_TOKEN })
-  const writeApi = influxDB.getWriteApi(INFLUX_ORG, INFLUX_BUCKET)
-
   const { txnEvents, failedTxnInfos } =
     await tokenDispenserEventSubscriber.parseTransactionLogs()
+
+  for (const txnEvent of txnEvents) {
+    if (txnEvent.blockTime > latestTxBlockTime) {
+      latestTxBlockTime = txnEvent.blockTime
+      latestSignature = txnEvent.signature
+    }
+  }
+  for (const failedTxnInfo of failedTxnInfos) {
+    if (failedTxnInfo.blockTime > latestTxBlockTime) {
+      latestTxBlockTime = failedTxnInfo.blockTime
+      latestSignature = failedTxnInfo.signature
+    }
+  }
 
   console.log('Events', txnEvents)
   console.log('Failed Txn Infos', failedTxnInfos)
@@ -124,6 +143,13 @@ async function main() {
     writeApi.writePoint(failedTxnEventPoint)
   })
 
+  console.log('Latest Signature at the end:', latestSignature);
+  const latestTxPoint = new Point('latest_txn_seen')
+    .tag('network', CLUSTER)
+    .stringField('signature', latestSignature)
+
+  writeApi.writePoint(latestTxPoint)
+
   writeApi
     .close()
     .then(() => {
@@ -133,6 +159,23 @@ async function main() {
       console.error(e)
       console.log('\nFinished with error')
     })
+}
+
+async function getLatestTxSignature(bucket: string, network: string, readApi: QueryApi): Promise<string | undefined> {
+  const query = `from(bucket: "${bucket}")
+    |> range(start: -1d)
+    |> filter(fn: (r) => r._measurement == "latest_txn_seen")
+    |> filter(fn: (r) => r.network == "${network}")
+    |> last()
+    |> limit(n:1)`
+
+  let signature = undefined;
+  for await (const {values, tableMeta} of readApi.iterateRows(query)) {
+    const o = tableMeta.toObject(values)
+    signature = o._value.length > 0 ? o._value : undefined
+  }
+
+  return signature;
 }
 
 function createTxnEventPoints(formattedTxnEvents: FormattedTxnEventInfo[]) {

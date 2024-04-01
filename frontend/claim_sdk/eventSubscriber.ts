@@ -16,12 +16,14 @@ export class TokenDispenserEventSubscriber {
   connection: anchor.web3.Connection
   programId: anchor.web3.PublicKey
   timeWindowSecs: number
+  lastSignatureSeen: string | undefined
   chunkSize: number
 
   constructor(
     endpoint: string,
     programId: anchor.web3.PublicKey,
     timeWindowSecs: number,
+    lastSignatureSeen: string | undefined,
     chunkSize: number,
     confirmOpts?: anchor.web3.ConfirmOptions
   ) {
@@ -29,6 +31,7 @@ export class TokenDispenserEventSubscriber {
     this.programId = programId
     this.eventParser = new anchor.EventParser(this.programId, coder)
     this.timeWindowSecs = timeWindowSecs
+    this.lastSignatureSeen = lastSignatureSeen
     this.chunkSize = chunkSize
     confirmOpts = confirmOpts ?? anchor.AnchorProvider.defaultOptions()
     if (
@@ -54,31 +57,37 @@ export class TokenDispenserEventSubscriber {
     let signatures: Array<ConfirmedSignatureInfo> = []
     let currentBatch = await this.connection.getSignaturesForAddress(
       this.programId,
-      {},
+      {
+        until: this.lastSignatureSeen,
+      },
       this.connection.commitment as anchor.web3.Finality
     )
-    let batchWithinWindow = true
-    while (currentBatch.length > 0 && batchWithinWindow) {
-      const currentBatchLastSig =
-        currentBatch[currentBatch.length - 1]?.signature
-      const currentBatchLastSigBlockTime = await this.getTransactionBlockTime(
-        currentBatchLastSig
-      )
-      if (
-        currentBatchLastSigBlockTime &&
-        currentBatchLastSigBlockTime < currentTimeSec - this.timeWindowSecs
-      ) {
-        batchWithinWindow = false
-      }
+    if (this.lastSignatureSeen !== undefined) {
       signatures = signatures.concat(currentBatch)
-      currentBatch = await this.connection.getSignaturesForAddress(
-        this.programId,
-        {
-          before: currentBatchLastSig,
-          // Note: ignoring lastSignature and will assume datadog can handle de-duplication
-        },
-        this.connection.commitment as anchor.web3.Finality
-      )
+    } else {
+      let batchWithinWindow = true
+      while (currentBatch.length > 0 && batchWithinWindow) {
+        const currentBatchLastSig =
+          currentBatch[currentBatch.length - 1]?.signature
+        const currentBatchLastSigBlockTime = await this.getTransactionBlockTime(
+          currentBatchLastSig
+        )
+        if (
+          currentBatchLastSigBlockTime &&
+          currentBatchLastSigBlockTime < currentTimeSec - this.timeWindowSecs
+        ) {
+          batchWithinWindow = false
+        }
+        signatures = signatures.concat(currentBatch)
+        currentBatch = await this.connection.getSignaturesForAddress(
+          this.programId,
+          {
+            before: currentBatchLastSig,
+            // Note: ignoring lastSignature and will assume datadog can handle de-duplication
+          },
+          this.connection.commitment as anchor.web3.Finality
+        )
+      }
     }
 
     const validTxnSigs = []
