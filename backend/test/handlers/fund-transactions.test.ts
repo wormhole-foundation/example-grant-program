@@ -19,7 +19,7 @@ import { AnchorProvider, IdlTypes, Program, BN } from '@coral-xyz/anchor'
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { IDL, TokenDispenser } from '../../src/token-dispenser'
 import { fundTransactions } from '../../src/handlers/fund-transactions'
-import { GenericContainer, StartedTestContainer, Wait } from 'testcontainers'
+import { GenericContainer, StartedTestContainer } from 'testcontainers'
 import { InfluxDB } from '@influxdata/influxdb-client'
 
 const RANDOM_BLOCKHASH = 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
@@ -54,10 +54,11 @@ describe('fundTransactions integration test', () => {
     process.env.INFLUXDB_URL = `http://${startedInflux.getHost()}:${startedInflux.getMappedPort(
       8086
     )}`
+    process.env.INFLUXDB_FLUSH_ENABLED = 'true'
 
     process.env.FUNDING_WALLET_KEY = `[${FUNDER_KEY.secretKey}]`
     process.env.TOKEN_DISPENSER_PROGRAM_ID = PROGRAM_ID.toString()
-  }, 15_000)
+  }, 20_000)
 
   afterAll(async () => {
     await startedInflux.stop()

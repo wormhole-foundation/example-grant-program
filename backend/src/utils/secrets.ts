@@ -9,11 +9,11 @@ const client = new SecretsManagerClient({ region: config.aws.region })
 
 export async function getDispenserKey() {
   let key: string
-  if (config.keys.dispenserGuard.key) {
+  if (config.secrets.dispenserGuard.key) {
     console.log('Using dispenser guard key from config')
-    key = config.keys.dispenserGuard.key
+    key = config.secrets.dispenserGuard.key
   } else {
-    key = await getSecretKey(config.keys.dispenserGuard.secretName, 'key')
+    key = await getSecretKey(config.secrets.dispenserGuard.secretName, 'key')
   }
 
   return { key: JSON.parse(key) }
@@ -21,14 +21,26 @@ export async function getDispenserKey() {
 
 export async function getFundingKey(): Promise<{ key: Uint8Array }> {
   let key: string
-  if (config.keys.funding.key()) {
+  if (config.secrets.funding.key()) {
     console.log('Using funding key from config')
-    key = config.keys.funding.key()!
+    key = config.secrets.funding.key()!
   } else {
-    key = await getSecretKey(config.keys.funding.secretName, 'key')
+    key = await getSecretKey(config.secrets.funding.secretName, 'key')
   }
 
   return { key: JSON.parse(key) }
+}
+
+export async function getInfluxToken(): Promise<string> {
+  let key: string
+  if (config.secrets.influx.key()) {
+    console.log('Using influx token from config')
+    key = config.secrets.influx.key()!
+  } else {
+    key = await getSecretKey(config.secrets.influx.secretName, 'key')
+  }
+
+  return key
 }
 
 export async function getSecretKey(secretName: string, keyName: string) {
