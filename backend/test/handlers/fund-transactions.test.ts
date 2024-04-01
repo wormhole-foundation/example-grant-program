@@ -210,7 +210,7 @@ describe('fundTransactions integration test', () => {
     const instructions = [
       tokenDispenserInstruction,
       createComputeUnitLimitInstruction(200),
-      createComputeUnitPriceInstruction(BigInt(10000000)),
+      createComputeUnitPriceInstruction(BigInt(10_000_000)),
       createSecp256k1ProgramInstruction()
     ]
 
@@ -229,7 +229,7 @@ const givenDownstreamServicesWork = () => {
   server.use(
     http.all('https://secretsmanager.us-east-2.amazonaws.com', () => {
       return HttpResponse.json({
-        SecretString: JSON.stringify({ keys: `[${[...FUNDER_KEY.secretKey]}]` })
+        SecretString: JSON.stringify({ keys: JSON.stringify([[...FUNDER_KEY.secretKey]]) })
       })
     })
   )

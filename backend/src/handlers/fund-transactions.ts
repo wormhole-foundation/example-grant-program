@@ -76,19 +76,8 @@ async function loadFunderWallets(): Promise<Record<string, NodeWallet>> {
   }
 
   const secretData = await getFundingKeys()
-  const funderWalletKeys = Object.values(secretData)
 
-  const keypairs = funderWalletKeys.map((key) => {
-    const parsedKey = key
-      .toString()
-      .replace('[', '')
-      .replace(']', '')
-      .split(',')
-      .map((l) => parseInt(l))
-    return Keypair.fromSecretKey(Uint8Array.from(parsedKey))
-  })
-
-  keypairs.forEach((keypair) => {
+  secretData.forEach((keypair) => {
     funderWallets[keypair.publicKey.toBase58()] = new NodeWallet(keypair)
   })
 
