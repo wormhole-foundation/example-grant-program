@@ -58,7 +58,20 @@ export function SolanaWalletProvider({
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
+      <WalletProvider
+        onError={(e) => {
+          if (
+            e?.error?.code === -32603 &&
+            e?.error?.message === 'Unexpected error'
+          ) {
+            alert(
+              `An unexpected error happened.\n\nMake sure that the wallet that you selected it's connected to your Solana account and reload the page.`
+            )
+          }
+        }}
+        wallets={wallets}
+        autoConnect
+      >
         {children}
       </WalletProvider>
     </ConnectionProvider>
