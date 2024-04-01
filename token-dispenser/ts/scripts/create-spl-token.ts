@@ -17,7 +17,7 @@ console.log(
 
 (async () => {
   const tokenConfig = {
-    decimals: 9,
+    decimals: 6,
     name: "Test grant Token",
     symbol: "TEST_GRANT_TKN",
     uri: "https://thisisnot.arealurl/info.json",
