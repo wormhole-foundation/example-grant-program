@@ -1,7 +1,7 @@
 import BN from 'bn.js'
 
 const TRAILING_ZEROS = new RegExp(/\.?0+$/)
-const W_DECIMALS = 9
+const W_DECIMALS = 6
 
 export function toStringWithDecimals(amount: BN) {
   const padded = amount.toString().padStart(W_DECIMALS + 1, '0')
