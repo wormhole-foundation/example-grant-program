@@ -57,7 +57,7 @@ async function main() {
     readApi
   )
 
-  console.log("LATEST SIGNATURE AT START:", latestSignature)
+  console.log('LATEST SIGNATURE AT START:', latestSignature)
   const tokenDispenserEventSubscriber = new TokenDispenserEventSubscriber(
     ENDPOINT,
     new anchor.web3.PublicKey(PROGRAM_ID),
