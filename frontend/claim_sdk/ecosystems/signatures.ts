@@ -39,6 +39,21 @@ export function evmBuildSignedMessage(
   }
 }
 
+export function injectiveBuildSignedMessage(
+  publicKey: Buffer,
+  fullSignature: Uint8Array,
+  payload: string,
+): SignedMessage {
+  const fullMessage = evmGetFullMessage(payload);
+  const [signature, recoveryId] = splitEvmSignature(Buffer.from(fullSignature).toString('hex'));
+  return {
+    publicKey,
+    signature,
+    recoveryId,
+    fullMessage,
+  }
+}
+
 export function cosmwasmBuildSignedMessage(
   pub_key: AminoPubkey,
   address: string,
