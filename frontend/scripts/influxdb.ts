@@ -41,10 +41,10 @@ const MAX_AMOUNT_PER_ECOSYSTEM = new Map<string, BN>([
 ])
 
 async function main() {
-  console.log("Program Id", PROGRAM_ID)
-  console.log("Node:", ENDPOINT)
-  console.log("Time Window Secs:", TIME_WINDOW_SECS)
-  console.log("Chunk Size:", CHUNK_SIZE)
+  console.log('Program Id', PROGRAM_ID)
+  console.log('Node:', ENDPOINT)
+  console.log('Time Window Secs:', TIME_WINDOW_SECS)
+  console.log('Chunk Size:', CHUNK_SIZE)
   
   const tokenDispenserEventSubscriber = new TokenDispenserEventSubscriber(
     ENDPOINT,
@@ -62,14 +62,14 @@ async function main() {
   const { txnEvents, failedTxnInfos } =
     await tokenDispenserEventSubscriber.parseTransactionLogs()
 
-  console.log("Events", txnEvents)
-  console.log("Failed Txn Infos", failedTxnInfos)
+  console.log('Events', txnEvents)
+  console.log('Failed Txn Infos', failedTxnInfos)
 
   const formattedTxnEvents = txnEvents
     .filter((txnEvent) => txnEvent.event)
     .map((txnEvent) => formatTxnEventInfo(txnEvent))
 
-  console.log("Formatted Events", formattedTxnEvents);
+  console.log('Formatted Events', formattedTxnEvents)
   const doubleClaimEventPoints = createDoubleClaimPoint(formattedTxnEvents)
 
   console.log(
@@ -82,7 +82,7 @@ async function main() {
   )
   if (doubleClaimEventPoints.length > 0) {
     doubleClaimEventPoints.forEach((doubleClaimEventPoint) => {
-      writeApi.writePoint(doubleClaimEventPoint);
+      writeApi.writePoint(doubleClaimEventPoint)
     })
   }
 
@@ -105,7 +105,7 @@ async function main() {
   console.log(
     `Txn Event Requests: ${inspect(txnEventPoints, false, 10, undefined)}`
   )
-  txnEventPoints.forEach(txnEventPoint => {
+  txnEventPoints.forEach((txnEventPoint) => {
     writeApi.writePoint(txnEventPoint)
   })
 
@@ -120,18 +120,18 @@ async function main() {
     )}`
   )
 
-  failedTxnEventPoints.forEach(failedTxnEventPoint => {
+  failedTxnEventPoints.forEach((failedTxnEventPoint) => {
     writeApi.writePoint(failedTxnEventPoint)
   })
 
   writeApi
     .close()
     .then(() => {
-      console.log('Finished writing points');
+      console.log('Finished writing points')
     })
     .catch(e => {
-      console.error(e);
-      console.log('\nFinished with error');
+      console.error(e)
+      console.log('\nFinished with error')
     })
 }
 
@@ -157,7 +157,7 @@ function createTxnEventPoints(formattedTxnEvents: FormattedTxnEventInfo[]) {
       .stringField('eventDetails', JSON.stringify(formattedEvent))
       .timestamp(new Date(formattedEvent.blockTime * 1000).toISOString())
 
-    return point;
+    return point
   })
 }
 
@@ -216,7 +216,7 @@ function createFailedTxnEventPoints(failedTxns: TxnInfo[]) {
       .stringField('errorDetails', JSON.stringify(errorLog))
       .timestamp(new Date(errorLog.blockTime * 1000).toISOString())
     return point
-  });
+  })
 }
 
 function createLowBalanceEventPoint(
@@ -225,9 +225,9 @@ function createLowBalanceEventPoint(
   if (formattedTxnEvents.length === 0) {
     return undefined
   }
-  
+
   const mostRecentEvent = formattedTxnEvents.sort((a, b) => b.slot - a.slot)[0]
-  
+
   if (
     mostRecentEvent.remainingBalance &&
     new BN(mostRecentEvent.remainingBalance).lt(new BN(LOW_BALANCE_THRESHOLD))
@@ -237,7 +237,7 @@ function createLowBalanceEventPoint(
       .tag('network', CLUSTER)
       .tag('service', 'token-dispenser-event-subscriber')
       .intField(
-        'remainingBalance', 
+        'remainingBalance',
         parseInt(mostRecentEvent.remainingBalance, 10)
       )
       .stringField('eventDetails', JSON.stringify(mostRecentEvent))
