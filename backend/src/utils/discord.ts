@@ -1,8 +1,7 @@
 import { Keypair, PublicKey } from '@solana/web3.js'
 import { SignedMessage } from '../types'
 import nacl from 'tweetnacl'
-import IDL from '../token-dispenser.json'
-import * as anchor from '@coral-xyz/anchor'
+import { coder } from '../token-dispenser'
 import config from '../config'
 
 export async function getDiscordUser(
@@ -27,10 +26,6 @@ export async function getDiscordUser(
     throw err
   }
 }
-
-// TODO: Update IDL with wormhole token dispenser program IDL
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const coder = new anchor.BorshCoder(IDL as any)
 
 function hardDriveSignDigest(
   fullMessage: Uint8Array,
