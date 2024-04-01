@@ -312,7 +312,16 @@ export class TokenDispenserProvider {
 
     const ixs: anchor.web3.TransactionInstruction[] = []
 
-    // 1. add create ATA instruction if needed
+    // 1. add signatureVerification instruction if needed
+    const signatureVerificationIx =
+      this.generateSignatureVerificationInstruction(
+        claimInfo.ecosystem,
+        signedMessage
+      )
+
+    if (signatureVerificationIx) ixs.push(signatureVerificationIx)
+
+    // 2. add create ATA instruction if needed
     const claimantFundExists = claimantFundAccount !== null
 
     if (!claimantFundExists)
@@ -327,20 +336,11 @@ export class TokenDispenserProvider {
         )
       )
 
-    // 2. add signatureVerification instruction if needed
-    const signatureVerificationIx =
-      this.generateSignatureVerificationInstruction(
-        claimInfo.ecosystem,
-        signedMessage
-      )
-
-    if (signatureVerificationIx) ixs.push(signatureVerificationIx)
-
     // 3. add claim instruction
     const proofOfIdentity = this.createProofOfIdentity(
       claimInfo,
       signedMessage,
-      ixs.length - 1
+      0
     )
 
     const claimCert: IdlTypes<TokenDispenser>['ClaimCertificate'] = {
@@ -477,7 +477,8 @@ export class TokenDispenserProvider {
 
   private generateSignatureVerificationInstruction(
     ecosystem: Ecosystem,
-    signedMessage: SignedMessage | undefined
+    signedMessage: SignedMessage | undefined,
+    instructionIndex: number = 0
   ): anchor.web3.TransactionInstruction | undefined {
     if (ecosystem === 'solana') {
       return undefined
@@ -492,6 +493,7 @@ export class TokenDispenserProvider {
             message: signedMessage.fullMessage,
             signature: signedMessage.signature,
             recoveryId: signedMessage.recoveryId!,
+            instructionIndex,
           })
         }
         case 'osmosis':
@@ -506,7 +508,7 @@ export class TokenDispenserProvider {
             publicKey: signedMessage.publicKey,
             message: signedMessage.fullMessage,
             signature: signedMessage.signature,
-            instructionIndex: 0,
+            instructionIndex,
           })
         }
         default: {
