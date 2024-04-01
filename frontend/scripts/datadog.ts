@@ -43,6 +43,7 @@ async function main() {
     ENDPOINT,
     new anchor.web3.PublicKey(PROGRAM_ID),
     TIME_WINDOW_SECS,
+    undefined,
     CHUNK_SIZE,
     {
       commitment: 'confirmed',
