@@ -438,7 +438,7 @@ export class TokenDispenserProvider {
         : ataCreationCost + pdaDerivationCosts(claimaintFundBump))
     ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
-    const microLamports = 1_000_000 //somewhat arbitrary choice
+    const microLamports = 1_000_000 - 1 //somewhat arbitrary choice
     ixs.push(ComputeBudgetProgram.setComputeUnitPrice({ microLamports }))
 
     // 5. build and return the transaction
@@ -679,11 +679,11 @@ export class TokenDispenserProvider {
     // 35 seconds
     const maxTimeout = 35 * 1000
     const connection = new Connection(endpoint)
-    let shouldRetry = getCancellationSignal()
+    let isCancelled = getCancellationSignal()
     //TODO check that this is really the txId
     const txId = bs58.encode(transaction.signatures[0])
 
-    while (shouldRetry) {
+    while (!isCancelled) {
       //first send the transaction raw
       try {
         await connection.sendRawTransaction(transaction.serialize(), {
@@ -720,7 +720,7 @@ export class TokenDispenserProvider {
       //wait 1.8 seconds so as to not murder the RPC
       await wait(1800)
 
-      shouldRetry = getCancellationSignal()
+      isCancelled = getCancellationSignal()
     }
 
     //This means we got manually cancelled.
