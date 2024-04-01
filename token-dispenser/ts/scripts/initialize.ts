@@ -51,7 +51,6 @@ type InitConfig = {
       recentSlot: await connection.getSlot(),
     });
 
-  
   console.log("Config PDA: ", configPda.toBase58());
 
   const extendAddressLooupTableIx = AddressLookupTableProgram.extendLookupTable(
@@ -66,7 +65,6 @@ type InitConfig = {
         SystemProgram.programId,
         SYSVAR_INSTRUCTIONS_PUBKEY,
         ASSOCIATED_TOKEN_PROGRAM_ID,
-
       ],
     }
   );
@@ -82,17 +80,11 @@ type InitConfig = {
       payer: signerPk,
       authority: signerPk,
       lookupTable,
-      addresses: [
-        ...funders,
-        ...treasuries,
-      ],
+      addresses: [...funders, ...treasuries],
     }
   );
 
-  await ledgerSignAndSendV0(
-    [addFundersAndTreasuriesIx],
-    []
-  );
+  await ledgerSignAndSendV0([addFundersAndTreasuriesIx], []);
   console.log("Funders and Treasuries added to lookup table");
 
   const initializeIx = await tokenDispenser.createInitializeInstruction({

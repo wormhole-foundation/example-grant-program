@@ -1,6 +1,4 @@
-import {
-  PublicKey,
-} from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 
 import { TokenDispenserSdk } from "../sdk";
 import { connection, getSigner, getEnv } from "./env";
@@ -24,6 +22,6 @@ type InitConfig = {
   });
 
   const configPda = new PublicKey(tokenDispenser.configAccountAddress());
-  
+
   console.log("Config PDA: ", configPda.toBase58());
 })();
