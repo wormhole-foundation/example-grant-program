@@ -46,14 +46,14 @@ export function deserializeTransactions(
 }
 
 async function loadWhitelistedProgramIds(): Promise<PublicKey[]> {
-  const programId = config.tokenDispenserProgramId()
-  if (!programId) {
+  const tokenDispenserProgramId = config.tokenDispenserProgramId()
+  if (!tokenDispenserProgramId) {
     throw new Error('Token dispenser program ID not set')
   }
 
-  const PROGRAM_ID = new PublicKey(programId)
+  const tokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
   return [
-    PROGRAM_ID,
+    tokenDispenserPublicKey,
     Secp256k1Program.programId,
     Ed25519Program.programId,
     ComputeBudgetProgram.programId

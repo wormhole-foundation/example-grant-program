@@ -22,7 +22,6 @@ module.exports = withBundleAnalyzer({
   env: {
     ENDPOINT: process.env.ENDPOINT,
     CLUSTER: process.env.CLUSTER,
-    PROGRAM_ID: process.env.PROGRAM_ID,
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {

@@ -8,7 +8,7 @@ import {
 import { TokenDispenserSdk } from "../sdk";
 import { ledgerSignAndSend, ledgerSignAndSendV0 } from "./helpers";
 import { connection, getSigner, getEnv } from "./env";
-import { funders, treasuries } from "./config";
+import { funders, tokenDispenserProgramId, treasuries } from "./config";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
@@ -25,7 +25,7 @@ type InitConfig = {
 
 (async () => {
   const config: InitConfig = {
-    tokenDispenser: getEnv("PROGRAM_ID"),
+    tokenDispenser: tokenDispenserProgramId,
     mint: getEnv("MINT"),
     dispenserGuard: getEnv("DISPENSER_GUARD"),
     merkleRoot: Buffer.from(getEnv("MERKLE_ROOT"), "hex"),

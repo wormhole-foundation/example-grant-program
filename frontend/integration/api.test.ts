@@ -27,11 +27,12 @@ import {
   countTotalSignatures,
 } from '../utils/verifyTransaction'
 import { treasuries } from '../claim_sdk/treasury'
+import { tokenDispenserProgramId } from 'utils/constants'
 
 dotenv.config()
-const PROGRAM_ID = new PublicKey(process.env.PROGRAM_ID!)
+const tokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
 const WHITELISTED_PROGRAMS: PublicKey[] = [
-  PROGRAM_ID,
+  tokenDispenserPublicKey,
   Secp256k1Program.programId,
   Ed25519Program.programId,
   ComputeBudgetProgram.programId,
@@ -63,7 +64,7 @@ describe('test fund transaction api', () => {
   it('tests the api', async () => {
     const tokenDispenser = new Program(
       IDL as any,
-      PROGRAM_ID,
+      tokenDispenserPublicKey,
       new AnchorProvider(
         new Connection('http://localhost:8899'),
         new NodeWallet(new Keypair()),
@@ -177,7 +178,11 @@ describe('test fund transaction api', () => {
       },
     ])
     expect(
-      checkTransactions([transactionOK1], PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransactions(
+        [transactionOK1],
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(true)
 
     await mockfetchFundTransaction([
@@ -187,7 +192,11 @@ describe('test fund transaction api', () => {
       },
     ])
     expect(
-      checkTransactions([transactionOK2], PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransactions(
+        [transactionOK2],
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(true)
 
     await expect(
@@ -201,7 +210,7 @@ describe('test fund transaction api', () => {
     expect(
       checkTransactions(
         [transactionTooManySigs],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
@@ -217,7 +226,7 @@ describe('test fund transaction api', () => {
     expect(
       checkTransactions(
         [transactionBadTransfer],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
@@ -233,7 +242,7 @@ describe('test fund transaction api', () => {
     expect(
       checkTransactions(
         [transactionBadNoTokenDispenser],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
@@ -246,7 +255,7 @@ describe('test fund transaction api', () => {
     expect(
       checkTransactions(
         [transactionBadComputeHeap],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
@@ -262,7 +271,7 @@ describe('test fund transaction api', () => {
     expect(
       checkTransactions(
         [transactionBadTransfer2],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
@@ -278,7 +287,7 @@ describe('test fund transaction api', () => {
     expect(
       checkTransactions(
         [transactionBadTransfer3],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
@@ -292,14 +301,24 @@ describe('test fund transaction api', () => {
       ]).catch((e) => e)
     ).resolves.toThrow('Unauthorized transaction')
     expect(
-      checkTransactions([transactionLegacy], PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransactions(
+        [transactionLegacy],
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(false)
 
     // More granular tests
     expect(
-      checkTransaction(transactionOK1, PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransaction(
+        transactionOK1,
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(true)
-    expect(checkProgramAppears(transactionOK1, PROGRAM_ID)).toBe(true)
+    expect(checkProgramAppears(transactionOK1, tokenDispenserPublicKey)).toBe(
+      true
+    )
     expect(
       checkAllProgramsWhitelisted(transactionOK1, WHITELISTED_PROGRAMS)
     ).toBe(true)
@@ -310,9 +329,15 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionOK1)).toBe(2)
 
     expect(
-      checkTransaction(transactionOK2, PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransaction(
+        transactionOK2,
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(true)
-    expect(checkProgramAppears(transactionOK2, PROGRAM_ID)).toBe(true)
+    expect(checkProgramAppears(transactionOK2, tokenDispenserPublicKey)).toBe(
+      true
+    )
     expect(
       checkAllProgramsWhitelisted(transactionOK2, WHITELISTED_PROGRAMS)
     ).toBe(true)
@@ -323,9 +348,15 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionOK2)).toBe(3)
 
     expect(
-      checkTransaction(transactionTooManySigs, PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransaction(
+        transactionTooManySigs,
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(false)
-    expect(checkProgramAppears(transactionTooManySigs, PROGRAM_ID)).toBe(true)
+    expect(
+      checkProgramAppears(transactionTooManySigs, tokenDispenserPublicKey)
+    ).toBe(true)
     expect(
       checkAllProgramsWhitelisted(transactionTooManySigs, WHITELISTED_PROGRAMS)
     ).toBe(true)
@@ -338,9 +369,15 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionTooManySigs)).toBe(4)
 
     expect(
-      checkTransaction(transactionBadTransfer, PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransaction(
+        transactionBadTransfer,
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(false)
-    expect(checkProgramAppears(transactionBadTransfer, PROGRAM_ID)).toBe(false)
+    expect(
+      checkProgramAppears(transactionBadTransfer, tokenDispenserPublicKey)
+    ).toBe(false)
     expect(
       checkAllProgramsWhitelisted(transactionBadTransfer, WHITELISTED_PROGRAMS)
     ).toBe(false)
@@ -355,12 +392,15 @@ describe('test fund transaction api', () => {
     expect(
       checkTransaction(
         transactionBadNoTokenDispenser,
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
     expect(
-      checkProgramAppears(transactionBadNoTokenDispenser, PROGRAM_ID)
+      checkProgramAppears(
+        transactionBadNoTokenDispenser,
+        tokenDispenserPublicKey
+      )
     ).toBe(false)
     expect(
       checkAllProgramsWhitelisted(
@@ -379,13 +419,13 @@ describe('test fund transaction api', () => {
     expect(
       checkTransaction(
         transactionBadComputeHeap,
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
-    expect(checkProgramAppears(transactionBadComputeHeap, PROGRAM_ID)).toBe(
-      true
-    )
+    expect(
+      checkProgramAppears(transactionBadComputeHeap, tokenDispenserPublicKey)
+    ).toBe(true)
     expect(
       checkAllProgramsWhitelisted(
         transactionBadComputeHeap,
@@ -403,11 +443,13 @@ describe('test fund transaction api', () => {
     expect(
       checkTransaction(
         transactionBadTransfer2,
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
-    expect(checkProgramAppears(transactionBadTransfer2, PROGRAM_ID)).toBe(true)
+    expect(
+      checkProgramAppears(transactionBadTransfer2, tokenDispenserPublicKey)
+    ).toBe(true)
     expect(
       checkAllProgramsWhitelisted(transactionBadTransfer2, WHITELISTED_PROGRAMS)
     ).toBe(false)
@@ -422,11 +464,13 @@ describe('test fund transaction api', () => {
     expect(
       checkTransaction(
         transactionBadTransfer3,
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
-    expect(checkProgramAppears(transactionBadTransfer3, PROGRAM_ID)).toBe(true)
+    expect(
+      checkProgramAppears(transactionBadTransfer3, tokenDispenserPublicKey)
+    ).toBe(true)
     expect(
       checkAllProgramsWhitelisted(transactionBadTransfer3, WHITELISTED_PROGRAMS)
     ).toBe(false)
@@ -439,9 +483,15 @@ describe('test fund transaction api', () => {
     expect(countTotalSignatures(transactionBadTransfer3)).toBe(3)
 
     expect(
-      checkTransaction(transactionLegacy, PROGRAM_ID, WHITELISTED_PROGRAMS)
+      checkTransaction(
+        transactionLegacy,
+        tokenDispenserPublicKey,
+        WHITELISTED_PROGRAMS
+      )
     ).toBe(false)
-    expect(checkProgramAppears(transactionLegacy, PROGRAM_ID)).toBe(true)
+    expect(
+      checkProgramAppears(transactionLegacy, tokenDispenserPublicKey)
+    ).toBe(true)
     expect(
       checkAllProgramsWhitelisted(transactionLegacy, WHITELISTED_PROGRAMS)
     ).toBe(true)
@@ -465,7 +515,7 @@ describe('test fund transaction api', () => {
     expect(
       checkTransactions(
         [transactionOK1, transactionOK2],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(true)
@@ -489,7 +539,7 @@ describe('test fund transaction api', () => {
     expect(
       checkTransactions(
         [transactionOK1, transactionBadTransfer3, transactionOK2],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)
@@ -512,7 +562,7 @@ describe('test fund transaction api', () => {
     expect(
       checkTransactions(
         [transactionOK1, transactionOK2, transactionBadComputeHeap],
-        PROGRAM_ID,
+        tokenDispenserPublicKey,
         WHITELISTED_PROGRAMS
       )
     ).toBe(false)

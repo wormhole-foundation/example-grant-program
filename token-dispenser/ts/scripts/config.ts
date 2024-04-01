@@ -17,3 +17,6 @@ export const funders = [
   new PublicKey("wafydZpGcTLk3FYEQ5Q4wwSKJXMy3EMTngxeVEXG45e"),
   new PublicKey("WafzGQMEqwABhMdNHH86yDRqzZQvK5rELK5Nrto97Va"),
 ];
+
+export const tokenDispenserProgramId =
+  "WApA1JC9eJLaULc2Ximo5TffuqCESzf47JZsuhYvfzC";

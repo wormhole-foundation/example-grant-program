@@ -1,7 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
 
 import { TokenDispenserSdk } from "../sdk";
-import { connection, getSigner, getEnv } from "./env";
+import { connection, getSigner } from "./env";
+import { tokenDispenserProgramId } from "./config";
 
 type InitConfig = {
   // Account Addresses (base58 encoded):
@@ -10,7 +11,7 @@ type InitConfig = {
 
 (async () => {
   const config: InitConfig = {
-    tokenDispenser: getEnv("PROGRAM_ID"),
+    tokenDispenser: tokenDispenserProgramId,
   };
 
   const signer = await getSigner();

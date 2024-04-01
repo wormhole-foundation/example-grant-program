@@ -20,7 +20,7 @@ import IDL from '../../src/token-dispenser.json'
 import { fundTransactions } from '../../src/handlers/fund-transactions'
 
 const RANDOM_BLOCKHASH = 'HXq5QPm883r7834LWwDpcmEM8G8uQ9Hqm1xakCHGxprV'
-const PROGRAM_ID = new Keypair().publicKey
+const TokenDispenserPublicKey = new Keypair().publicKey
 const FUNDER_KEY = new Keypair()
 const server = setupServer()
 let input: VersionedTransaction[]
@@ -30,7 +30,7 @@ describe('fundTransactions integration test', () => {
   beforeAll(() => {
     process.env.AWS_ACCESS_KEY_ID = 'key'
     process.env.AWS_SECRET_ACCESS_KEY = 'secret'
-    process.env.TOKEN_DISPENSER_PROGRAM_ID = PROGRAM_ID.toString()
+    process.env.TOKEN_DISPENSER_PROGRAM_ID = TokenDispenserPublicKey.toString()
   })
 
   afterEach(() => {
@@ -286,7 +286,7 @@ const createTestLegacyTransactionFromInstructions = (
 const createTokenDispenserProgramInstruction = async () => {
   const tokenDispenser = new Program(
     IDL as any,
-    PROGRAM_ID,
+    TokenDispenserPublicKey,
     new AnchorProvider(
       new Connection('http://localhost:8899'),
       new NodeWallet(new Keypair()),

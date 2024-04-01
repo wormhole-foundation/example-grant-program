@@ -1,8 +1,6 @@
-import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import {
   ComputeBudgetProgram,
   Ed25519Program,
-  Keypair,
   PublicKey,
   Secp256k1Program,
   VersionedTransaction,
@@ -18,15 +16,15 @@ import { ClaimInfo, Ecosystem } from '../claim_sdk/claim'
 import { loadFunderWallets } from '../claim_sdk/testWallets'
 import { checkTransactions } from '../utils/verifyTransaction'
 import { getInMemoryDb } from './utils'
-import { inspect } from 'util'
 import { TransactionWithFunder } from '../../backend/src/utils/fund-transactions'
+import { tokenDispenserProgramId } from 'utils/constants'
 
 const wallets = loadFunderWallets()
 
-const PROGRAM_ID = new PublicKey(process.env.PROGRAM_ID!)
+const tokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
 
 const WHITELISTED_PROGRAMS: PublicKey[] = [
-  PROGRAM_ID,
+  tokenDispenserPublicKey,
   Secp256k1Program.programId,
   Ed25519Program.programId,
   ComputeBudgetProgram.programId,
@@ -112,7 +110,7 @@ export default async function handlerFundTransaction(
   if (
     checkTransactions(
       transactions.map((tx) => tx.transaction),
-      PROGRAM_ID,
+      tokenDispenserPublicKey,
       WHITELISTED_PROGRAMS
     )
   ) {
