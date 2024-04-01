@@ -51,9 +51,13 @@ async function main() {
   const readApi = influxDB.getQueryApi(INFLUX_ORG)
 
   let latestTxBlockTime = 0
-  let latestSignature = await getLatestTxSignature(INFLUX_BUCKET, CLUSTER, readApi)
+  let latestSignature = await getLatestTxSignature(
+    INFLUX_BUCKET,
+    CLUSTER,
+    readApi
+  )
 
-  console.log("LATEST SIGNATURE AT START:", latestSignature);
+  console.log("LATEST SIGNATURE AT START:", latestSignature)
   const tokenDispenserEventSubscriber = new TokenDispenserEventSubscriber(
     ENDPOINT,
     new anchor.web3.PublicKey(PROGRAM_ID),
@@ -143,7 +147,7 @@ async function main() {
     writeApi.writePoint(failedTxnEventPoint)
   })
 
-  console.log('Latest Signature at the end:', latestSignature);
+  console.log('Latest Signature at the end:', latestSignature)
   const latestTxPoint = new Point('latest_txn_seen')
     .tag('network', CLUSTER)
     .stringField('signature', latestSignature)
@@ -161,7 +165,11 @@ async function main() {
     })
 }
 
-async function getLatestTxSignature(bucket: string, network: string, readApi: QueryApi): Promise<string | undefined> {
+async function getLatestTxSignature(
+  bucket: string,
+  network: string,
+  readApi: QueryApi
+): Promise<string | undefined> {
   const query = `from(bucket: "${bucket}")
     |> range(start: -1d)
     |> filter(fn: (r) => r._measurement == "latest_txn_seen")
@@ -169,13 +177,13 @@ async function getLatestTxSignature(bucket: string, network: string, readApi: Qu
     |> last()
     |> limit(n:1)`
 
-  let signature = undefined;
-  for await (const {values, tableMeta} of readApi.iterateRows(query)) {
+  let signature = undefined
+  for await (const { values, tableMeta } of readApi.iterateRows(query)) {
     const o = tableMeta.toObject(values)
     signature = o._value.length > 0 ? o._value : undefined
   }
 
-  return signature;
+  return signature
 }
 
 function createTxnEventPoints(formattedTxnEvents: FormattedTxnEventInfo[]) {
@@ -198,7 +206,7 @@ function createTxnEventPoints(formattedTxnEvents: FormattedTxnEventInfo[]) {
       .stringField('signature', signature)
       .intField('amount', amountValue)
       .stringField('eventDetails', JSON.stringify(formattedEvent))
-      .timestamp(new Date(formattedEvent.blockTime * 1000).toISOString())
+      .timestamp(new Date(formattedEvent.blockTime * 1000))
 
     return point
   })
@@ -241,7 +249,7 @@ function createDoubleClaimPoint(formattedTxnEvents: FormattedTxnEventInfo[]) {
         .tag('network', CLUSTER)
         .tag('service', 'token-dispenser-event-subscriber')
         .stringField('details', JSON.stringify(txnEventInfos))
-        .timestamp(new Date(blockTime * 1000).toISOString())
+        .timestamp(new Date(blockTime * 1000))
       doubleClaimPoints.push(point)
     }
     entry = entryGen.next()
@@ -257,7 +265,7 @@ function createFailedTxnEventPoints(failedTxns: TxnInfo[]) {
       .tag('network', CLUSTER)
       .tag('service', 'token-dispenser-event-subscriber')
       .stringField('errorDetails', JSON.stringify(errorLog))
-      .timestamp(new Date(errorLog.blockTime * 1000).toISOString())
+      .timestamp(new Date(errorLog.blockTime * 1000))
     return point
   })
 }
