@@ -41,10 +41,10 @@ const MAX_AMOUNT_PER_ECOSYSTEM = new Map<string, BN>([
 ])
 
 async function main() {
-  console.log("Program Id", PROGRAM_ID);
-  console.log("Node:", ENDPOINT);
-  console.log("Time Window Secs:", TIME_WINDOW_SECS);
-  console.log("Chunk Size:", CHUNK_SIZE);
+  console.log("Program Id", PROGRAM_ID)
+  console.log("Node:", ENDPOINT)
+  console.log("Time Window Secs:", TIME_WINDOW_SECS)
+  console.log("Chunk Size:", CHUNK_SIZE)
   
   const tokenDispenserEventSubscriber = new TokenDispenserEventSubscriber(
     ENDPOINT,
@@ -56,75 +56,94 @@ async function main() {
     }
   )
 
-  const influxDB = new InfluxDB({ url: INFLUX_URL, token: INFLUX_TOKEN });
-  const writeApi = influxDB.getWriteApi(INFLUX_ORG, INFLUX_BUCKET);
+  const influxDB = new InfluxDB({ url: INFLUX_URL, token: INFLUX_TOKEN })
+  const writeApi = influxDB.getWriteApi(INFLUX_ORG, INFLUX_BUCKET)
 
   const { txnEvents, failedTxnInfos } =
     await tokenDispenserEventSubscriber.parseTransactionLogs()
 
-  console.log("Events", txnEvents);
-  console.log("Failed Txn Infos", failedTxnInfos);
+  console.log("Events", txnEvents)
+  console.log("Failed Txn Infos", failedTxnInfos)
 
   const formattedTxnEvents = txnEvents
     .filter((txnEvent) => txnEvent.event)
     .map((txnEvent) => formatTxnEventInfo(txnEvent))
 
   console.log("Formatted Events", formattedTxnEvents);
-  const doubleClaimEventPoints =
-    createDoubleClaimPoint(formattedTxnEvents);
+  const doubleClaimEventPoints = createDoubleClaimPoint(formattedTxnEvents)
 
-  console.log(`Double Claim Event Requests: ${inspect(doubleClaimEventPoints, false, 10, undefined)}`);
+  console.log(
+    `Double Claim Event Requests: ${inspect(
+      doubleClaimEventPoints,
+      false,
+      10,
+      undefined
+    )}`
+  )
   if (doubleClaimEventPoints.length > 0) {
     doubleClaimEventPoints.forEach((doubleClaimEventPoint) => {
       writeApi.writePoint(doubleClaimEventPoint);
-    });
+    })
   }
 
-  const lowBalanceEventPoint =
-    createLowBalanceEventPoint(formattedTxnEvents);
+  const lowBalanceEventPoint = createLowBalanceEventPoint(formattedTxnEvents)
 
-  console.log(`Low Balance Event Request: ${inspect(lowBalanceEventPoint, false, 10, undefined)}`);
+  console.log(
+    `Low Balance Event Request: ${inspect(
+      lowBalanceEventPoint,
+      false,
+      10,
+      undefined
+    )}`
+  )
   if (lowBalanceEventPoint) {
-      writeApi.writePoint(lowBalanceEventPoint);
+    writeApi.writePoint(lowBalanceEventPoint)
   }
 
-  const txnEventPoints = createTxnEventPoints(formattedTxnEvents);
+  const txnEventPoints = createTxnEventPoints(formattedTxnEvents)
 
-  console.log(`Txn Event Requests: ${inspect(txnEventPoints, false, 10, undefined)}`);
+  console.log(
+    `Txn Event Requests: ${inspect(txnEventPoints, false, 10, undefined)}`
+  )
   txnEventPoints.forEach(txnEventPoint => {
-    writeApi.writePoint(txnEventPoint);
-  });
+    writeApi.writePoint(txnEventPoint)
+  })
 
-  const failedTxnEventPoints = createFailedTxnEventPoints(failedTxnInfos);
+  const failedTxnEventPoints = createFailedTxnEventPoints(failedTxnInfos)
 
-  console.log(`Failed Txn Event Requests: ${inspect(failedTxnEventPoints, false, 10, undefined)}`);
+  console.log(
+    `Failed Txn Event Requests: ${inspect(
+      failedTxnEventPoints,
+      false,
+      10,
+      undefined
+    )}`
+  )
 
   failedTxnEventPoints.forEach(failedTxnEventPoint => {
-    writeApi.writePoint(failedTxnEventPoint);
-  });
+    writeApi.writePoint(failedTxnEventPoint)
+  })
 
   writeApi
-  .close()
-  .then(() => {
-    console.log('Finished writing points');
-  })
-  .catch(e => {
-    console.error(e);
-    console.log('\nFinished with error');
-  });
+    .close()
+    .then(() => {
+      console.log('Finished writing points');
+    })
+    .catch(e => {
+      console.error(e);
+      console.log('\nFinished with error');
+    })
 }
 
-function createTxnEventPoints(
-  formattedTxnEvents: FormattedTxnEventInfo[]
-) {
+function createTxnEventPoints(formattedTxnEvents: FormattedTxnEventInfo[]) {
   return formattedTxnEvents.map((formattedEvent) => {
-    const { signature, claimant } = formattedEvent;
-    const { ecosystem, address, amount } = formattedEvent.claimInfo!;
-    let eventCategory = 'normal';
-    let amountValue = parseInt(amount, 10);
+    const { signature, claimant } = formattedEvent
+    const { ecosystem, address, amount } = formattedEvent.claimInfo!
+    let eventCategory = 'normal'
+    let amountValue = parseInt(amount, 10)
 
     if (MAX_AMOUNT_PER_ECOSYSTEM.get(ecosystem)!.lt(new BN(amount))) {
-      eventCategory = 'max_transfer_exceeded';
+      eventCategory = 'max_transfer_exceeded'
     }
 
     const point = new Point('txn_event')
@@ -136,22 +155,22 @@ function createTxnEventPoints(
       .stringField('signature', signature)
       .intField('amount', amountValue)
       .stringField('eventDetails', JSON.stringify(formattedEvent))
-      .timestamp(new Date(formattedEvent.blockTime * 1000).toISOString());
+      .timestamp(new Date(formattedEvent.blockTime * 1000).toISOString())
 
     return point;
-  });
+  })
 }
 
 /**
  * Check for double claims and create error events for any detected
  * @param formattedTxnEvents
  */
-function createDoubleClaimPoint(
-  formattedTxnEvents: FormattedTxnEventInfo[]
-) {
+function createDoubleClaimPoint(formattedTxnEvents: FormattedTxnEventInfo[]) {
   const claimInfoMap = new Map<string, Set<FormattedTxnEventInfo>>()
   formattedTxnEvents.forEach((formattedTxnEvent) => {
-    const claimInfoKey = `${formattedTxnEvent.claimInfo!.ecosystem}-${formattedTxnEvent.claimInfo!.address}`
+    const claimInfoKey = `${formattedTxnEvent.claimInfo!.ecosystem}-${
+      formattedTxnEvent.claimInfo!.address
+    }`
     if (!claimInfoMap.get(claimInfoKey)) {
       claimInfoMap.set(claimInfoKey, new Set<FormattedTxnEventInfo>())
     }
@@ -166,10 +185,10 @@ function createDoubleClaimPoint(
       const [claimInfoKey, txnEventInfosSet] = entry.value
       const [ecosystem, address] = claimInfoKey.split('-')
       const txnEventInfos = Array.from(txnEventInfosSet)
-      let blockTime = 0;
+      let blockTime = 0
       for (const txnEventInfo of txnEventInfos) {
         if (txnEventInfo.blockTime > blockTime) {
-          blockTime = txnEventInfo.blockTime;
+          blockTime = txnEventInfo.blockTime
         }
       }
 
@@ -179,8 +198,8 @@ function createDoubleClaimPoint(
         .tag('network', CLUSTER)
         .tag('service', 'token-dispenser-event-subscriber')
         .stringField('details', JSON.stringify(txnEventInfos))
-        .timestamp(new Date(blockTime * 1000).toISOString());
-      doubleClaimPoints.push(point);
+        .timestamp(new Date(blockTime * 1000).toISOString())
+      doubleClaimPoints.push(point)
     }
     entry = entryGen.next()
   }
@@ -188,17 +207,15 @@ function createDoubleClaimPoint(
   return doubleClaimPoints
 }
 
-function createFailedTxnEventPoints(
-  failedTxns: TxnInfo[]
-) {
+function createFailedTxnEventPoints(failedTxns: TxnInfo[]) {
   return failedTxns.map((errorLog) => {
     const point = new Point('failed_txn_event')
       .tag('signature', errorLog.signature)
       .tag('network', CLUSTER)
       .tag('service', 'token-dispenser-event-subscriber')
       .stringField('errorDetails', JSON.stringify(errorLog))
-      .timestamp(new Date(errorLog.blockTime * 1000).toISOString());
-    return point;
+      .timestamp(new Date(errorLog.blockTime * 1000).toISOString())
+    return point
   });
 }
 
@@ -206,10 +223,10 @@ function createLowBalanceEventPoint(
   formattedTxnEvents: FormattedTxnEventInfo[]
 ) {
   if (formattedTxnEvents.length === 0) {
-    return undefined;
+    return undefined
   }
   
-  const mostRecentEvent = formattedTxnEvents.sort((a, b) => b.slot - a.slot)[0];
+  const mostRecentEvent = formattedTxnEvents.sort((a, b) => b.slot - a.slot)[0]
   
   if (
     mostRecentEvent.remainingBalance &&
@@ -219,13 +236,16 @@ function createLowBalanceEventPoint(
       .tag('signature', mostRecentEvent.signature)
       .tag('network', CLUSTER)
       .tag('service', 'token-dispenser-event-subscriber')
-      .intField('remainingBalance', parseInt(mostRecentEvent.remainingBalance, 10))
+      .intField(
+        'remainingBalance', 
+        parseInt(mostRecentEvent.remainingBalance, 10)
+      )
       .stringField('eventDetails', JSON.stringify(mostRecentEvent))
-      .timestamp(new Date(mostRecentEvent.blockTime * 1000).toISOString());
-    return point;
+      .timestamp(new Date(mostRecentEvent.blockTime * 1000).toISOString())
+    return point
   }
 
-  return undefined;
+  return undefined
 }
 
 ;(async () => {
@@ -234,4 +254,5 @@ function createLowBalanceEventPoint(
   } catch (e) {
     console.error(`error from influxdb.ts: ${e}`)
     process.exit(1)
-  }})()
+  }
+})()
