@@ -56,12 +56,7 @@ export function loadFunderWallets(): Record<string, NodeWallet> {
   let keypair: Keypair
   if (process.env.FUNDER_KEYPAIR) {
     keypair = Keypair.fromSecretKey(
-      Uint8Array.from(
-        process.env.FUNDER_KEYPAIR.replace('[', '')
-          .replace(']', '')
-          .split(',')
-          .map((x: string) => parseInt(x))
-      )
+      Uint8Array.from(JSON.parse(process.env.FUNDER_KEYPAIR))
     )
   } else {
     keypair = Keypair.fromSecretKey(
