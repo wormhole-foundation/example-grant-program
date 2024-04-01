@@ -56,11 +56,11 @@ async function loadWhitelistedProgramIds(): Promise<PublicKey[]> {
 
   const tokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
   return [
-    splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
     tokenDispenserPublicKey,
     Secp256k1Program.programId,
     Ed25519Program.programId,
-    ComputeBudgetProgram.programId
+    ComputeBudgetProgram.programId,
+    splToken.ASSOCIATED_TOKEN_PROGRAM_ID
   ]
 }
 
