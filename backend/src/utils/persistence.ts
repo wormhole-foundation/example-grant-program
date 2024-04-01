@@ -80,7 +80,6 @@ function mapIdentity(claimSignature: ClaimSignature) {
       break
     }
     case 'terra': {
-      // DONE but still need to verify
       identity =
         TERRA_ADDRESS_PREFIX +
         Buffer.from(
@@ -90,7 +89,6 @@ function mapIdentity(claimSignature: ClaimSignature) {
       break
     }
     case 'injective': {
-      // TODO: DONE but still need to verify
       identity =
         INJECTIVE_ADDRESS_PREFIX +
         Buffer.from(
