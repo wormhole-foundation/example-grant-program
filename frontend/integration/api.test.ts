@@ -27,7 +27,7 @@ import {
   countTotalSignatures,
 } from '../utils/verifyTransaction'
 import { treasuries } from '../claim_sdk/treasury'
-import { tokenDispenserProgramId } from 'utils/constants'
+import { tokenDispenserProgramId } from '../utils/constants'
 
 dotenv.config()
 const tokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)

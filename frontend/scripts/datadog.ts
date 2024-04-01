@@ -20,7 +20,7 @@ import {
 } from '@datadog/datadog-api-client/dist/packages/datadog-api-client-v1/models/EventAlertType'
 import { envOrErr } from '../claim_sdk'
 import { BN } from '@coral-xyz/anchor'
-import { tokenDispenserProgramId } from 'utils/constants'
+import { tokenDispenserProgramId } from '../utils/constants'
 
 const ENDPOINT = envOrErr('ENDPOINT')
 const CLUSTER = envOrErr('CLUSTER')

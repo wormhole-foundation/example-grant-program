@@ -73,6 +73,8 @@ export function loadFunderWallets(): Record<string, NodeWallet> {
 
   result[keypair.publicKey.toBase58()] = new NodeWallet(keypair)
 
+  // console.log('Funder wallets:', inspect(result, false, null, true));
+
   return result
 }
 

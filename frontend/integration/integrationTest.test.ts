@@ -353,6 +353,40 @@ describe('integration test', () => {
       ).toBeTruthy()
     })
 
+    it('submits an injective claim', async () => {
+      const wallet = testWallets.injective[0]
+      const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(
+        'injective',
+        wallet.address()
+      ))!
+      const signedMessage = await wallet.signMessage(
+        tokenDispenserProvider.generateAuthorizationPayload()
+      )
+
+      await Promise.all(
+        await tokenDispenserProvider.submitClaims(
+          [makeClaim(claimInfo, proofOfInclusion, signedMessage)],
+          mockfetchFundTransaction,
+          getTestClaimPayers(treasury)
+        )
+      )
+
+      expect(
+        await tokenDispenserProvider.isClaimAlreadySubmitted(claimInfo)
+      ).toBeTruthy()
+
+      const claimantFundPubkey =
+        await tokenDispenserProvider.getClaimantFundAddress()
+
+      const claimantFund = await mint.getAccountInfo(claimantFundPubkey)
+
+      expect(
+        claimantFund.amount.eq(
+          new anchor.BN(3000000 + 6000000 + 6100000 + 6200000 + 7000000)
+        )
+      ).toBeTruthy()
+    }, 40000)
+
     it('submits an aptos claim', async () => {
       const wallet = testWallets.aptos[0]
       const { claimInfo, proofOfInclusion } = (await mockFetchAmountAndProof(

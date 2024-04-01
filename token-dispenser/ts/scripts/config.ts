@@ -6,7 +6,7 @@ export const treasuries = [
   new PublicKey("WaTaaPXBpshpGyAcctT4JatEicmavMqv8JR93gRtYeQ"),
   new PublicKey("WaTUZowJtRjyiUnxLy2nwNij9G9EuGpfiQGrNM8st1B"),
   new PublicKey("WaTyrB78jtyZun9JcAF2psWUFhurzxotckJr9J96ksS"),
-  new PublicKey("wAtZcn6ZeL3pxtDJJ19LJ5qRb5YewtUdr6CTYRjLfZL"),
+  new PublicKey("wAtZcn6ZeL3pxtDJJ19LJ5qRb5YewtUdr6CTYRjLfZL")
 ];
 
 export const funders = [
@@ -15,7 +15,7 @@ export const funders = [
   new PublicKey("wAfmKAiAgtfywPhfRdLQ7uMeS2RW3kN57kodaRabX6V"),
   new PublicKey("WAfN8P3NdYeTnnvFPKYUiveyqZSZtBboxUyrMSAzQc1"),
   new PublicKey("wafydZpGcTLk3FYEQ5Q4wwSKJXMy3EMTngxeVEXG45e"),
-  new PublicKey("WafzGQMEqwABhMdNHH86yDRqzZQvK5rELK5Nrto97Va"),
+  new PublicKey("WafzGQMEqwABhMdNHH86yDRqzZQvK5rELK5Nrto97Va")
 ];
 
 export const tokenDispenserProgramId =

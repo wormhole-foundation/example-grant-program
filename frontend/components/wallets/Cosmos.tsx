@@ -13,7 +13,7 @@ import {
   WALLET_NAME,
 } from 'hooks/useChainWallet'
 
-export type ChainName = 'osmosis' | 'terra'
+export type ChainName = 'osmosis' | 'terra' | 'injective'
 
 type CosmosWalletProviderProps = {
   children: JSX.Element

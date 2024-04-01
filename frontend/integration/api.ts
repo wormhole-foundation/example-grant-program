@@ -17,7 +17,7 @@ import { loadFunderWallets } from '../claim_sdk/testWallets'
 import { checkTransactions } from '../utils/verifyTransaction'
 import { getInMemoryDb } from './utils'
 import { TransactionWithFunder } from '../../backend/src/utils/fund-transactions'
-import { tokenDispenserProgramId } from 'utils/constants'
+import { tokenDispenserProgramId } from '../utils/constants'
 
 const wallets = loadFunderWallets()
 
@@ -116,6 +116,7 @@ export default async function handlerFundTransaction(
   ) {
     try {
       for (const txWithFunder of transactions) {
+        console.log(`About to send (backend) with funder: ${txWithFunder.funder}`);
         const wallet = wallets[txWithFunder.funder]
         if (!wallet) {
           return res.status(403).json({ error: 'Unauthorized funder' })

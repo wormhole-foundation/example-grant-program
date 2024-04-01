@@ -4,6 +4,7 @@ import { TokenDispenserSdk } from "../sdk";
 import { connection, getSigner } from "./env";
 import { tokenDispenserProgramId } from "./config";
 
+
 type InitConfig = {
   // Account Addresses (base58 encoded):
   tokenDispenser: string;
@@ -23,6 +24,5 @@ type InitConfig = {
   });
 
   const configPda = new PublicKey(tokenDispenser.configAccountAddress());
-
   console.log("Config PDA: ", configPda.toBase58());
 })();

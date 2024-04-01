@@ -80,11 +80,17 @@ type InitConfig = {
       payer: signerPk,
       authority: signerPk,
       lookupTable,
-      addresses: [...funders, ...treasuries],
+      addresses: [
+        ...funders,
+        ...treasuries,
+      ],
     }
   );
 
-  await ledgerSignAndSendV0([addFundersAndTreasuriesIx], []);
+  await ledgerSignAndSendV0(
+    [addFundersAndTreasuriesIx],
+    []
+  );
   console.log("Funders and Treasuries added to lookup table");
 
   const initializeIx = await tokenDispenser.createInitializeInstruction({

@@ -7,8 +7,10 @@ import {
   TransactionInstruction,
   VersionedTransaction
 } from '@solana/web3.js'
+import { coder } from '../token-dispenser'
 
 import config from '../config'
+import { ClaimCertificate } from '../types'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
 const SET_COMPUTE_UNIT_PRICE_DISCRIMINANT = 3
@@ -223,5 +225,38 @@ export async function checkTransactions(
   } catch (err) {
     console.error('Error occured while checking transactions', err)
     return false
+  }
+}
+
+export function extractCallData(
+  versionedTx: VersionedTransaction,
+  programId?: string
+): ClaimCertificate | null {
+  const tokenDispenserPid = programId || config.tokenDispenserProgramId()
+  if (!tokenDispenserPid) {
+    console.error('Token dispenser program ID not set')
+    throw new Error('Token dispenser program ID not set')
+  }
+
+  try {
+    const instruction = versionedTx.message.compiledInstructions.find(
+      (ix) =>
+        versionedTx.message.staticAccountKeys[ix.programIdIndex].toBase58() ===
+        tokenDispenserPid
+    )
+
+    if (!instruction) {
+      return null
+    }
+
+    const decoded = coder.instruction.decode(
+      Buffer.from(instruction.data),
+      'base58'
+    )?.data as { claimCertificate: ClaimCertificate }
+
+    return decoded?.claimCertificate as ClaimCertificate
+  } catch (err) {
+    console.error('Failed to extract call data', err)
+    return null
   }
 }
