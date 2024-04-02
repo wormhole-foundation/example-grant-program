@@ -9,9 +9,7 @@ import {
 
 import { ledgerSignAndSend, ledgerSignAndSendV0 } from "./helpers";
 import { connection, getSigner, getEnv } from "./env";
-import {
-  createApproveInstruction,
-} from "@solana/spl-token";
+import { createApproveInstruction } from "@solana/spl-token";
 
 type Config = {
   treasury: PublicKey;
@@ -26,7 +24,10 @@ type Config = {
     approveAmount: BigInt(getEnv("APPROVE_AMOUNT")),
   };
 
-  console.log(`Delegating ${config.approveAmount} of treasury: `, config.treasury.toBase58());
+  console.log(
+    `Delegating ${config.approveAmount} of treasury: `,
+    config.treasury.toBase58()
+  );
 
   const signer = await getSigner();
   const signerPk = new PublicKey(await signer.getAddress());
@@ -38,13 +39,16 @@ type Config = {
     config.treasury,
     config.configAccount,
     signerPk,
-    config.approveAmount,
+    config.approveAmount
   );
 
-  const result = await ledgerSignAndSend([
-    setComputePriceIx,
-    approveInstruction,
-  ], []);
+  const result = await ledgerSignAndSend(
+    [setComputePriceIx, approveInstruction],
+    []
+  );
 
-  console.log(`Token account ${config.treasury.toBase58()} delegated. Signature: `, result);
+  console.log(
+    `Token account ${config.treasury.toBase58()} delegated. Signature: `,
+    result
+  );
 })();

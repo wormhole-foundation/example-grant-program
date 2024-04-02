@@ -9,7 +9,7 @@ import { TokenDispenserSdk } from "../sdk";
 import { ledgerSignAndSend, ledgerSignAndSendV0 } from "./helpers";
 import { connection, getSigner, getEnv } from "./env";
 import { funders, tokenDispenserProgramId, treasuries } from "./config";
-import { envOrErr } from '../../../frontend/claim_sdk/index';
+import { envOrErr } from "../../../frontend/claim_sdk/index";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
@@ -35,14 +35,9 @@ type ExtendConfig = {
       payer: signerPk,
       authority: signerPk,
       lookupTable: config.lookupTable,
-      addresses: [
-        ...treasuries,
-      ],
+      addresses: [...treasuries],
     }
   );
 
-  await ledgerSignAndSendV0(
-    [extendAddressLooupTableIx],
-    []
-  );
+  await ledgerSignAndSendV0([extendAddressLooupTableIx], []);
 })();

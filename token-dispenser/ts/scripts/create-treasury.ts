@@ -29,10 +29,15 @@ type Config = {
 (async () => {
   const config: Config = {
     mint: new PublicKey(getEnv("MINT")),
-    treasury: Keypair.fromSecretKey(new Uint8Array(loadJsonSync(`${getEnv("TREASURY")}.json`))),
+    treasury: Keypair.fromSecretKey(
+      new Uint8Array(loadJsonSync(`${getEnv("TREASURY")}.json`))
+    ),
   };
 
-  console.log("Creating token account for treasury: ", config.treasury.publicKey.toBase58());
+  console.log(
+    "Creating token account for treasury: ",
+    config.treasury.publicKey.toBase58()
+  );
 
   const signer = await getSigner();
   const signerPk = new PublicKey(await signer.getAddress());
@@ -41,7 +46,7 @@ type Config = {
     connection,
     config.mint,
     "confirmed",
-    TOKEN_PROGRAM_ID,
+    TOKEN_PROGRAM_ID
   );
   const space = getAccountLenForMint(mintState);
   const lamports = await connection.getMinimumBalanceForRentExemption(space);
@@ -58,15 +63,22 @@ type Config = {
     programId: TOKEN_PROGRAM_ID,
   });
 
-  const initializeInstructionIx = createInitializeAccountInstruction(config.treasury.publicKey, config.mint, signerPk, TOKEN_PROGRAM_ID);
+  const initializeInstructionIx = createInitializeAccountInstruction(
+    config.treasury.publicKey,
+    config.mint,
+    signerPk,
+    TOKEN_PROGRAM_ID
+  );
 
-  const result = await ledgerSignAndSend([
-    setComputePriceIx,
-    createAccountIx,
-    initializeInstructionIx,
-  ], [config.treasury]);
+  const result = await ledgerSignAndSend(
+    [setComputePriceIx, createAccountIx, initializeInstructionIx],
+    [config.treasury]
+  );
 
-  console.log(`Token account ${config.treasury.publicKey.toBase58()} created. Signature: `, result);
+  console.log(
+    `Token account ${config.treasury.publicKey.toBase58()} created. Signature: `,
+    result
+  );
 })();
 
 function loadJsonSync(filePath: string): any {
