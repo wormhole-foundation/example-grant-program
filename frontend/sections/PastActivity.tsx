@@ -42,7 +42,7 @@ export const PastActivity = ({ onBack, onProceed }: StepProps) => {
           <p className="mb-6">
             <i>
               Please note that not all Wormhole-supported chains are shown here.
-              Cross-chain activity on those chains was attributed to wallets on
+              Cross-chain activity on chains not shown was attributed to wallets on
               the other side of the transaction.
             </i>
           </p>
