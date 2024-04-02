@@ -3,12 +3,12 @@ import { ClaimInfo } from './claim'
 import { PublicKey } from '@solana/web3.js'
 
 export const treasuries = [
-  new PublicKey('waTh9vNmRz8hHxQv1zW81ExKQ7fwaa1TR6tQT5fTkjg'),
-  new PublicKey('waTirsbdRyyxm8DFxH9Z9P5Pyrj74jJ7E74zqhmGX1k'),
-  new PublicKey('wAtMcoqwHb7obEL2USNXPqxg1CmJDSjjjsNcEm9bzCZ'),
-  new PublicKey('Wats1sM7W4UvxUuQPevGxexgcaFiaXMXxActKUmcvHx'),
-  new PublicKey('waTtgLt1WVRgoWYNZh97AYAUqoU4nN98jVThPdYQVwj'),
-  new PublicKey('WaTxa5w4TjYHRdHwG2zaN9ynA1c9z4J9TswsBCmzy4N'),
+  new PublicKey('WaTtAHa1YZB2DFHTZveUSqBnAWsDQtxfN6RC77gmifa'),
+  new PublicKey('wAT8vs52AcD7B77KpkwVVUgDm5vcb83uDUr1eSuvhTm'),
+  new PublicKey('wAt9yuPxmredtJxFxM19aeToc5wWZVEfN5L346XPR2o'),
+  new PublicKey('waTgcmvbUNBCW9h5sd6Fd2ziRJyRTvtTBPiYBNuQUNx'),
+  new PublicKey('WatWL18fpiB28zMg3mbxxnPfoemx6Pr4YA4rL56PQyg'),
+  new PublicKey('WaT7ACb6Zvibjh1NN6zNkpdMGBTqPjVigQKxU2MbBWs'),
 ]
 
 export const funders = [
