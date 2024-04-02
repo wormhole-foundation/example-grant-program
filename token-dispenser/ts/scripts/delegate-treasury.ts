@@ -16,17 +16,17 @@ import {
 type Config = {
   treasury: PublicKey;
   configAccount: PublicKey;
-  mintAmount: bigint;
+  approveAmount: bigint;
 };
 
 (async () => {
   const config: Config = {
     treasury: new PublicKey(getEnv("TREASURY")),
     configAccount: new PublicKey(getEnv("CONFIG_PDA")),
-    mintAmount: BigInt(getEnv("MINT_AMOUNT")),
+    approveAmount: BigInt(getEnv("APPROVE_AMOUNT")),
   };
 
-  console.log(`Delegating ${config.mintAmount} of treasury: `, config.treasury.toBase58());
+  console.log(`Delegating ${config.approveAmount} of treasury: `, config.treasury.toBase58());
 
   const signer = await getSigner();
   const signerPk = new PublicKey(await signer.getAddress());
@@ -38,7 +38,7 @@ type Config = {
     config.treasury,
     config.configAccount,
     signerPk,
-    config.mintAmount,
+    config.approveAmount,
   );
 
   const result = await ledgerSignAndSend([
