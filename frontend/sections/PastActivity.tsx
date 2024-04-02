@@ -39,6 +39,13 @@ export const PastActivity = ({ onBack, onProceed }: StepProps) => {
             Please tick the appropriate boxes below that reflect your wallet
             usage and participation in the Wormhole ecosystem.
           </p>
+          <p className="mb-6">
+            <i>
+              Please note that not all Wormhole-supported chains are shown here.
+              Cross-chain activity on chains not shown was attributed to wallets
+              on the other side of the transaction.
+            </i>
+          </p>
 
           <p className="mb-6 font-light">Active on:</p>
           <div className="mb-6 grid max-w-[420px] grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">

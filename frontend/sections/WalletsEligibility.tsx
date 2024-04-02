@@ -170,7 +170,7 @@ function TableRow({ ecosystem }: TableRowProps) {
             ]
           } else {
             return [
-              'Congratulations! This wallet is successfully connected. Click on the wallet address to disconnect to connect to another wallet.',
+              'Congratulations! This wallet is successfully connected. If you want to connect to a different wallet, click on the wallet address to disconnect and try again.',
               <Verified key={null} />,
             ]
           }
