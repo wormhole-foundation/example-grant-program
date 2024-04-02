@@ -20,7 +20,7 @@ module.exports = withBundleAnalyzer({
   },
   swcMinify: false,
   env: {
-    ENDPOINT: process.env.ENDPOINT,
+    ENDPOINTS: process.env.ENDPOINTS,
     CLUSTER: process.env.CLUSTER,
   },
   webpack: (config, { isServer }) => {
