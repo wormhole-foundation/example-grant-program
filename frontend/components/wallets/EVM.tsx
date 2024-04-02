@@ -18,11 +18,13 @@ import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { InjectedConnector } from 'wagmi/connectors/injected'
+import { PhantomConnector } from './phantomConnector'
 
 import coinbase from '@images/coinbase.svg'
 import walletConnect from '@images/wallet-connect.svg'
 import metamask from '@images/metamask.svg'
 import okx from '@images/okx.svg'
+import phantom from '@images/phantom.svg'
 
 import { getInjectiveAddress } from '../../utils/getInjectiveAddress'
 
@@ -54,12 +56,23 @@ const config = createConfig({
         showQrModal: true,
       },
     }),
+    new PhantomConnector({
+      chains,
+      options: {
+        name: 'Phantom',
+      },
+    }),
   ],
   publicClient,
   webSocketPublicClient,
 })
 
-type WalletIds = 'metaMask' | 'coinbaseWallet' | 'walletConnect' | 'injected'
+type WalletIds =
+  | 'metaMask'
+  | 'coinbaseWallet'
+  | 'walletConnect'
+  | 'injected'
+  | 'phantom'
 
 type EVMWalletProviderProps = {
   children: ReactNode
@@ -153,6 +166,7 @@ function getIcon(id: WalletIds | undefined) {
   if (id === undefined) return undefined
   if (id === 'metaMask') return metamask
   if (id === 'coinbaseWallet') return coinbase
+  if (id === 'phantom') return phantom
   if (id === 'injected') return okx
   return walletConnect
 }
