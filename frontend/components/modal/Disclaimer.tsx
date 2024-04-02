@@ -134,7 +134,7 @@ export function Disclaimer({ onAgree, showModal }: DisclaimerProps) {
             Terms.{' '}
           </p>
         </div>
-        <div className="flex min-h-fit flex-col items-stretch gap-4 px-6 py-5 text-sm md:px-10 [&>button]:w-[200px]">
+        <div className="[&>button]:w-[200px] flex min-h-fit flex-col items-stretch gap-4 px-6 py-5 text-sm md:px-10">
           <div
             className="flex items-center justify-center gap-2 hover:cursor-pointer"
             onClick={() => setAgreed((agreed) => !agreed)}
