@@ -38,7 +38,7 @@ export async function getInfluxToken(): Promise<string> {
     console.log('Using influx token from config')
     key = config.secrets.influx.key()!
   } else {
-    key = await getSecretKey(config.secrets.influx.secretName, 'key')
+    key = await getSecretKey(config.secrets.influx.secretName, 'idb-token')
   }
 
   return key
