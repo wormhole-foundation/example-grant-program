@@ -658,7 +658,7 @@ export class TokenDispenserProvider {
         if (successfulResults.length >= 1) {
           output.push(successfulResults[0])
         } else {
-          output.push(successfulResults[0])
+          output.push(null)
         }
       }
 
