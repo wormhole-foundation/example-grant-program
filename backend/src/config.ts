@@ -5,7 +5,7 @@ export default {
   aws: {
     region: process.env.AWS_REGION ?? 'us-east-2'
   },
-  tokenDispenserProgramId: () => 'wAPFpaiQj5BHweaBF2VDrGjq1CZWXWx1zLSJZUrxbtC',
+  tokenDispenserProgramId: () => 'Wapq3Hpv2aSKjWrh4pM8eweh8jVJB7D1nLBw9ikjVYx',
   secrets: {
     dispenserGuard: {
       /** optional. mostly for local testing */
