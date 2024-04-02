@@ -22,7 +22,9 @@ export default function VerifyEligibilityPage() {
           necessary.
         </p>
         <p className="mb-6">
-          Note that you won&apos;t be able to move on to the next step and claim your W unless all your wallets or Discord account are successfully connected.
+          Note that you won&apos;t be able to move on to the next step and claim
+          your W unless all your wallets or Discord account are successfully
+          connected.
         </p>
         <p className="">
           If you are connecting a Solana wallet to verify eligibility, keep in
