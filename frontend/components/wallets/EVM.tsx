@@ -25,6 +25,7 @@ import walletConnect from '@images/wallet-connect.svg'
 import metamask from '@images/metamask.svg'
 import okx from '@images/okx.svg'
 import phantom from '@images/phantom.svg'
+import rabby from '@images/rabby.svg'
 
 import { getInjectiveAddress } from '../../utils/getInjectiveAddress'
 
@@ -96,6 +97,7 @@ export function EVMWalletButton({
   const { address, status, isConnected, connector } = useAccount()
   const { connect, connectors } = useConnect()
   const hasOKXWallet = typeof (window as any).okxwallet !== 'undefined'
+  const hasRabbyWallet = typeof (window as any).rabby !== 'undefined'
 
   // If the wallet is connected or loadable, try to connect to it.
   // Else, redirect user to the wallet webpage.
@@ -107,13 +109,16 @@ export function EVMWalletButton({
       } else if (connector.name === 'OKX Wallet') {
         if (hasOKXWallet) connect({ connector })
         else window.open('https://www.okx.com/web3', '_blank')
+      } else if (connector.name === 'Rabby') {
+        if (hasRabbyWallet) connect({ connector })
+        else window.open('https://rabby.io/', '_blank')
       } else {
         // Wallet flow is handled pretty well by coinbase and walletconnect.
         // We don't need to customize
         connect({ connector })
       }
     },
-    [connect, hasOKXWallet]
+    [connect, hasOKXWallet, hasRabbyWallet]
   )
 
   const wallets = () => {
@@ -140,6 +145,21 @@ export function EVMWalletButton({
       onSelect: () => onSelect(OKX_connector),
     })
 
+    const Rabby_connector = new InjectedConnector({
+      chains,
+      options: {
+        name: 'Rabby',
+        getProvider: () =>
+          typeof window !== undefined ? (window as any).rabby : undefined,
+      },
+    })
+
+    allConnectors.push({
+      name: 'Rabby',
+      icon: getIcon(Rabby_connector.id as WalletIds, 'Rabby'),
+      onSelect: () => onSelect(Rabby_connector),
+    })
+
     return allConnectors
   }
 
@@ -155,18 +175,21 @@ export function EVMWalletButton({
           onClick={disconnect}
           address={isInjective ? getInjectiveAddress(address) : address}
           disabled={disableOnConnect}
-          icon={getIcon(connector?.id as WalletIds)}
+          icon={getIcon(connector?.id as WalletIds, connector?.name)}
         />
       )}
     />
   )
 }
 
-function getIcon(id: WalletIds | undefined) {
+function getIcon(id: WalletIds | undefined, name?: any) {
   if (id === undefined) return undefined
   if (id === 'metaMask') return metamask
   if (id === 'coinbaseWallet') return coinbase
   if (id === 'phantom') return phantom
-  if (id === 'injected') return okx
+  if (id === 'injected') {
+    if (name === 'Rabby') return rabby
+    return okx
+  }
   return walletConnect
 }
