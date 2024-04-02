@@ -16,7 +16,7 @@ export default {
     ],
   },
   twitter: {
-    handle: '@wormholecrypto',
+    handle: '@wormhole',
     cardType: 'summary_large_image',
   },
 }

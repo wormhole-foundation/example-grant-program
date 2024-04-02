@@ -21,8 +21,14 @@ export default function VerifyEligibilityPage() {
           previous step. Feel free to go back and adjust any selections if
           necessary.
         </p>
-        <p>
-          {`Note that you won't be able to move on to the next step and claim your W unless all your wallets or Discord account are successfully connected.`}
+        <p className="mb-6">
+          Note that you won&apos;t be able to move on to the next step and claim
+          your W unless all your wallets or Discord account are successfully
+          connected.
+        </p>
+        <p className="">
+          If you are connecting a Solana wallet to verify eligibility, keep in
+          mind that the same wallet will be used to claim your W.
         </p>
 
         <div className="mt-12 flex justify-end gap-4">

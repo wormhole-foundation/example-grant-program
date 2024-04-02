@@ -147,7 +147,7 @@ export const Layout = ({ children, setDisclaimerWasRead }: LayoutProps) => {
         </span>
         <div className="mb-5 flex items-center gap-6 lg:mb-0">
           <Link
-            href="https://twitter.com/wormholecrypto"
+            href="https://twitter.com/wormhole"
             target="_blank"
             rel="noreferrer"
           >

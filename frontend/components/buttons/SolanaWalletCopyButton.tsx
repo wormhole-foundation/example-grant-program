@@ -11,16 +11,16 @@ import { WalletIcon } from '@components/wallets/WalletButton'
 // This component will only render when solana wallet is connected
 export function SolanaWalletCopyButton() {
   const solanaIdentity = useGetEcosystemIdentity()(Ecosystem.SOLANA)
-  const [tooltipContent, setTooltipContent] = useState('copy')
+  const [tooltipContent, setTooltipContent] = useState('Copy')
   const { wallet } = useWallet()
 
   if (solanaIdentity === undefined) return <></>
   return (
     <div
       className="w-max"
-      onMouseEnter={() => setTooltipContent('copy')}
+      onMouseEnter={() => setTooltipContent('Copy')}
       onMouseDown={() => {
-        setTooltipContent('copied')
+        setTooltipContent('Copied')
       }}
     >
       <Tooltip content={tooltipContent} placement={'bottom'}>

@@ -26,6 +26,10 @@ export const LoggedInSolana = ({ onBack, onProceed }: StepProps) => {
           The W you claim will be sent to the Solana wallet you link during this
           process.
         </p>
+        <p className="mb-6">
+          If you connected a Solana wallet to verify eligibility, keep in mind
+          that the same wallet will be used to claim your W.
+        </p>
         <p className="">
           To change the connected wallet please go to the previous step.
         </p>
