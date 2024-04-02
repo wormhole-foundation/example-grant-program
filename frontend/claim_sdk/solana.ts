@@ -412,7 +412,7 @@ export class TokenDispenserProvider {
       const cusPerPdaDerivation = 1500
       return (maxBump - bump) * cusPerPdaDerivation
     }
-    const safetyMargin = 1000
+    const safetyMargin = 10000
     const ataCreationCost = 20460
     //determined experimentally:
     const ecosystemCUs = {
