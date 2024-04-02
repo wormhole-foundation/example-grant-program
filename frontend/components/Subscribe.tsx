@@ -65,7 +65,7 @@ const Subscribe = () => {
           <div className="relative mb-2 mt-4 flex flex-col gap-2 sm:flex-row sm:gap-4">
             <input
               type="email"
-              className="h-11 w-full border border-white border-opacity-50 bg-black bg-opacity-35 px-6 font-mono text-[13px] outline-none"
+              className="bg-opacity-35 h-11 w-full border border-white border-opacity-50 bg-black px-6 font-mono text-[13px] outline-none"
               id="outlined-name"
               placeholder="E-mail"
               value={status.email}
@@ -106,7 +106,7 @@ const Subscribe = () => {
               onChange={() =>
                 setStatus((s) => ({ ...status, terms: !status.terms }))
               }
-              className="checkbox h-4 w-4 appearance-none border border-white bg-white bg-opacity-15"
+              className="checkbox bg-opacity-15 h-4 w-4 appearance-none border border-white bg-white"
             />
             <span className="opacity-70">
               I agree to receive marketing emails and other communications
