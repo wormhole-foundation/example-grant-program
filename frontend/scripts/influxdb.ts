@@ -95,15 +95,15 @@ async function main() {
   console.log('Formatted Events', formattedTxnEvents)
   const doubleClaimEventPoints = createDoubleClaimPoint(formattedTxnEvents)
 
-  console.log(
-    `Double Claim Event Requests: ${inspect(
-      doubleClaimEventPoints,
-      false,
-      10,
-      undefined
-    )}`
-  )
   if (doubleClaimEventPoints.length > 0) {
+    console.log(
+      `Double Claim Event Requests: ${inspect(
+        doubleClaimEventPoints,
+        false,
+        10,
+        undefined
+      )}`
+    )
     doubleClaimEventPoints.forEach((doubleClaimEventPoint) => {
       writeApi.writePoint(doubleClaimEventPoint)
     })
@@ -111,15 +111,15 @@ async function main() {
 
   const lowBalanceEventPoint = createLowBalanceEventPoint(formattedTxnEvents)
 
-  console.log(
-    `Low Balance Event Request: ${inspect(
-      lowBalanceEventPoint,
-      false,
-      10,
-      undefined
-    )}`
-  )
   if (lowBalanceEventPoint) {
+    console.log(
+      `Low Balance Event Request: ${inspect(
+        lowBalanceEventPoint,
+        false,
+        10,
+        undefined
+      )}`
+    )
     writeApi.writePoint(lowBalanceEventPoint)
   }
 
