@@ -17,7 +17,10 @@ const router = useRouter()
           </p>
         </div>
         <div className="bg-black bg-opacity-50 px-10 py-8">
-          <Button type={'primary'} onClick={() => showModal(false)}>
+          <Button type={'primary'} onClick={() => {
+             showModal(false)
+             router.back()
+          }}>
             <span className="flex  items-center gap-2">
               Try again
               <svg
