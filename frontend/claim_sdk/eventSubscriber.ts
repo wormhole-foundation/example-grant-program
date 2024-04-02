@@ -55,11 +55,10 @@ export class TokenDispenserEventSubscriber {
   }> {
     const currentTimeSec = Date.now() / 1000
     let signatures: Array<ConfirmedSignatureInfo> = []
+    const options = this.lastSignatureSeen === undefined ? undefined : { until: this.lastSignatureSeen }
     let currentBatch = await this.connection.getSignaturesForAddress(
       this.programId,
-      {
-        until: this.lastSignatureSeen,
-      },
+      options,
       this.connection.commitment as anchor.web3.Finality
     )
     if (this.lastSignatureSeen !== undefined) {

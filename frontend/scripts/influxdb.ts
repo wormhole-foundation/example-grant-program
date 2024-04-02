@@ -6,7 +6,6 @@
  * Then update the parameters in .env accordingly
  * source .env ts-node ./scripts/influxdb.ts
  */
-
 import {
   formatTxnEventInfo,
   TokenDispenserEventSubscriber,
@@ -174,6 +173,7 @@ async function getLatestTxSignature(
     |> range(start: -1d)
     |> filter(fn: (r) => r._measurement == "latest_txn_seen")
     |> filter(fn: (r) => r.network == "${network}")
+    |> sort(desc: true)
     |> last()
     |> limit(n:1)`
 
