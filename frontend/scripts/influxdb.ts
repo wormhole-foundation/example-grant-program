@@ -40,10 +40,7 @@ const MAX_AMOUNT_PER_ECOSYSTEM = new Map<string, BN>([
 ])
 
 async function main() {
-  console.log('Program Id', PROGRAM_ID)
-  console.log('Node:', ENDPOINT)
-  console.log('Time Window Secs:', TIME_WINDOW_SECS)
-  console.log('Chunk Size:', CHUNK_SIZE)
+  console.log(`Connecting to program id <${PROGRAM_ID}> on ${CLUSTER}`)
 
   const influxDB = new InfluxDB({ url: INFLUX_URL, token: INFLUX_TOKEN })
   const writeApi = influxDB.getWriteApi(INFLUX_ORG, INFLUX_BUCKET)
@@ -56,7 +53,7 @@ async function main() {
     readApi
   )
 
-  console.log('LATEST SIGNATURE AT START:', latestSignature)
+  console.log(`Start from last signature: ${latestSignature === undefined ? 'none' : latestSignature}`)
   const tokenDispenserEventSubscriber = new TokenDispenserEventSubscriber(
     ENDPOINT,
     new anchor.web3.PublicKey(PROGRAM_ID),
@@ -84,69 +81,47 @@ async function main() {
     }
   }
 
-  console.log('Events', txnEvents)
-  console.log('Failed Txn Infos', failedTxnInfos)
+  console.log(`Found ${txnEvents.length} event${txnEvents.length > 1 ? 's' : ''}`)
+  console.log(`Found ${failedTxnInfos.length} failed txn${failedTxnInfos.length > 1 ? 's' : ''}`)
 
   const formattedTxnEvents = txnEvents
     .filter((txnEvent) => txnEvent.event)
     .map((txnEvent) => formatTxnEventInfo(txnEvent))
+  console.log(`Formatted ${formattedTxnEvents.length} event${formattedTxnEvents.length > 1 ? 's' : ''}`)
 
-  console.log('Formatted Events', formattedTxnEvents)
   const doubleClaimEventPoints = createDoubleClaimPoint(formattedTxnEvents)
 
   if (doubleClaimEventPoints.length > 0) {
-    console.log(
-      `Double Claim Event Requests: ${inspect(
-        doubleClaimEventPoints,
-        false,
-        10,
-        undefined
-      )}`
-    )
+    console.log(`Detected ${doubleClaimEventPoints.length} double claim${doubleClaimEventPoints.length > 1 ? 's' : ''}`)
     doubleClaimEventPoints.forEach((doubleClaimEventPoint) => {
       writeApi.writePoint(doubleClaimEventPoint)
     })
+  } else {
+    console.log('No double claims detected')
   }
 
   const lowBalanceEventPoint = createLowBalanceEventPoint(formattedTxnEvents)
 
   if (lowBalanceEventPoint) {
-    console.log(
-      `Low Balance Event Request: ${inspect(
-        lowBalanceEventPoint,
-        false,
-        10,
-        undefined
-      )}`
-    )
+    console.log('Detected low balance event')
     writeApi.writePoint(lowBalanceEventPoint)
+  } else {
+    console.log('No low balance detected')
   }
 
   const txnEventPoints = createTxnEventPoints(formattedTxnEvents)
-
-  console.log(
-    `Txn Event Requests: ${inspect(txnEventPoints, false, 10, undefined)}`
-  )
   txnEventPoints.forEach((txnEventPoint) => {
     writeApi.writePoint(txnEventPoint)
   })
+  console.log(`Wrote ${txnEventPoints.length} txn event${txnEventPoints.length > 1 ? 's' : ''} to InfluxDB`)
 
   const failedTxnEventPoints = createFailedTxnEventPoints(failedTxnInfos)
-
-  console.log(
-    `Failed Txn Event Requests: ${inspect(
-      failedTxnEventPoints,
-      false,
-      10,
-      undefined
-    )}`
-  )
-
   failedTxnEventPoints.forEach((failedTxnEventPoint) => {
     writeApi.writePoint(failedTxnEventPoint)
   })
+  console.log(`Wrote ${failedTxnEventPoints.length} failed txn event${failedTxnEventPoints.length > 1 ? 's' : ''} to InfluxDB`)
 
-  console.log('Latest Signature at the end:', latestSignature)
+  console.log('Last signature processed:', latestSignature)
   const latestTxPoint = new Point('latest_txn_seen')
     .tag('network', CLUSTER)
     .stringField('signature', latestSignature)
