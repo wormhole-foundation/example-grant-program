@@ -117,10 +117,14 @@ function mapIdentity(claimSignature: ClaimSignature) {
 
 async function initInfluxWriter() {
   const token = await getInfluxToken()
+  console.log('Influx URL: ' + config.influx.url())
+  console.log('Influx ORG: ' + config.influx.org())
+  console.log('Influx BUCKET: ' + config.influx.bucket())
+
   return new InfluxDB({
     url: config.influx.url(),
     token
-  }).getWriteApi(config.influx.org(), config.influx.bucket(), 'ms')
+  }).getWriteApi(config.influx.org(), config.influx.bucket())
 }
 
 process.on('SIGTERM', async () => {
