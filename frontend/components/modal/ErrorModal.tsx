@@ -1,5 +1,6 @@
 import { Button } from '@components/buttons/Button'
 import { ModalWrapper } from '@components/modal/ModalWrapper'
+import { useRouter } from 'next/navigation'
 
 export function ErrorModal({ showModal }: { showModal: Function }) {
   return (
