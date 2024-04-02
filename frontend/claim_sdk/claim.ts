@@ -5,17 +5,7 @@ import { ethers } from 'ethers'
 import { base32decode, removeLeading0x } from './index'
 
 // Must be kept in line with the database types and the on-chain program
-export type Ecosystem =
-  | 'discord'
-  | 'solana'
-  | 'evm'
-  | 'sui'
-  | 'algorand'
-  | 'aptos'
-  | 'terra'
-  | 'osmosis'
-  | 'injective'
-export const Ecosystems: Ecosystem[] = [
+export const Ecosystems = [
   'discord',
   'solana',
   'evm',
@@ -25,7 +15,8 @@ export const Ecosystems: Ecosystem[] = [
   'terra',
   'osmosis',
   'injective',
-]
+] as const
+export type Ecosystem = typeof Ecosystems[number]
 
 export class ClaimInfo {
   constructor(
@@ -56,16 +47,11 @@ export class ClaimInfo {
         }
         break
       }
-      case 'osmosis':
-      case 'terra': {
+      case 'sui': {
         identityStruct = {
-          cosmwasm: { address: this.identity },
-        }
-        break
-      }
-      case 'injective': {
-        identityStruct = {
-          injective: { address: this.identity },
+          sui: {
+            address: Buffer.from(removeLeading0x(this.identity), 'hex'),
+          },
         }
         break
       }
@@ -77,18 +63,23 @@ export class ClaimInfo {
         }
         break
       }
-      case 'sui': {
+      case 'terra':
+      case 'osmosis': {
         identityStruct = {
-          sui: {
-            address: Buffer.from(removeLeading0x(this.identity), 'hex'),
-          },
+          cosmwasm: { address: this.identity },
+        }
+        break
+      }
+      case 'injective': {
+        identityStruct = {
+          injective: { address: this.identity },
         }
         break
       }
       case 'algorand': {
         identityStruct = {
           algorand: {
-            address: base32decode(this.identity),
+            pubkey: base32decode(this.identity).subarray(0, 32),
           },
         }
         break

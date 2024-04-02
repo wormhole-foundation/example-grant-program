@@ -1,3 +1,5 @@
+import { BorshCoder } from '@coral-xyz/anchor'
+
 export type TokenDispenser = {
   version: '0.1.0'
   name: 'token_dispenser'
@@ -22,6 +24,17 @@ export type TokenDispenser = {
           name: 'mint'
           isMut: false
           isSigner: false
+          docs: ['Mint of the treasury']
+        },
+        {
+          name: 'treasury'
+          isMut: false
+          isSigner: false
+          docs: [
+            'Treasury token account. This is an externally owned token account and',
+            'the owner of this account will approve the config as a delegate using the',
+            'solana CLI command `spl-token approve <treasury_account_address> <approve_amount> <config_address>`'
+          ]
         },
         {
           name: 'systemProgram'
@@ -43,6 +56,10 @@ export type TokenDispenser = {
         },
         {
           name: 'dispenserGuard'
+          type: 'publicKey'
+        },
+        {
+          name: 'funder'
           type: 'publicKey'
         },
         {
@@ -150,7 +167,15 @@ export type TokenDispenser = {
             type: 'publicKey'
           },
           {
+            name: 'treasury'
+            type: 'publicKey'
+          },
+          {
             name: 'addressLookupTable'
+            type: 'publicKey'
+          },
+          {
+            name: 'funder'
             type: 'publicKey'
           },
           {
@@ -562,11 +587,6 @@ export type TokenDispenser = {
       name: 'ClaimEvent'
       fields: [
         {
-          name: 'treasury'
-          type: 'publicKey'
-          index: false
-        },
-        {
           name: 'remainingBalance'
           type: 'u64'
           index: false
@@ -640,67 +660,82 @@ export const IDL: TokenDispenser = {
     {
       name: 'initialize',
       docs: [
-        'This can only be called once and should be called right after the program is deployed.',
+        'This can only be called once and should be called right after the program is deployed.'
       ],
       accounts: [
         {
           name: 'payer',
           isMut: true,
-          isSigner: true,
+          isSigner: true
         },
         {
           name: 'config',
           isMut: true,
-          isSigner: false,
+          isSigner: false
         },
         {
           name: 'mint',
           isMut: false,
           isSigner: false,
+          docs: ['Mint of the treasury']
+        },
+        {
+          name: 'treasury',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            'Treasury token account. This is an externally owned token account and',
+            'the owner of this account will approve the config as a delegate using the',
+            'solana CLI command `spl-token approve <treasury_account_address> <approve_amount> <config_address>`'
+          ]
         },
         {
           name: 'systemProgram',
           isMut: false,
-          isSigner: false,
+          isSigner: false
         },
         {
           name: 'addressLookupTable',
           isMut: false,
-          isSigner: false,
-        },
+          isSigner: false
+        }
       ],
       args: [
         {
           name: 'merkleRoot',
           type: {
-            array: ['u8', 20],
-          },
+            array: ['u8', 20]
+          }
         },
         {
           name: 'dispenserGuard',
-          type: 'publicKey',
+          type: 'publicKey'
+        },
+        {
+          name: 'funder',
+          type: 'publicKey'
         },
         {
           name: 'maxTransfer',
-          type: 'u64',
-        },
-      ],
+          type: 'u64'
+        }
+      ]
     },
     {
       name: 'claim',
       docs: [
-        "* Claim a claimant's tokens. This instructions needs to enforce :\n     * - The dispenser guard has signed the transaction - DONE\n     * - The claimant is claiming no more than once per ecosystem - DONE\n     * - The claimant has provided a valid proof of identity (is the owner of the wallet\n     *   entitled to the tokens)\n     * - The claimant has provided a valid proof of inclusion (this confirm that the claimant --\n     *   DONE\n     * - The claimant has not already claimed tokens -- DONE",
+        "* Claim a claimant's tokens. This instructions needs to enforce :\n     * - The dispenser guard has signed the transaction - DONE\n     * - The claimant is claiming no more than once per ecosystem - DONE\n     * - The claimant has provided a valid proof of identity (is the owner of the wallet\n     *   entitled to the tokens)\n     * - The claimant has provided a valid proof of inclusion (this confirm that the claimant --\n     *   DONE\n     * - The claimant has not already claimed tokens -- DONE"
       ],
       accounts: [
         {
           name: 'funder',
           isMut: true,
-          isSigner: true,
+          isSigner: true
         },
         {
           name: 'claimant',
           isMut: false,
-          isSigner: true,
+          isSigner: true
         },
         {
           name: 'claimantFund',
@@ -708,57 +743,57 @@ export const IDL: TokenDispenser = {
           isSigner: false,
           docs: [
             "Claimant's associated token account to receive the tokens",
-            'Should be initialized outside of this program.',
-          ],
+            'Should be initialized outside of this program.'
+          ]
         },
         {
           name: 'config',
           isMut: false,
-          isSigner: false,
+          isSigner: false
         },
         {
           name: 'mint',
           isMut: false,
-          isSigner: false,
+          isSigner: false
         },
         {
           name: 'treasury',
           isMut: true,
-          isSigner: false,
+          isSigner: false
         },
         {
           name: 'tokenProgram',
           isMut: false,
-          isSigner: false,
+          isSigner: false
         },
         {
           name: 'systemProgram',
           isMut: false,
-          isSigner: false,
+          isSigner: false
         },
         {
           name: 'sysvarInstruction',
           isMut: false,
           isSigner: false,
           docs: [
-            "CHECK : Anchor wants me to write this comment because I'm using AccountInfo which doesn't check for ownership and doesn't deserialize the account automatically. But it's fine because I check the address and I load it using load_instruction_at_checked.",
-          ],
+            "CHECK : Anchor wants me to write this comment because I'm using AccountInfo which doesn't check for ownership and doesn't deserialize the account automatically. But it's fine because I check the address and I load it using load_instruction_at_checked."
+          ]
         },
         {
           name: 'associatedTokenProgram',
           isMut: false,
-          isSigner: false,
-        },
+          isSigner: false
+        }
       ],
       args: [
         {
           name: 'claimCertificate',
           type: {
-            defined: 'ClaimCertificate',
-          },
-        },
-      ],
-    },
+            defined: 'ClaimCertificate'
+          }
+        }
+      ]
+    }
   ],
   accounts: [
     {
@@ -768,79 +803,87 @@ export const IDL: TokenDispenser = {
         fields: [
           {
             name: 'bump',
-            type: 'u8',
+            type: 'u8'
           },
           {
             name: 'merkleRoot',
             type: {
-              array: ['u8', 20],
-            },
+              array: ['u8', 20]
+            }
           },
           {
             name: 'dispenserGuard',
-            type: 'publicKey',
+            type: 'publicKey'
           },
           {
             name: 'mint',
-            type: 'publicKey',
+            type: 'publicKey'
+          },
+          {
+            name: 'treasury',
+            type: 'publicKey'
           },
           {
             name: 'addressLookupTable',
-            type: 'publicKey',
+            type: 'publicKey'
+          },
+          {
+            name: 'funder',
+            type: 'publicKey'
           },
           {
             name: 'maxTransfer',
-            type: 'u64',
-          },
-        ],
-      },
+            type: 'u64'
+          }
+        ]
+      }
     },
     {
       name: 'Receipt',
       type: {
         kind: 'struct',
-        fields: [],
-      },
-    },
+        fields: []
+      }
+    }
   ],
   types: [
     {
       name: 'CosmosMessage',
       docs: [
-        '* An ADR036 message used in Cosmos. ADR036 is a standard for signing arbitrary data.\n* Only the message payload is stored in this struct.\n* The message signed for Cosmos is a JSON serialized CosmosStdSignDoc containing the payload and ADR036 compliant parameters.\n* The message also contains the bech32 address of the signer. We check that the signer corresponds to the public key.',
+        '* An ADR036 message used in Cosmos. ADR036 is a standard for signing arbitrary data.\n* Only the message payload is stored in this struct.\n* The message signed for Cosmos is a JSON serialized CosmosStdSignDoc containing the payload and ADR036 compliant parameters.\n* The message also contains the bech32 address of the signer. We check that the signer corresponds to the public key.'
       ],
       type: {
         kind: 'struct',
         fields: [
           {
             name: 'payload',
-            type: 'bytes',
+            type: 'bytes'
           },
           {
             name: 'signer',
-            type: 'string',
-          },
-        ],
-      },
+            type: 'string'
+          }
+        ]
+      }
     },
     {
       name: 'DiscordMessage',
       docs: [
-        "* This message (borsh-serialized) needs to be signed by the dispenser guard after\n * verifying the claimant's pubkey controls the discord account.\n * The dispenser guard key should not be used for anything else.",
+        "* This message (borsh-serialized) needs to be signed by the dispenser guard after\n * verifying the claimant's pubkey controls the discord account.\n * The dispenser guard key should not be used for anything else."
       ],
       type: {
         kind: 'struct',
         fields: [
           {
             name: 'username',
-            type: 'string',
+            type: 'string'
           },
           {
             name: 'claimant',
-            type: 'publicKey',
-          },
-        ],
-      },
+            type: 'publicKey'
+          }
+        ]
+      }
     },
     {
       name: 'Ed25519InstructionHeader',
@@ -849,42 +892,42 @@ export const IDL: TokenDispenser = {
         fields: [
           {
             name: 'numSignatures',
-            type: 'u8',
+            type: 'u8'
           },
           {
             name: 'padding',
-            type: 'u8',
+            type: 'u8'
           },
           {
             name: 'signatureOffset',
-            type: 'u16',
+            type: 'u16'
           },
           {
             name: 'signatureInstructionIndex',
-            type: 'u16',
+            type: 'u16'
           },
           {
             name: 'publicKeyOffset',
-            type: 'u16',
+            type: 'u16'
           },
           {
             name: 'publicKeyInstructionIndex',
-            type: 'u16',
+            type: 'u16'
           },
           {
             name: 'messageDataOffset',
-            type: 'u16',
+            type: 'u16'
           },
           {
             name: 'messageDataSize',
-            type: 'u16',
+            type: 'u16'
           },
           {
             name: 'messageInstructionIndex',
-            type: 'u16',
-          },
-        ],
-      },
+            type: 'u16'
+          }
+        ]
+      }
     },
     {
       name: 'Secp256k1InstructionHeader',
@@ -893,38 +936,38 @@ export const IDL: TokenDispenser = {
         fields: [
           {
             name: 'numSignatures',
-            type: 'u8',
+            type: 'u8'
           },
           {
             name: 'signatureOffset',
-            type: 'u16',
+            type: 'u16'
           },
           {
             name: 'signatureInstructionIndex',
-            type: 'u8',
+            type: 'u8'
           },
           {
             name: 'ethAddressOffset',
-            type: 'u16',
+            type: 'u16'
           },
           {
             name: 'ethAddressInstructionIndex',
-            type: 'u8',
+            type: 'u8'
           },
           {
             name: 'messageDataOffset',
-            type: 'u16',
+            type: 'u16'
           },
           {
             name: 'messageDataSize',
-            type: 'u16',
+            type: 'u16'
           },
           {
             name: 'messageInstructionIndex',
-            type: 'u8',
-          },
-        ],
-      },
+            type: 'u8'
+          }
+        ]
+      }
     },
     {
       name: 'ClaimInfo',
@@ -934,15 +977,15 @@ export const IDL: TokenDispenser = {
           {
             name: 'identity',
             type: {
-              defined: 'Identity',
-            },
+              defined: 'Identity'
+            }
           },
           {
             name: 'amount',
-            type: 'u64',
-          },
-        ],
-      },
+            type: 'u64'
+          }
+        ]
+      }
     },
     {
       name: 'ClaimCertificate',
@@ -951,29 +994,29 @@ export const IDL: TokenDispenser = {
         fields: [
           {
             name: 'amount',
-            type: 'u64',
+            type: 'u64'
           },
           {
             name: 'proofOfIdentity',
             type: {
-              defined: 'IdentityCertificate',
-            },
+              defined: 'IdentityCertificate'
+            }
           },
           {
             name: 'proofOfInclusion',
             type: {
               vec: {
-                array: ['u8', 20],
-              },
-            },
-          },
-        ],
-      },
+                array: ['u8', 20]
+              }
+            }
+          }
+        ]
+      }
     },
     {
       name: 'Identity',
       docs: [
-        "* This is the identity that the claimant will use to claim tokens.\n * A claimant can claim tokens for 1 identity on each ecosystem.\n * Typically for a blockchain it is a public key in the blockchain's address space.",
+        "* This is the identity that the claimant will use to claim tokens.\n * A claimant can claim tokens for 1 identity on each ecosystem.\n * Typically for a blockchain it is a public key in the blockchain's address space."
       ],
       type: {
         kind: 'enum',
@@ -983,9 +1026,9 @@ export const IDL: TokenDispenser = {
             fields: [
               {
                 name: 'username',
-                type: 'string',
-              },
-            ],
+                type: 'string'
+              }
+            ]
           },
           {
             name: 'Solana',
@@ -993,10 +1036,10 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 32],
-                },
-              },
-            ],
+                  array: ['u8', 32]
+                }
+              }
+            ]
           },
           {
             name: 'Evm',
@@ -1004,10 +1047,10 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 20],
-                },
-              },
-            ],
+                  array: ['u8', 20]
+                }
+              }
+            ]
           },
           {
             name: 'Sui',
@@ -1015,10 +1058,10 @@ export const IDL: TokenDispenser = {
               {
                 name: 'address',
                 type: {
-                  array: ['u8', 32],
-                },
-              },
-            ],
+                  array: ['u8', 32]
+                }
+              }
+            ]
           },
           {
             name: 'Aptos',
@@ -1026,28 +1069,28 @@ export const IDL: TokenDispenser = {
               {
                 name: 'address',
                 type: {
-                  array: ['u8', 32],
-                },
-              },
-            ],
+                  array: ['u8', 32]
+                }
+              }
+            ]
           },
           {
             name: 'Cosmwasm',
             fields: [
               {
                 name: 'address',
-                type: 'string',
-              },
-            ],
+                type: 'string'
+              }
+            ]
           },
           {
             name: 'Injective',
             fields: [
               {
                 name: 'address',
-                type: 'string',
-              },
-            ],
+                type: 'string'
+              }
+            ]
           },
           {
             name: 'Algorand',
@@ -1055,13 +1098,13 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 32],
-                },
-              },
-            ],
-          },
-        ],
-      },
+                  array: ['u8', 32]
+                }
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       name: 'IdentityCertificate',
@@ -1073,13 +1116,13 @@ export const IDL: TokenDispenser = {
             fields: [
               {
                 name: 'username',
-                type: 'string',
+                type: 'string'
               },
               {
                 name: 'verification_instruction_index',
-                type: 'u8',
-              },
-            ],
+                type: 'u8'
+              }
+            ]
           },
           {
             name: 'Evm',
@@ -1087,17 +1130,17 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 20],
-                },
+                  array: ['u8', 20]
+                }
               },
               {
                 name: 'verification_instruction_index',
-                type: 'u8',
-              },
-            ],
+                type: 'u8'
+              }
+            ]
           },
           {
-            name: 'Solana',
+            name: 'Solana'
           },
           {
             name: 'Sui',
@@ -1105,14 +1148,14 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 32],
-                },
+                  array: ['u8', 32]
+                }
               },
               {
                 name: 'verification_instruction_index',
-                type: 'u8',
-              },
-            ],
+                type: 'u8'
+              }
+            ]
           },
           {
             name: 'Aptos',
@@ -1120,43 +1163,43 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 32],
-                },
+                  array: ['u8', 32]
+                }
               },
               {
                 name: 'verification_instruction_index',
-                type: 'u8',
-              },
-            ],
+                type: 'u8'
+              }
+            ]
           },
           {
             name: 'Cosmwasm',
             fields: [
               {
                 name: 'chain_id',
-                type: 'string',
+                type: 'string'
               },
               {
                 name: 'signature',
                 type: {
-                  array: ['u8', 64],
-                },
+                  array: ['u8', 64]
+                }
               },
               {
                 name: 'recovery_id',
-                type: 'u8',
+                type: 'u8'
               },
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 65],
-                },
+                  array: ['u8', 65]
+                }
               },
               {
                 name: 'message',
-                type: 'bytes',
-              },
-            ],
+                type: 'bytes'
+              }
+            ]
           },
           {
             name: 'Injective',
@@ -1164,14 +1207,14 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 20],
-                },
+                  array: ['u8', 20]
+                }
               },
               {
                 name: 'verification_instruction_index',
-                type: 'u8',
-              },
-            ],
+                type: 'u8'
+              }
+            ]
           },
           {
             name: 'Algorand',
@@ -1179,92 +1222,89 @@ export const IDL: TokenDispenser = {
               {
                 name: 'pubkey',
                 type: {
-                  array: ['u8', 32],
-                },
+                  array: ['u8', 32]
+                }
               },
               {
                 name: 'verification_instruction_index',
-                type: 'u8',
-              },
-            ],
-          },
-        ],
-      },
-    },
+                type: 'u8'
+              }
+            ]
+          }
+        ]
+      }
+    }
   ],
   events: [
     {
       name: 'ClaimEvent',
       fields: [
         {
-          name: 'treasury',
-          type: 'publicKey',
-          index: false,
-        },
-        {
           name: 'remainingBalance',
           type: 'u64',
-          index: false,
+          index: false
         },
         {
           name: 'claimant',
           type: 'publicKey',
-          index: false,
+          index: false
         },
         {
           name: 'claimInfo',
           type: {
-            defined: 'ClaimInfo',
+            defined: 'ClaimInfo'
           },
-          index: false,
-        },
-      ],
-    },
+          index: false
+        }
+      ]
+    }
   ],
   errors: [
     {
       code: 6000,
-      name: 'AlreadyClaimed',
+      name: 'AlreadyClaimed'
     },
     {
       code: 6001,
-      name: 'InvalidInclusionProof',
+      name: 'InvalidInclusionProof'
     },
     {
       code: 6002,
-      name: 'WrongPda',
+      name: 'WrongPda'
     },
     {
       code: 6003,
-      name: 'SignatureVerificationWrongProgram',
+      name: 'SignatureVerificationWrongProgram'
     },
     {
       code: 6004,
-      name: 'SignatureVerificationWrongAccounts',
+      name: 'SignatureVerificationWrongAccounts'
     },
     {
       code: 6005,
-      name: 'SignatureVerificationWrongHeader',
+      name: 'SignatureVerificationWrongHeader'
     },
     {
       code: 6006,
-      name: 'SignatureVerificationWrongPayload',
+      name: 'SignatureVerificationWrongPayload'
     },
     {
       code: 6007,
-      name: 'SignatureVerificationWrongPayloadMetadata',
+      name: 'SignatureVerificationWrongPayloadMetadata'
     },
     {
       code: 6008,
-      name: 'SignatureVerificationWrongSigner',
+      name: 'SignatureVerificationWrongSigner'
     },
     {
       code: 6009,
-      name: 'UnauthorizedCosmosChainId',
+      name: 'UnauthorizedCosmosChainId'
     },
     {
       code: 6010,
-      name: 'TransferExceedsMax',
-    },
-  ],
+      name: 'TransferExceedsMax'
+    }
+  ]
 }
+
+export const coder = new BorshCoder(IDL)

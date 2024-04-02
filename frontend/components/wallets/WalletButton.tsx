@@ -57,6 +57,7 @@ export function WalletLoadingButton() {
 
 export type WalletButtonProps = {
   connected: boolean
+  isEVM?: boolean
   isLoading: boolean
   walletConnectedButton: (address: string) => ReactElement
   address: string | undefined
@@ -67,6 +68,7 @@ export type WalletButtonProps = {
 // When the wallet is connected
 export function WalletButton({
   connected,
+  isEVM,
   isLoading,
   walletConnectedButton,
   wallets,
@@ -74,7 +76,7 @@ export function WalletButton({
 }: WalletButtonProps) {
   if (isLoading === true) return <WalletLoadingButton />
   else if (connected === true) return walletConnectedButton(address!)
-  return <WalletModalButton wallets={wallets} />
+  return <WalletModalButton isEVM={isEVM} wallets={wallets} />
 }
 
 export type Wallet = {
@@ -84,8 +86,9 @@ export type Wallet = {
 }
 export type WalletModalButtonProps = {
   wallets: Wallet[]
+  isEVM?: boolean
 }
-export function WalletModalButton({ wallets }: WalletModalButtonProps) {
+export function WalletModalButton({ wallets, isEVM }: WalletModalButtonProps) {
   const [modal, openModal] = useState(false)
 
   return (
@@ -99,7 +102,9 @@ export function WalletModalButton({ wallets }: WalletModalButtonProps) {
           <span>Connect wallet</span>
         </span>
       </button>
-      {modal && <WalletModal openModal={openModal} wallets={wallets} />}
+      {modal && (
+        <WalletModal isEVM={isEVM} openModal={openModal} wallets={wallets} />
+      )}
     </>
   )
 }
@@ -107,20 +112,27 @@ export function WalletModalButton({ wallets }: WalletModalButtonProps) {
 export type WalletModalProps = {
   openModal: Function
   wallets: Wallet[]
+  isEVM?: boolean
 }
-export function WalletModal({ openModal, wallets }: WalletModalProps) {
+export function WalletModal({ isEVM, openModal, wallets }: WalletModalProps) {
   return (
     <Modal openModal={openModal}>
       <h3 className="mb-8 font-header  text-[24px] font-light sm:mb-16 sm:text-[36px]">
         Connect Your Wallet
       </h3>
+      {isEVM && (
+        <div className="mb-8">
+          If you have multiple EVM wallets active, please disable the wallets
+          that will not be used for eligibility verification.
+        </div>
+      )}
       <div className="mx-auto flex max-w-[200px] flex-col justify-around gap-y-4">
         {wallets.map((wallet) => {
           return (
             <SingleWalletView
               wallet={wallet}
               onSelect={() => openModal(false)}
-              key={wallet.icon}
+              key={wallet.name}
             />
           )
         })}

@@ -27,6 +27,8 @@ import { TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
 import { SignedMessage } from './ecosystems/signatures'
 import { extractChainId } from './ecosystems/cosmos'
 import { fetchFundTransaction } from '../utils/api'
+import { getClaimPayers } from './treasury'
+import { inspect } from 'util'
 
 export const ERROR_SIGNING_TX = 'error: signing transaction'
 export const ERROR_FUNDING_TX = 'error: funding transaction'
@@ -40,6 +42,11 @@ const AUTHORIZATION_PAYLOAD = [
   '\nI authorize Solana wallet\n',
   '\nto claim my W tokens.\n',
 ]
+
+export type TransactionWithPayers = {
+  tx: VersionedTransaction
+  payers: [PublicKey, PublicKey]
+}
 
 /**
  * This class wraps the interaction with the TokenDispenser
@@ -71,7 +78,10 @@ export class TokenDispenserProvider {
       provider
     ) as unknown as Program<TokenDispenser>
 
-    this.configPda = this.getConfigPda()
+    this.configPda = anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from('config')],
+      this.programId
+    )
   }
 
   get programId(): anchor.web3.PublicKey {
@@ -91,13 +101,7 @@ export class TokenDispenserProvider {
   }
 
   public getConfigPda(): [anchor.web3.PublicKey, bump] {
-    return (
-      this.configPda ??
-      anchor.web3.PublicKey.findProgramAddressSync(
-        [Buffer.from('config')],
-        this.programId
-      )
-    )
+    return this.configPda
   }
 
   public async getConfig(): Promise<IdlAccounts<TokenDispenser>['Config']> {
@@ -141,36 +145,35 @@ export class TokenDispenserProvider {
   public async initialize(
     root: Buffer,
     mint: anchor.web3.PublicKey,
-    treasury: anchor.web3.PublicKey,
     dispenserGuard: anchor.web3.PublicKey,
-    funder: anchor.web3.PublicKey,
+    treasuries: readonly anchor.web3.PublicKey[],
+    funders: readonly anchor.web3.PublicKey[],
     maxTransfer: anchor.BN
   ): Promise<TransactionSignature> {
     const addressLookupTable = await this.initAddressLookupTable(
       mint,
-      treasury,
-      funder
+      treasuries,
+      funders
     )
 
     return this.tokenDispenserProgram.methods
-      .initialize(Array.from(root), dispenserGuard, funder, maxTransfer)
+      .initialize(Array.from(root), dispenserGuard, maxTransfer)
       .accounts({
         config: this.getConfigPda()[0],
         mint,
-        treasury,
         systemProgram: anchor.web3.SystemProgram.programId,
         addressLookupTable,
       })
       .rpc()
   }
 
-  private async initAddressLookupTable(
+  async initAddressLookupTable(
     mint: anchor.web3.PublicKey,
-    treasury: anchor.web3.PublicKey,
-    funder: anchor.web3.PublicKey
+    treasuries: readonly anchor.web3.PublicKey[],
+    funders: readonly anchor.web3.PublicKey[]
   ): Promise<anchor.web3.PublicKey> {
     const recentSlot = await this.provider.connection.getSlot()
-    const [loookupTableInstruction, lookupTableAddress] =
+    const [lookupTableInstruction, lookupTableAddress] =
       AddressLookupTableProgram.createLookupTable({
         authority: this.provider.publicKey!,
         payer: this.provider.publicKey!,
@@ -183,17 +186,17 @@ export class TokenDispenserProvider {
       addresses: [
         this.configPda[0],
         mint,
-        treasury,
         TOKEN_PROGRAM_ID,
         SystemProgram.programId,
         SYSVAR_INSTRUCTIONS_PUBKEY,
         splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
-        funder,
+        ...treasuries,
+        ...funders,
       ],
     })
     let createLookupTableTx = new VersionedTransaction(
       new TransactionMessage({
-        instructions: [loookupTableInstruction, extendInstruction],
+        instructions: [lookupTableInstruction, extendInstruction],
         payerKey: this.provider.publicKey!,
         recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
       }).compileToV0Message()
@@ -229,38 +232,61 @@ export class TokenDispenserProvider {
       signedMessage: SignedMessage | undefined
     }[],
     fetchFundTransactionFunction: (
-      transactions: VersionedTransaction[]
-    ) => Promise<VersionedTransaction[]> = fetchFundTransaction // This argument is only used for testing where we can't call the API
+      transactions: TransactionWithPayers[]
+    ) => Promise<VersionedTransaction[]> = fetchFundTransaction, // This argument is only used for testing where we can't call the API
+    getPayersForClaim: (
+      claimInfo: ClaimInfo
+    ) => [anchor.web3.PublicKey, anchor.web3.PublicKey] = getClaimPayers // This argument is only used for testing where we can't call the API
   ): Promise<Promise<TransactionError | null>[]> {
-    const txs: VersionedTransaction[] = []
+    const txs: TransactionWithPayers[] = []
 
     try {
       for (const claim of claims) {
-        txs.push(
-          await this.generateClaimTransaction(
+        const [funder, treasury] = getPayersForClaim(claim.claimInfo)
+
+        txs.push({
+          tx: await this.generateClaimTransaction(
+            funder,
+            treasury,
             claim.claimInfo,
             claim.proofOfInclusion,
             claim.signedMessage
-          )
-        )
+          ),
+          payers: [funder, treasury],
+        })
       }
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_CRAFTING_TX)
     }
 
-    let txsSignedOnce
+    let txsSignedOnce: VersionedTransaction[]
+
     try {
       txsSignedOnce = await (
         this.tokenDispenserProgram.provider as anchor.AnchorProvider
-      ).wallet.signAllTransactions(txs)
+      ).wallet.signAllTransactions(txs.map((tx) => tx.tx))
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_SIGNING_TX)
     }
 
+    const txsSignedOnceWithPayers: TransactionWithPayers[] = txsSignedOnce.map(
+      (tx, index) => {
+        return {
+          tx: tx,
+          payers: txs[index].payers,
+        }
+      }
+    )
+
     let txsSignedTwice
     try {
-      txsSignedTwice = await fetchFundTransactionFunction(txsSignedOnce)
+      txsSignedTwice = await fetchFundTransactionFunction(
+        txsSignedOnceWithPayers
+      )
     } catch (e) {
+      console.error(e)
       throw new Error(ERROR_FUNDING_TX)
     }
 
@@ -290,13 +316,60 @@ export class TokenDispenserProvider {
   }
 
   public async generateClaimTransaction(
+    funder: PublicKey,
+    treasury: PublicKey,
     claimInfo: ClaimInfo,
     proofOfInclusion: Uint8Array[],
     signedMessage: SignedMessage | undefined
   ): Promise<VersionedTransaction> {
-    // 1. generate claim certificate
-    //    a. create proofOfIdentity
-    const proofOfIdentity = this.createProofOfIdentity(claimInfo, signedMessage)
+    const [receiptPda, receiptBump] = this.getReceiptPda(claimInfo)
+    const { mint } = await this.getConfig()
+    //same as getClaimantFundAddress / getAssociatedTokenAddress but with bump
+    const [claimantFund, claimaintFundBump] = PublicKey.findProgramAddressSync(
+      [
+        this.claimant.toBytes(),
+        splToken.TOKEN_PROGRAM_ID.toBytes(),
+        mint.toBytes(),
+      ],
+      splToken.ASSOCIATED_TOKEN_PROGRAM_ID
+    )
+    const [claimantFundAccount, lookupTableAccount] = await Promise.all([
+      this.connection.getAccountInfo(claimantFund),
+      this.getLookupTableAccount(),
+    ])
+
+    const ixs: anchor.web3.TransactionInstruction[] = []
+
+    // 1. add signatureVerification instruction if needed
+    const signatureVerificationIx =
+      this.generateSignatureVerificationInstruction(
+        claimInfo.ecosystem,
+        signedMessage
+      )
+
+    if (signatureVerificationIx) ixs.push(signatureVerificationIx)
+
+    // 2. add create ATA instruction if needed
+    const claimantFundExists = claimantFundAccount !== null
+
+    if (!claimantFundExists)
+      ixs.push(
+        splToken.Token.createAssociatedTokenAccountInstruction(
+          splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+          splToken.TOKEN_PROGRAM_ID,
+          mint,
+          claimantFund,
+          this.claimant,
+          funder
+        )
+      )
+
+    // 3. add claim instruction
+    const proofOfIdentity = this.createProofOfIdentity(
+      claimInfo,
+      signedMessage,
+      0
+    )
 
     const claimCert: IdlTypes<TokenDispenser>['ClaimCertificate'] = {
       amount: claimInfo.amount,
@@ -304,61 +377,79 @@ export class TokenDispenserProvider {
       proofOfInclusion,
     }
 
-    // 2. generate signature verification instruction if needed
-    const signatureVerificationIx =
-      this.generateSignatureVerificationInstruction(
-        claimInfo.ecosystem,
-        signedMessage
-      )
+    ixs.push(
+      await this.tokenDispenserProgram.methods
+        .claim(claimCert)
+        .accounts({
+          funder,
+          claimant: this.claimant,
+          claimantFund,
+          config: this.getConfigPda()[0],
+          mint,
+          treasury,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          systemProgram: anchor.web3.SystemProgram.programId,
+          sysvarInstruction: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+          associatedTokenProgram: splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+        })
+        .remainingAccounts([
+          {
+            pubkey: receiptPda,
+            isWritable: true,
+            isSigner: false,
+          },
+        ])
+        .instruction()
+    )
 
-    // 3. derive receipt pda
-    const receiptPda = this.getReceiptPda(claimInfo)[0]
+    // 4. add Compute Unit instructions
+    const pdaDerivationCosts = (bump: number) => {
+      const maxBump = 255
+      const cusPerPdaDerivation = 1500
+      return (maxBump - bump) * cusPerPdaDerivation
+    }
+    const safetyMargin = 1000
+    const ataCreationCost = 20460
+    //determined experimentally:
+    const ecosystemCUs = {
+      discord: 44200,
+      solana: 40450,
+      evm: 66600,
+      sui: 79200,
+      aptos: 78800,
+      terra: 113500,
+      osmosis: 113200,
+      injective: 71700,
+      algorand: 70700,
+    }
 
-    const lookupTableAccount = await this.getLookupTableAccount()
+    const units =
+      safetyMargin +
+      ecosystemCUs[claimInfo.ecosystem] +
+      pdaDerivationCosts(claimaintFundBump) +
+      pdaDerivationCosts(receiptBump) +
+      (claimantFundExists
+        ? 0
+        : ataCreationCost + pdaDerivationCosts(claimaintFundBump))
+    ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
-    const ixs = signatureVerificationIx ? [signatureVerificationIx] : []
-    const claim_ix = await this.tokenDispenserProgram.methods
-      .claim(claimCert)
-      .accounts({
-        funder: (await this.getConfig()).funder,
-        claimant: this.claimant,
-        claimantFund: await this.getClaimantFundAddress(),
-        config: this.getConfigPda()[0],
-        mint: (await this.getConfig()).mint,
-        treasury: (await this.getConfig()).treasury,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId,
-        sysvarInstruction: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
-        associatedTokenProgram: splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
-      })
-      .remainingAccounts([
-        {
-          pubkey: receiptPda,
-          isWritable: true,
-          isSigner: false,
-        },
-      ])
-      .instruction()
-    ixs.push(claim_ix)
-    ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }))
-
-    const microLamports = 1 //TODO determine true value
+    const microLamports = 1_000_000 //somewhat arbitrary choice
     ixs.push(ComputeBudgetProgram.setComputeUnitPrice({ microLamports }))
 
-    const claimTx = new VersionedTransaction(
+    // 5. build and return the transaction
+    return new VersionedTransaction(
       new TransactionMessage({
         instructions: ixs,
-        payerKey: (await this.getConfig()).funder,
+        payerKey: funder,
         recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
       }).compileToV0Message([lookupTableAccount!])
     )
-
-    return claimTx
   }
 
   private createProofOfIdentity(
     claimInfo: ClaimInfo,
-    signedMessage: SignedMessage | undefined
+    signedMessage: SignedMessage | undefined,
+    verificationInstructionIndex: number
   ): IdlTypes<TokenDispenser>['IdentityCertificate'] {
     if (claimInfo.ecosystem === 'solana') {
       return {
@@ -376,7 +467,7 @@ export class TokenDispenserProvider {
           return {
             [claimInfo.ecosystem]: {
               pubkey: Array.from(signedMessage.publicKey),
-              verificationInstructionIndex: 0,
+              verificationInstructionIndex,
             },
           }
         }
@@ -396,7 +487,7 @@ export class TokenDispenserProvider {
           return {
             discord: {
               username: claimInfo.identity,
-              verificationInstructionIndex: 0,
+              verificationInstructionIndex,
             },
           }
         }
@@ -414,7 +505,8 @@ export class TokenDispenserProvider {
 
   private generateSignatureVerificationInstruction(
     ecosystem: Ecosystem,
-    signedMessage: SignedMessage | undefined
+    signedMessage: SignedMessage | undefined,
+    instructionIndex: number = 0
   ): anchor.web3.TransactionInstruction | undefined {
     if (ecosystem === 'solana') {
       return undefined
@@ -429,6 +521,7 @@ export class TokenDispenserProvider {
             message: signedMessage.fullMessage,
             signature: signedMessage.signature,
             recoveryId: signedMessage.recoveryId!,
+            instructionIndex,
           })
         }
         case 'osmosis':
@@ -443,7 +536,7 @@ export class TokenDispenserProvider {
             publicKey: signedMessage.publicKey,
             message: signedMessage.fullMessage,
             signature: signedMessage.signature,
-            instructionIndex: 0,
+            instructionIndex,
           })
         }
         default: {
@@ -457,6 +550,7 @@ export class TokenDispenserProvider {
       )
     }
   }
+
   public async getClaimantFundAddress(): Promise<PublicKey> {
     const config = await this.getConfig()
     const associatedTokenAccount =

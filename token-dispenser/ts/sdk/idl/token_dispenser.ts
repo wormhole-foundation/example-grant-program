@@ -22,17 +22,6 @@ export type TokenDispenser = {
           name: "mint";
           isMut: false;
           isSigner: false;
-          docs: ["Mint of the treasury"];
-        },
-        {
-          name: "treasury";
-          isMut: false;
-          isSigner: false;
-          docs: [
-            "Treasury token account. This is an externally owned token account and",
-            "the owner of this account will approve the config as a delegate using the",
-            "solana CLI command `spl-token approve <treasury_account_address> <approve_amount> <config_address>`"
-          ];
         },
         {
           name: "systemProgram";
@@ -54,10 +43,6 @@ export type TokenDispenser = {
         },
         {
           name: "dispenserGuard";
-          type: "publicKey";
-        },
-        {
-          name: "funder";
           type: "publicKey";
         },
         {
@@ -165,15 +150,7 @@ export type TokenDispenser = {
             type: "publicKey";
           },
           {
-            name: "treasury";
-            type: "publicKey";
-          },
-          {
             name: "addressLookupTable";
-            type: "publicKey";
-          },
-          {
-            name: "funder";
             type: "publicKey";
           },
           {
@@ -464,7 +441,7 @@ export type TokenDispenser = {
                 type: "string";
               },
               {
-                name: "verificationInstructionIndex";
+                name: "verification_instruction_index";
                 type: "u8";
               }
             ];
@@ -479,7 +456,7 @@ export type TokenDispenser = {
                 };
               },
               {
-                name: "verificationInstructionIndex";
+                name: "verification_instruction_index";
                 type: "u8";
               }
             ];
@@ -497,7 +474,7 @@ export type TokenDispenser = {
                 };
               },
               {
-                name: "verificationInstructionIndex";
+                name: "verification_instruction_index";
                 type: "u8";
               }
             ];
@@ -512,7 +489,7 @@ export type TokenDispenser = {
                 };
               },
               {
-                name: "verificationInstructionIndex";
+                name: "verification_instruction_index";
                 type: "u8";
               }
             ];
@@ -521,7 +498,7 @@ export type TokenDispenser = {
             name: "Cosmwasm";
             fields: [
               {
-                name: "chainId";
+                name: "chain_id";
                 type: "string";
               },
               {
@@ -531,7 +508,7 @@ export type TokenDispenser = {
                 };
               },
               {
-                name: "recoveryId";
+                name: "recovery_id";
                 type: "u8";
               },
               {
@@ -556,7 +533,7 @@ export type TokenDispenser = {
                 };
               },
               {
-                name: "verificationInstructionIndex";
+                name: "verification_instruction_index";
                 type: "u8";
               }
             ];
@@ -571,7 +548,7 @@ export type TokenDispenser = {
                 };
               },
               {
-                name: "verificationInstructionIndex";
+                name: "verification_instruction_index";
                 type: "u8";
               }
             ];
@@ -584,6 +561,11 @@ export type TokenDispenser = {
     {
       name: "ClaimEvent";
       fields: [
+        {
+          name: "treasury";
+          type: "publicKey";
+          index: false;
+        },
         {
           name: "remainingBalance";
           type: "u64";
@@ -675,17 +657,6 @@ export const IDL: TokenDispenser = {
           name: "mint",
           isMut: false,
           isSigner: false,
-          docs: ["Mint of the treasury"],
-        },
-        {
-          name: "treasury",
-          isMut: false,
-          isSigner: false,
-          docs: [
-            "Treasury token account. This is an externally owned token account and",
-            "the owner of this account will approve the config as a delegate using the",
-            "solana CLI command `spl-token approve <treasury_account_address> <approve_amount> <config_address>`",
-          ],
         },
         {
           name: "systemProgram",
@@ -707,10 +678,6 @@ export const IDL: TokenDispenser = {
         },
         {
           name: "dispenserGuard",
-          type: "publicKey",
-        },
-        {
-          name: "funder",
           type: "publicKey",
         },
         {
@@ -818,15 +785,7 @@ export const IDL: TokenDispenser = {
             type: "publicKey",
           },
           {
-            name: "treasury",
-            type: "publicKey",
-          },
-          {
             name: "addressLookupTable",
-            type: "publicKey",
-          },
-          {
-            name: "funder",
             type: "publicKey",
           },
           {
@@ -1117,7 +1076,7 @@ export const IDL: TokenDispenser = {
                 type: "string",
               },
               {
-                name: "verificationInstructionIndex",
+                name: "verification_instruction_index",
                 type: "u8",
               },
             ],
@@ -1132,7 +1091,7 @@ export const IDL: TokenDispenser = {
                 },
               },
               {
-                name: "verificationInstructionIndex",
+                name: "verification_instruction_index",
                 type: "u8",
               },
             ],
@@ -1150,7 +1109,7 @@ export const IDL: TokenDispenser = {
                 },
               },
               {
-                name: "verificationInstructionIndex",
+                name: "verification_instruction_index",
                 type: "u8",
               },
             ],
@@ -1165,7 +1124,7 @@ export const IDL: TokenDispenser = {
                 },
               },
               {
-                name: "verificationInstructionIndex",
+                name: "verification_instruction_index",
                 type: "u8",
               },
             ],
@@ -1174,7 +1133,7 @@ export const IDL: TokenDispenser = {
             name: "Cosmwasm",
             fields: [
               {
-                name: "chainId",
+                name: "chain_id",
                 type: "string",
               },
               {
@@ -1184,7 +1143,7 @@ export const IDL: TokenDispenser = {
                 },
               },
               {
-                name: "recoveryId",
+                name: "recovery_id",
                 type: "u8",
               },
               {
@@ -1209,7 +1168,7 @@ export const IDL: TokenDispenser = {
                 },
               },
               {
-                name: "verificationInstructionIndex",
+                name: "verification_instruction_index",
                 type: "u8",
               },
             ],
@@ -1224,7 +1183,7 @@ export const IDL: TokenDispenser = {
                 },
               },
               {
-                name: "verificationInstructionIndex",
+                name: "verification_instruction_index",
                 type: "u8",
               },
             ],
@@ -1237,6 +1196,11 @@ export const IDL: TokenDispenser = {
     {
       name: "ClaimEvent",
       fields: [
+        {
+          name: "treasury",
+          type: "publicKey",
+          index: false,
+        },
         {
           name: "remainingBalance",
           type: "u64",

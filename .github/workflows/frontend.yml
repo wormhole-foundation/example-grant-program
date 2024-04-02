@@ -14,9 +14,6 @@ jobs:
       env:
         ENDPOINT: http://localhost:8899
 
-    env:
-      PROGRAM_ID: WabZqXyytFA2XeXswf9DdQkQuSZuRiEgKdDmq7c5Mnp
-
     defaults:
       run:
         working-directory: ./frontend

@@ -7,20 +7,40 @@ import {
   TransactionInstruction,
   VersionedTransaction
 } from '@solana/web3.js'
+import * as splToken from '@solana/spl-token'
+import { coder } from '../token-dispenser'
 
 import config from '../config'
+import { ClaimCertificate } from '../types'
 
 const SET_COMPUTE_UNIT_LIMIT_DISCRIMINANT = 2
 const SET_COMPUTE_UNIT_PRICE_DISCRIMINANT = 3
 
 const MAX_COMPUTE_UNIT_PRICE = BigInt(1_000_000)
 
+export type TransactionWithFunder = {
+  transaction: VersionedTransaction
+  funder: string
+}
+
+export type SerializedTransactionWithFunder = {
+  tx: Uint8Array
+  funder: string
+}
+
 export function deserializeTransactions(
   transactions: unknown
-): VersionedTransaction[] {
+): TransactionWithFunder[] {
   try {
-    return (transactions as Uint8Array[]).map((serializedTx) =>
-      VersionedTransaction.deserialize(Buffer.from(serializedTx))
+    return (transactions as SerializedTransactionWithFunder[]).map(
+      (serializedTx) => {
+        return {
+          transaction: VersionedTransaction.deserialize(
+            Buffer.from(serializedTx.tx)
+          ),
+          funder: serializedTx.funder
+        }
+      }
     )
   } catch (err) {
     console.error('Failed to deserialize transactions', err)
@@ -29,17 +49,18 @@ export function deserializeTransactions(
 }
 
 async function loadWhitelistedProgramIds(): Promise<PublicKey[]> {
-  const programId = config.tokenDispenserProgramId()
-  if (!programId) {
+  const tokenDispenserProgramId = config.tokenDispenserProgramId()
+  if (!tokenDispenserProgramId) {
     throw new Error('Token dispenser program ID not set')
   }
 
-  const PROGRAM_ID = new PublicKey(programId)
+  const tokenDispenserPublicKey = new PublicKey(tokenDispenserProgramId)
   return [
-    PROGRAM_ID,
+    tokenDispenserPublicKey,
     Secp256k1Program.programId,
     Ed25519Program.programId,
-    ComputeBudgetProgram.programId
+    ComputeBudgetProgram.programId,
+    splToken.ASSOCIATED_TOKEN_PROGRAM_ID
   ]
 }
 
@@ -121,7 +142,7 @@ export function checkSetComputeBudgetInstructionsAreSetComputeUnitPrice(
         const priorityFee = ComputeBudgetInstruction.decodeSetComputeUnitPrice(
           legacTransactionInstruction
         )
-        if (priorityFee.microLamports >= MAX_COMPUTE_UNIT_PRICE) {
+        if (priorityFee.microLamports > MAX_COMPUTE_UNIT_PRICE) {
           console.error('Priority fee set is too high')
           return false
         }
@@ -206,5 +227,38 @@ export async function checkTransactions(
   } catch (err) {
     console.error('Error occured while checking transactions', err)
     return false
+  }
+}
+
+export function extractCallData(
+  versionedTx: VersionedTransaction,
+  programId?: string
+): ClaimCertificate | null {
+  const tokenDispenserPid = programId || config.tokenDispenserProgramId()
+  if (!tokenDispenserPid) {
+    console.error('Token dispenser program ID not set')
+    throw new Error('Token dispenser program ID not set')
+  }
+
+  try {
+    const instruction = versionedTx.message.compiledInstructions.find(
+      (ix) =>
+        versionedTx.message.staticAccountKeys[ix.programIdIndex].toBase58() ===
+        tokenDispenserPid
+    )
+
+    if (!instruction) {
+      return null
+    }
+
+    const decoded = coder.instruction.decode(
+      Buffer.from(instruction.data),
+      'base58'
+    )?.data as { claimCertificate: ClaimCertificate }
+
+    return decoded?.claimCertificate as ClaimCertificate
+  } catch (err) {
+    console.error('Failed to extract call data', err)
+    return null
   }
 }

@@ -28,4 +28,3 @@ Following env vars are required:
 
 - `DISPENSER_KEY_SECRET_NAME`: private key of the wallet that will be used to sign the discord message
 - `FUNDER_WALLET_KEY_SECRET_NAME`: private key of the wallet that will be used to fund the transactions
-- `TOKEN_DISPENSER_PROGRAM_ID`: the program id of the token dispenser

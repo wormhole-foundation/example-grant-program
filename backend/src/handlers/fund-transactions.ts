@@ -1,18 +1,21 @@
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { getFundingKey } from '../utils/secrets'
+import { getFundingKeys } from '../utils/secrets'
 import {
   checkTransactions,
-  deserializeTransactions
+  deserializeTransactions,
+  extractCallData
 } from '../utils/fund-transactions'
-import { Keypair, VersionedTransaction } from '@solana/web3.js'
+import { VersionedTransaction } from '@solana/web3.js'
 import bs58 from 'bs58'
 import { HandlerError } from '../utils/errors'
 import { asJsonResponse } from '../utils/response'
+import { ClaimSignature } from '../types'
+import { saveSignedTransactions } from '../utils/persistence'
 
 export type FundTransactionRequest = Uint8Array[]
 
-let funderWallet: NodeWallet
+const funderWallets: Record<string, NodeWallet> = {}
 
 export const fundTransactions = async (
   event: APIGatewayProxyEvent
@@ -21,16 +24,31 @@ export const fundTransactions = async (
     const requestBody = JSON.parse(event.body!)
     validateFundTransactions(requestBody)
     const transactions = deserializeTransactions(requestBody)
-    const isTransactionsValid = await checkTransactions(transactions)
+    const isTransactionsValid = await checkTransactions(
+      transactions.map((txWithFunder) => txWithFunder.transaction)
+    )
 
     if (!isTransactionsValid) {
       return asJsonResponse(403, { error: 'Unauthorized transactions' })
     }
 
-    const wallet = await loadFunderWallet()
+    const wallets = await loadFunderWallets()
 
-    const signedTransactions = await wallet.signAllTransactions(transactions)
-    logSignatures(signedTransactions)
+    const signedTransactions: VersionedTransaction[] = []
+
+    for (const txWithFunder of transactions) {
+      const funderWallet = wallets[txWithFunder.funder]
+      if (!funderWallet) {
+        return asJsonResponse(403, { error: 'Unauthorized funder' })
+      }
+
+      signedTransactions.push(
+        await funderWallet.signTransaction(txWithFunder.transaction)
+      )
+    }
+
+    await saveSignedTransactions(getSignatures(signedTransactions))
+
     return asJsonResponse(
       200,
       signedTransactions.map((tx) => Buffer.from(tx.serialize()))
@@ -56,19 +74,18 @@ function validateFundTransactions(transactions: unknown) {
   }
 }
 
-async function loadFunderWallet(): Promise<NodeWallet> {
-  if (funderWallet) {
-    return funderWallet
+async function loadFunderWallets(): Promise<Record<string, NodeWallet>> {
+  if (Object.keys(funderWallets).length > 0) {
+    return funderWallets
   }
 
-  const secretData = await getFundingKey()
-  const funderWalletKey = secretData.key
+  const secretData = await getFundingKeys()
 
-  const keypair = Keypair.fromSecretKey(Uint8Array.from(funderWalletKey))
+  secretData.forEach((keypair) => {
+    funderWallets[keypair.publicKey.toBase58()] = new NodeWallet(keypair)
+  })
 
-  funderWallet = new NodeWallet(keypair)
-  console.log('Loaded funder wallet')
-  return funderWallet
+  return funderWallets
 }
 
 function getSignature(tx: VersionedTransaction): string {
@@ -79,10 +96,12 @@ function getSignature(tx: VersionedTransaction): string {
   return 'unkown signature'
 }
 
-function logSignatures(signedTransactions: VersionedTransaction[]) {
-  const sigs: string[] = []
+function getSignatures(signedTransactions: VersionedTransaction[]) {
+  const sigs: ClaimSignature[] = []
   signedTransactions.forEach((tx) => {
-    sigs.push(getSignature(tx))
+    sigs.push({ sig: getSignature(tx), instruction: extractCallData(tx) })
   })
-  console.log(`Signed transactions: ${sigs}`)
+  console.log(`Signed transactions: ${JSON.stringify(sigs)}`)
+
+  return sigs
 }
