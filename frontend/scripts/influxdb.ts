@@ -53,7 +53,11 @@ async function main() {
     readApi
   )
 
-  console.log(`Start from last signature: ${latestSignature === undefined ? 'none' : latestSignature}`)
+  console.log(
+    `Start from last signature: ${
+      latestSignature === undefined ? 'none' : latestSignature
+    }`
+  )
   const tokenDispenserEventSubscriber = new TokenDispenserEventSubscriber(
     ENDPOINT,
     new anchor.web3.PublicKey(PROGRAM_ID),
@@ -81,18 +85,32 @@ async function main() {
     }
   }
 
-  console.log(`Found ${txnEvents.length} event${txnEvents.length > 1 ? 's' : ''}`)
-  console.log(`Found ${failedTxnInfos.length} failed txn${failedTxnInfos.length > 1 ? 's' : ''}`)
+  console.log(
+    `Found ${txnEvents.length} event${txnEvents.length > 1 ? 's' : ''}`
+  )
+  console.log(
+    `Found ${failedTxnInfos.length} failed txn${
+      failedTxnInfos.length > 1 ? 's' : ''
+    }`
+  )
 
   const formattedTxnEvents = txnEvents
     .filter((txnEvent) => txnEvent.event)
     .map((txnEvent) => formatTxnEventInfo(txnEvent))
-  console.log(`Formatted ${formattedTxnEvents.length} event${formattedTxnEvents.length > 1 ? 's' : ''}`)
+  console.log(
+    `Formatted ${formattedTxnEvents.length} event${
+      formattedTxnEvents.length > 1 ? 's' : ''
+    }`
+  )
 
   const doubleClaimEventPoints = createDoubleClaimPoint(formattedTxnEvents)
 
   if (doubleClaimEventPoints.length > 0) {
-    console.log(`Detected ${doubleClaimEventPoints.length} double claim${doubleClaimEventPoints.length > 1 ? 's' : ''}`)
+    console.log(
+      `Detected ${doubleClaimEventPoints.length} double claim${
+        doubleClaimEventPoints.length > 1 ? 's' : ''
+      }`
+    )
     doubleClaimEventPoints.forEach((doubleClaimEventPoint) => {
       writeApi.writePoint(doubleClaimEventPoint)
     })
@@ -113,13 +131,21 @@ async function main() {
   txnEventPoints.forEach((txnEventPoint) => {
     writeApi.writePoint(txnEventPoint)
   })
-  console.log(`Wrote ${txnEventPoints.length} txn event${txnEventPoints.length > 1 ? 's' : ''} to InfluxDB`)
+  console.log(
+    `Wrote ${txnEventPoints.length} txn event${
+      txnEventPoints.length > 1 ? 's' : ''
+    } to InfluxDB`
+  )
 
   const failedTxnEventPoints = createFailedTxnEventPoints(failedTxnInfos)
   failedTxnEventPoints.forEach((failedTxnEventPoint) => {
     writeApi.writePoint(failedTxnEventPoint)
   })
-  console.log(`Wrote ${failedTxnEventPoints.length} failed txn event${failedTxnEventPoints.length > 1 ? 's' : ''} to InfluxDB`)
+  console.log(
+    `Wrote ${failedTxnEventPoints.length} failed txn event${
+      failedTxnEventPoints.length > 1 ? 's' : ''
+    } to InfluxDB`
+  )
 
   console.log('Last signature processed:', latestSignature)
   const latestTxPoint = new Point('latest_txn_seen')
@@ -148,8 +174,8 @@ async function getLatestTxSignature(
     |> range(start: -1d)
     |> filter(fn: (r) => r._measurement == "latest_txn_seen")
     |> filter(fn: (r) => r.network == "${network}")
-    |> sort(desc: true)
-    |> last()
+    |> sort(columns: ["_time"], desc: true)
+    |> first()
     |> limit(n:1)`
 
   let signature = undefined
