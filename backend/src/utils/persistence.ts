@@ -125,4 +125,5 @@ async function initInfluxWriter() {
 
 process.on('SIGTERM', async () => {
   await influxWriter.close()
+  console.log('Influx writer closed')
 })
