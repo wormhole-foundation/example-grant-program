@@ -106,7 +106,7 @@ const Subscribe = () => {
               onChange={() =>
                 setStatus((s) => ({ ...status, terms: !status.terms }))
               }
-              className="bg-opacity-15 checkbox h-4 w-4 appearance-none border border-white bg-white"
+              className="checkbox bg-opacity-15 h-4 w-4 appearance-none border border-white bg-white"
             />
             <span className="opacity-70">
               I agree to receive marketing emails and other communications

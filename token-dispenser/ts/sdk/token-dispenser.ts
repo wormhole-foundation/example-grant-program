@@ -9,8 +9,6 @@ const CONFIG_SEED_PREFIX = "config";
 
 export class TokenDispenserSdk {
   readonly program: Program<TokenDispenser>;
-  // readonly mint: PublicKey;
-
   constructor(
     connection: Connection,
     args: {
@@ -26,7 +24,6 @@ export class TokenDispenserSdk {
       signAllTransactions: async function (...args: any[]): Promise<any> {
         throw new Error("ilegal call");
       },
-      // payer: args.payer,
     };
     const provider = new AnchorProvider(
       connection,
@@ -34,7 +31,6 @@ export class TokenDispenserSdk {
       AnchorProvider.defaultOptions()
     );
 
-    // this.program = new Program(IDL as any, new PublicKey(args.programId), provider);
     this.program = new Program(
       IDL as any,
       new PublicKey(args.programId),

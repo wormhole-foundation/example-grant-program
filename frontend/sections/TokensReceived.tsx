@@ -53,7 +53,7 @@ export const TokensReceived = ({ totalCoinsClaimed }: TokensReceivedProps) => {
             newsletter.
           </p>
 
-          <div className="mt-6 border border-light-25 bg-black bg-opacity-30 px-8 pt-8 pb-1">
+          <div className="mt-6 border border-light-25 bg-black bg-opacity-30 px-8 pb-1 pt-8">
             <Subscribe />
           </div>
         </div>
