@@ -6,7 +6,9 @@ const parseEndpoints = () => {
     endpoints = JSON.parse(process.env.ENDPOINTS || process.env.ENDPOINT!)
   } catch (e) {
     // if parse fails, assume it's a single endpoint
-    endpoints = [process.env.ENDPOINTS || process.env.ENDPOINT || clusterApiUrl('devnet')]
+    endpoints = [
+      process.env.ENDPOINTS || process.env.ENDPOINT || clusterApiUrl('devnet'),
+    ]
   }
 
   if (!Array.isArray(endpoints)) {
