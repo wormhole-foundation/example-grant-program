@@ -3,6 +3,7 @@ import { ModalWrapper } from '@components/modal/ModalWrapper'
 import { useRouter } from 'next/navigation'
 
 export function ErrorModal({ showModal }: { showModal: Function }) {
+const router = useRouter()
   return (
     <ModalWrapper>
       <div className="w-full max-w-[600px] divide-y divide-white divide-opacity-25 border  border-white border-opacity-25 bg-black bg-opacity-50 text-center">
