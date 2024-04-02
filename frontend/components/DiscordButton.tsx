@@ -2,14 +2,15 @@ import { useMemo } from 'react'
 import Discord from '@images/discord.inline.svg'
 import Image from 'next/image'
 import useDiscordAuth from 'hooks/useDiscordAuth'
+import useDiscordProfile from 'hooks/useDiscordProfile'
 
 type DiscordButtonProps = {
   disableOnAuth?: boolean
 }
 
 export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
-  const { authenticate, clear, isConnecting, isAuthenticated, profile } =
-    useDiscordAuth()
+  const { authenticate, isConnecting } = useDiscordAuth()
+  const { profile, isAuthenticated, disconnect } = useDiscordProfile()
 
   const { logo, text } = useMemo(() => {
     if (isAuthenticated)
@@ -33,7 +34,7 @@ export function DiscordButton({ disableOnAuth }: DiscordButtonProps) {
       className={'wbtn wbtn-secondary min-w-[117px] sm:min-w-[207px]'}
       onClick={() => {
         if (isAuthenticated) {
-          clear()
+          disconnect()
         } else {
           authenticate()
         }

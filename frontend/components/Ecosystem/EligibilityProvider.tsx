@@ -146,6 +146,7 @@ export function EligibilityProvider({ children }: ProviderProps) {
       if (!activity[ecosystem]) return undefined
       else {
         const identity = getEcosystemIdentity(ecosystem)
+        console.log('EligibilityProvider', identity);
         if (identity === undefined) return undefined
         else return eligibilityMap[ecosystem]?.[identity]
       }

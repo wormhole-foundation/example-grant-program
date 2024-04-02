@@ -9,8 +9,7 @@ import {
 
 import { Ecosystem } from '@components/Ecosystem'
 import { useCallback } from 'react'
-import { getInjectiveAddress } from '../utils/getInjectiveAddress'
-import useDiscordAuth from './useDiscordAuth'
+import useDiscordProfile from './useDiscordProfile'
 
 // It will return a function that can be used to get the identity of a given ecosystem
 // The function will return the identity if the ecosystem is connected
@@ -25,7 +24,7 @@ export function useGetEcosystemIdentity() {
   const suiAddress = useSuiAddress()
   const algorandAddress = useAlgorandAddress()
 
-  const { profile } = useDiscordAuth()
+  const { profile } = useDiscordProfile()
 
   return useCallback(
     (ecosystem: Ecosystem) => {
