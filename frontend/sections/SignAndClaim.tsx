@@ -208,7 +208,7 @@ export const SignAndClaim = ({ onBack, onProceed }: SignAndClaimProps) => {
           </BoxTitle>
           <div className="px-4 py-8 text-base sm:px-10 sm:text-base16">
             <p className="mb-6">
-              {`Please proceed to sign your connected wallets. Press the “Sign” button next to each wallet and confirm in the pop-up window.`}
+              {`Please proceed to prove ownership of your connected wallets by signing a message for each one. Click the “Sign” button next to each wallet and confirm in the pop-up window.`}
             </p>
             <p className="mb-6">
               Signing with your Solana wallet will be done at a later step.
