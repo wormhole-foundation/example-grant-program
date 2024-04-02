@@ -38,10 +38,7 @@
         {
           "name": "merkleRoot",
           "type": {
-            "array": [
-              "u8",
-              20
-            ]
+            "array": ["u8", 20]
           }
         },
         {
@@ -141,10 +138,7 @@
           {
             "name": "merkleRoot",
             "type": {
-              "array": [
-                "u8",
-                20
-              ]
+              "array": ["u8", 20]
             }
           },
           {
@@ -334,10 +328,7 @@
             "name": "proofOfInclusion",
             "type": {
               "vec": {
-                "array": [
-                  "u8",
-                  20
-                ]
+                "array": ["u8", 20]
               }
             }
           }
@@ -367,10 +358,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               }
             ]
@@ -381,10 +369,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    20
-                  ]
+                  "array": ["u8", 20]
                 }
               }
             ]
@@ -395,10 +380,7 @@
               {
                 "name": "address",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               }
             ]
@@ -409,10 +391,7 @@
               {
                 "name": "address",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               }
             ]
@@ -441,10 +420,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               }
             ]
@@ -476,10 +452,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    20
-                  ]
+                  "array": ["u8", 20]
                 }
               },
               {
@@ -497,10 +470,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               },
               {
@@ -515,10 +485,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               },
               {
@@ -537,10 +504,7 @@
               {
                 "name": "signature",
                 "type": {
-                  "array": [
-                    "u8",
-                    64
-                  ]
+                  "array": ["u8", 64]
                 }
               },
               {
@@ -550,10 +514,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    65
-                  ]
+                  "array": ["u8", 65]
                 }
               },
               {
@@ -568,10 +529,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    20
-                  ]
+                  "array": ["u8", 20]
                 }
               },
               {
@@ -586,10 +544,7 @@
               {
                 "name": "pubkey",
                 "type": {
-                  "array": [
-                    "u8",
-                    32
-                  ]
+                  "array": ["u8", 32]
                 }
               },
               {
