@@ -17,10 +17,6 @@ fi
 
 while IFS= read -r TREASURY; do
   MINT=$MINT TREASURY=$TREASURY npx tsx ./ts/scripts/create-treasury.ts
-  # spl-token \
-  #   --url $SOLANA_RPC_URL \
-  #   approve \
-  #   $TREASURY $APPROVE_AMOUNT $CONFIG_PDA \
-  #   --fee-payer usb://ledger?key=$LEDGER_CLI_DERIVATION_PATH \
-  #   --owner usb://ledger?key=$LEDGER_CLI_DERIVATION_PATH
+
+  TREASURY=$TREASURY CONFIG_PDA=$CONFIG_PDA MINT_AMOUNT=$MINT_AMOUNT npx tsx ./ts/scripts/delegate-treasury.ts
 done < "$(dirname "$0")/treasuries"
