@@ -14,7 +14,6 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
   Secp256k1Program,
-  SignatureStatus,
   SystemProgram,
   SYSVAR_INSTRUCTIONS_PUBKEY,
   TransactionError,
@@ -656,7 +655,11 @@ export class TokenDispenserProvider {
           )
 
         if (successfulResults.length >= 1) {
-          output.push(successfulResults[0])
+          // rule out that one of the RPCs succeeds and the rest fail for some reason
+          const successSubmit = successfulResults.find(
+            (res) => res?.err !== null && res?.err !== undefined
+          )
+          output.push(successSubmit || successfulResults[0])
         } else {
           output.push(null)
         }
