@@ -35,6 +35,8 @@ export const ERROR_FUNDING_TX = 'error: funding transaction'
 export const ERROR_RPC_CONNECTION = 'error: rpc connection'
 export const ERROR_CRAFTING_TX = 'error: crafting transaction'
 
+const MAX_TX_SIZE = 1232
+
 type bump = number
 // NOTE: This must be kept in sync with the on-chain program
 const AUTHORIZATION_PAYLOAD = [
@@ -324,7 +326,9 @@ export class TokenDispenserProvider {
     treasury: PublicKey,
     claimInfo: ClaimInfo,
     proofOfInclusion: Uint8Array[],
-    signedMessage: SignedMessage | undefined
+    signedMessage: SignedMessage | undefined,
+    shouldCreateATA: boolean = true,
+    claimantFundPdaDerivationMultiplier: number = 1
   ): Promise<VersionedTransaction> {
     const [receiptPda, receiptBump] = this.getReceiptPda(claimInfo)
     const { mint } = await this.getConfig()
@@ -356,7 +360,7 @@ export class TokenDispenserProvider {
     // 2. add create ATA instruction if needed
     const claimantFundExists = claimantFundAccount !== null
 
-    if (!claimantFundExists)
+    if (!claimantFundExists && shouldCreateATA)
       ixs.push(
         splToken.Token.createAssociatedTokenAccountInstruction(
           splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -381,30 +385,29 @@ export class TokenDispenserProvider {
       proofOfInclusion,
     }
 
-    ixs.push(
-      await this.tokenDispenserProgram.methods
-        .claim(claimCert)
-        .accounts({
-          funder,
-          claimant: this.claimant,
-          claimantFund,
-          config: this.getConfigPda()[0],
-          mint,
-          treasury,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          systemProgram: anchor.web3.SystemProgram.programId,
-          sysvarInstruction: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
-          associatedTokenProgram: splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
-        })
-        .remainingAccounts([
-          {
-            pubkey: receiptPda,
-            isWritable: true,
-            isSigner: false,
-          },
-        ])
-        .instruction()
-    )
+    const claimIx = await this.tokenDispenserProgram.methods
+      .claim(claimCert)
+      .accounts({
+        funder,
+        claimant: this.claimant,
+        claimantFund,
+        config: this.getConfigPda()[0],
+        mint,
+        treasury,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: anchor.web3.SystemProgram.programId,
+        sysvarInstruction: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+        associatedTokenProgram: splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .remainingAccounts([
+        {
+          pubkey: receiptPda,
+          isWritable: true,
+          isSigner: false,
+        },
+      ])
+      .instruction()
+    ixs.push(claimIx)
 
     // 4. add Compute Unit instructions
     const pdaDerivationCosts = (bump: number) => {
@@ -430,24 +433,44 @@ export class TokenDispenserProvider {
     const units =
       safetyMargin +
       ecosystemCUs[claimInfo.ecosystem] +
-      pdaDerivationCosts(claimaintFundBump) +
+      pdaDerivationCosts(claimaintFundBump) *
+        claimantFundPdaDerivationMultiplier +
       pdaDerivationCosts(receiptBump) +
       (claimantFundExists
         ? 0
-        : ataCreationCost + pdaDerivationCosts(claimaintFundBump))
+        : ataCreationCost + pdaDerivationCosts(claimaintFundBump)) +
+      (claimantFundPdaDerivationMultiplier > 1 ? 10000 : 0) // init_if_needed overhead
     ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
     const microLamports = 1_000_000 - 1 //somewhat arbitrary choice
     ixs.push(ComputeBudgetProgram.setComputeUnitPrice({ microLamports }))
 
     // 5. build and return the transaction
-    return new VersionedTransaction(
+    const latestBlockHash = await this.connection.getLatestBlockhash()
+
+    let transaction = new VersionedTransaction(
       new TransactionMessage({
         instructions: ixs,
         payerKey: funder,
-        recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
+        recentBlockhash: latestBlockHash.blockhash,
       }).compileToV0Message([lookupTableAccount!])
     )
+
+    // check for size and rebuild skipping the ATA if needed
+    const txSerialized = transaction.serialize()
+    if (txSerialized.length > MAX_TX_SIZE) {
+      return this.generateClaimTransaction(
+        funder,
+        treasury,
+        claimInfo,
+        proofOfInclusion,
+        signedMessage,
+        false,
+        3
+      )
+    }
+
+    return transaction
   }
 
   private createProofOfIdentity(
