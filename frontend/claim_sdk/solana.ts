@@ -326,9 +326,7 @@ export class TokenDispenserProvider {
     treasury: PublicKey,
     claimInfo: ClaimInfo,
     proofOfInclusion: Uint8Array[],
-    signedMessage: SignedMessage | undefined,
-    shouldCreateATA: boolean = true,
-    claimantFundPdaDerivationMultiplier: number = 1
+    signedMessage: SignedMessage | undefined
   ): Promise<VersionedTransaction> {
     const [receiptPda, receiptBump] = this.getReceiptPda(claimInfo)
     const { mint } = await this.getConfig()
@@ -341,10 +339,7 @@ export class TokenDispenserProvider {
       ],
       splToken.ASSOCIATED_TOKEN_PROGRAM_ID
     )
-    const [claimantFundAccount, lookupTableAccount] = await Promise.all([
-      this.connection.getAccountInfo(claimantFund),
-      this.getLookupTableAccount(),
-    ])
+    const lookupTableAccount = await this.getLookupTableAccount()
 
     const ixs: anchor.web3.TransactionInstruction[] = []
 
@@ -357,22 +352,7 @@ export class TokenDispenserProvider {
 
     if (signatureVerificationIx) ixs.push(signatureVerificationIx)
 
-    // 2. add create ATA instruction if needed
-    const claimantFundExists = claimantFundAccount !== null
-
-    if (!claimantFundExists && shouldCreateATA)
-      ixs.push(
-        splToken.Token.createAssociatedTokenAccountInstruction(
-          splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
-          splToken.TOKEN_PROGRAM_ID,
-          mint,
-          claimantFund,
-          this.claimant,
-          funder
-        )
-      )
-
-    // 3. add claim instruction
+    // 2. add claim instruction
     const proofOfIdentity = this.createProofOfIdentity(
       claimInfo,
       signedMessage,
@@ -385,6 +365,8 @@ export class TokenDispenserProvider {
       proofOfInclusion,
     }
 
+    //always rely on init_if_needed since we can't use createATAIdempotent without
+    //  bumping @solana/spl-token to newer version
     const claimIx = await this.tokenDispenserProgram.methods
       .claim(claimCert)
       .accounts({
@@ -409,13 +391,13 @@ export class TokenDispenserProvider {
       .instruction()
     ixs.push(claimIx)
 
-    // 4. add Compute Unit instructions
+    // 3. add Compute Unit instructions
     const pdaDerivationCosts = (bump: number) => {
       const maxBump = 255
       const cusPerPdaDerivation = 1500
       return (maxBump - bump) * cusPerPdaDerivation
     }
-    const safetyMargin = 10000
+    const safetyMargin = 20000 //+ init_if_needed overhead
     const ataCreationCost = 20460
     //determined experimentally:
     const ecosystemCUs = {
@@ -433,13 +415,10 @@ export class TokenDispenserProvider {
     const units =
       safetyMargin +
       ecosystemCUs[claimInfo.ecosystem] +
-      pdaDerivationCosts(claimaintFundBump) *
-        claimantFundPdaDerivationMultiplier +
-      pdaDerivationCosts(receiptBump) +
-      (claimantFundExists
-        ? 0
-        : ataCreationCost + pdaDerivationCosts(claimaintFundBump)) +
-      (claimantFundPdaDerivationMultiplier > 1 ? 10000 : 0) // init_if_needed overhead
+      ataCreationCost +
+      3 * pdaDerivationCosts(claimaintFundBump) +
+      pdaDerivationCosts(receiptBump)
+
     ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
     const microLamports = 1_000_000 - 1 //somewhat arbitrary choice
@@ -455,20 +434,6 @@ export class TokenDispenserProvider {
         recentBlockhash: latestBlockHash.blockhash,
       }).compileToV0Message([lookupTableAccount!])
     )
-
-    // check for size and rebuild skipping the ATA if needed
-    const txSerialized = transaction.serialize()
-    if (txSerialized.length > MAX_TX_SIZE) {
-      return this.generateClaimTransaction(
-        funder,
-        treasury,
-        claimInfo,
-        proofOfInclusion,
-        signedMessage,
-        false,
-        3
-      )
-    }
 
     return transaction
   }
