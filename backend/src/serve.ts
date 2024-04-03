@@ -1,6 +1,10 @@
 import bodyParser from 'body-parser'
 import express from 'express'
-import { signDiscordMessageHandler, fundTransactionHandler } from './index'
+import {
+  signDiscordMessageHandler,
+  fundTransactionHandler,
+  authorizerHandler
+} from './index'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 
 const app = express()
@@ -14,6 +18,7 @@ app.post(
   '/api/grant/v1/fund_transaction',
   lambdaProxyWrapper(fundTransactionHandler)
 )
+app.get('/checker', lambdaProxyWrapper(authorizerHandler))
 
 app.listen(8200, () => console.info('Server running on port 8200...'))
 
@@ -28,14 +33,23 @@ function lambdaProxyWrapper(
         proxy: req.params[0]
       },
       headers: req.headers,
-      body: JSON.stringify(req.body)
+      body: JSON.stringify(req.body),
+      requestContext: {
+        http: {
+          sourceIp: req.query.ip ?? ''
+        }
+      }
     }
 
     const response = await handler(event as unknown as APIGatewayProxyEvent)
 
-    res.status(response.statusCode)
-    res.set(response.headers)
+    res.status(response.statusCode ?? 200)
+    res.set(response.headers ?? {})
 
-    return res.json(JSON.parse(response.body))
+    if (response.body) {
+      return res.json(JSON.parse(response.body))
+    }
+
+    return res.json(response)
   }
 }

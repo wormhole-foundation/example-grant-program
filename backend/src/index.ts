@@ -1,7 +1,7 @@
 import { signDiscordMessage } from './handlers/discord-signed-digest'
 import { fundTransactions } from './handlers/fund-transactions'
-import { handler as helloworld } from './handlers/helloworld'
+import { authorizer } from './handlers/authorizer'
 
 export const signDiscordMessageHandler = signDiscordMessage
-export const helloworldHandler = helloworld
+export const authorizerHandler = authorizer
 export const fundTransactionHandler = fundTransactions
