@@ -86,7 +86,7 @@ export class TokenDispenserProvider {
     this.tokenDispenserProgram = new Program(
       tokenDispenser as Idl,
       programId,
-      this.providers[0]
+      this.providers[Math.floor(Math.random() * endpoints.length)]
     ) as unknown as Program<TokenDispenser>
 
     this.configPda = anchor.web3.PublicKey.findProgramAddressSync(
