@@ -123,7 +123,11 @@ async function initInfluxWriter() {
 
   return new InfluxDB({
     url: config.influx.url(),
-    token
+    token,
+    timeout: config.influx.timeout(),
+    writeOptions: {
+      maxRetries: config.influx.maxRetries()
+    }
   }).getWriteApi(config.influx.org(), config.influx.bucket())
 }
 

@@ -33,7 +33,9 @@ export default {
     org: () => process.env.INFLUXDB_ORG ?? 'xl',
     bucket: () => process.env.INFLUXDB_BUCKET ?? 'ad',
     token: () => process.env.INFLUXDB_TOKEN,
-    timeout: () => parseInt(process.env.INFLUXDB_TIMEOUT_MS ?? '20500'),
-    isFlushEnabled: () => process.env.INFLUXDB_FLUSH_ENABLED === 'true' ?? false
+    timeout: () => parseInt(process.env.INFLUXDB_TIMEOUT_MS ?? '3500'),
+    isFlushEnabled: () =>
+      process.env.INFLUXDB_FLUSH_ENABLED === 'true' ?? false,
+    maxRetries: () => parseInt(process.env.INFLUXDB_MAX_RETRIES ?? '3')
   }
 }
