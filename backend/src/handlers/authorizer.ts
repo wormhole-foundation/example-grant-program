@@ -18,7 +18,9 @@ export const authorizer = async (
     const geo = await geoIP.lookup(ip)
     country = geo?.country ?? 'unknown'
     if (
-      country in ['CU', 'IR', 'IQ', 'KP', 'RU', 'SY', 'GB', 'US', 'UA', 'AR']
+      ['CU', 'IR', 'IQ', 'KP', 'RU', 'SY', 'GB', 'US', 'UA', 'AR'].includes(
+        country
+      )
     ) {
       authorized = false
     }
