@@ -326,7 +326,7 @@ export class TokenDispenserProvider {
     treasury: PublicKey,
     claimInfo: ClaimInfo,
     proofOfInclusion: Uint8Array[],
-    signedMessage: SignedMessage | undefined,
+    signedMessage: SignedMessage | undefined
   ): Promise<VersionedTransaction> {
     const [receiptPda, receiptBump] = this.getReceiptPda(claimInfo)
     const { mint } = await this.getConfig()
@@ -415,9 +415,10 @@ export class TokenDispenserProvider {
     const units =
       safetyMargin +
       ecosystemCUs[claimInfo.ecosystem] +
-      ataCreationCost + 3 * pdaDerivationCosts(claimaintFundBump) +
+      ataCreationCost +
+      3 * pdaDerivationCosts(claimaintFundBump) +
       pdaDerivationCosts(receiptBump)
-      
+
     ixs.push(ComputeBudgetProgram.setComputeUnitLimit({ units }))
 
     const microLamports = 1_000_000 - 1 //somewhat arbitrary choice
