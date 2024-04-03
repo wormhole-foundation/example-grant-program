@@ -11,7 +11,14 @@ export function ErrorModal({ showModal }: { showModal: Function }) {
         <div className="p-6">
           <p className="mx-auto max-w-[350px] text-[15px] tracking-[.3px]">
             Solana is currently experiencing congestion and was unable to
-            include your transaction. Please try again in a few minutes
+            include at least one of your transactions. Please try again in a few
+            minutes
+          </p>
+          <br />
+          <p className="mx-auto max-w-[350px] text-[15px] tracking-[.3px]">
+            <i>
+              You can see which transactions failed when you close this popup
+            </i>
           </p>
         </div>
         <div className="bg-black bg-opacity-50 px-10 py-8">
@@ -21,20 +28,7 @@ export function ErrorModal({ showModal }: { showModal: Function }) {
               showModal(false)
             }}
           >
-            <span className="flex  items-center gap-2">
-              Try again
-              <svg
-                width={13}
-                height={9}
-                viewBox="0 0 13 9"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M8.13445 8.97557L13 4.4995L8.13445 0.0234376L7.11722 0.959101L10.2404 3.83123L4.43299e-08 3.83123L5.98891e-08 5.16772L10.2404 5.16772L7.11722 8.03985L8.13445 8.97557Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </span>
+            <span className="flex  items-center gap-2">Close</span>
           </Button>
         </div>
       </div>
