@@ -11,9 +11,9 @@ import {
   TokenDispenserEventSubscriber,
   FormattedTxnEventInfo,
   TxnInfo,
-} from '../claim_sdk/eventSubscriber'
+} from './claim_sdk/eventSubscriber'
 import * as anchor from '@coral-xyz/anchor'
-import { envOrErr } from '../claim_sdk'
+import { envOrErr } from './claim_sdk'
 import { BN } from '@coral-xyz/anchor'
 import { inspect } from 'util'
 import { InfluxDB, Point, QueryApi } from '@influxdata/influxdb-client'

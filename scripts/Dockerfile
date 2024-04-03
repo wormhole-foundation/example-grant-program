@@ -24,4 +24,4 @@ RUN rm -rf node_modules && mv node_modules_cache node_modules
 
 WORKDIR /home/node
 
-ENTRYPOINT [ "npm", "run", "influxdb" ]
+ENTRYPOINT [ "npm", "run", "airdrop:metrics" ]
