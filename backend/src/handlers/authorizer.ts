@@ -14,6 +14,7 @@ export const authorizer = async (
 
   try {
     const ip = authorizerEvent.requestContext.http.sourceIp
+    console.log('IP:', ip)
     const geo = await geoIP.lookup(ip)
     country = geo?.country ?? 'unknown'
     if (
@@ -24,6 +25,9 @@ export const authorizer = async (
   } catch (err) {
     console.error('Error looking up country', err)
   }
+
+  console.log('Country:', country)
+  console.log('Authorized:', authorized)
 
   return {
     isAuthorized: authorized,
