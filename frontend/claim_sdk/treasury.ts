@@ -21,12 +21,7 @@ export const funders = [
 ]
 
 export function getClaimPayers(claimInfo: ClaimInfo): [PublicKey, PublicKey] {
-  const buffer = claimInfo.toBuffer()
-  const toHex = buffer.toString('hex')
-  const toNumber = parseInt(toHex, 16)
-  const funderIndex = toNumber % funders.length
+  const selectedIndex = Math.floor(Math.random() * funders.length)
 
-  const treasuryIndex = toNumber % treasuries.length
-
-  return [funders[funderIndex], treasuries[treasuryIndex]]
+  return [funders[selectedIndex], treasuries[selectedIndex]]
 }
