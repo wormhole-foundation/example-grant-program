@@ -12,12 +12,12 @@ export function ErrorModal({ showModal }: { showModal: Function }) {
           <p className="mx-auto max-w-[350px] text-[15px] tracking-[.3px]">
             Solana is currently experiencing congestion and was unable to
             include at least one of your transactions. Please try again in a few
-            minutes
+            minutes.
           </p>
           <br />
           <p className="mx-auto max-w-[350px] text-[15px] tracking-[.3px]">
             <i>
-              You can see which transactions failed when you close this popup
+              You can see which transactions failed when you close this popup.
             </i>
           </p>
         </div>
