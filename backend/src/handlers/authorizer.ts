@@ -4,6 +4,8 @@ import {
 } from 'aws-lambda'
 import geoIP from 'fast-geoip'
 
+const DEFAULT_DENY_LIST = ['CU', 'IR', 'IQ', 'KP', 'RU', 'SY', 'GB', 'US', 'UA']
+
 export const authorizer = async (
   authorizerEvent: APIGatewayRequestAuthorizerEventV2
 ): Promise<
@@ -11,25 +13,20 @@ export const authorizer = async (
 > => {
   let authorized = true
   let country
+  const denyList = process.env.DENY_LIST?.split(',') ?? DEFAULT_DENY_LIST
+  const ip = authorizerEvent.requestContext.http.sourceIp
 
   try {
-    const ip = authorizerEvent.requestContext.http.sourceIp
-    console.log('IP:', ip)
     const geo = await geoIP.lookup(ip)
     country = geo?.country ?? 'unknown'
-    if (
-      ['CU', 'IR', 'IQ', 'KP', 'RU', 'SY', 'GB', 'US', 'UA', 'AR'].includes(
-        country
-      )
-    ) {
+    if (denyList.includes(country)) {
       authorized = false
     }
   } catch (err) {
     console.error('Error looking up country', err)
   }
 
-  console.log('Country:', country)
-  console.log('Authorized:', authorized)
+  console.log(`IP:${ip} - Country:${country} - Authorized:${authorized}`)
 
   return {
     isAuthorized: authorized,
