@@ -16,7 +16,7 @@ export const authorizer = async (
     const ip = authorizerEvent.requestContext.http.sourceIp
     const geo = await geoIP.lookup(ip)
     country = geo?.country ?? 'unknown'
-    if (country in ['CU', 'IR', 'IQ', 'KP', 'RU', 'SY', 'GB', 'US', 'UA']) {
+    if (country in ['CU', 'IR', 'IQ', 'KP', 'RU', 'SY', 'GB', 'US', 'UA', 'AR']) {
       authorized = false
     }
   } catch (err) {
