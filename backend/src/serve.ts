@@ -5,7 +5,7 @@ import {
   fundTransactionHandler,
   authorizerHandler
 } from './index'
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { APIGatewayProxyEvent } from 'aws-lambda'
 
 const app = express()
 app.use(bodyParser.json())
@@ -22,9 +22,7 @@ app.get('/checker', lambdaProxyWrapper(authorizerHandler))
 
 app.listen(8200, () => console.info('Server running on port 8200...'))
 
-function lambdaProxyWrapper(
-  handler: (event: APIGatewayProxyEvent) => Promise<APIGatewayProxyResult>
-) {
+function lambdaProxyWrapper(handler: (event: any) => Promise<any>) {
   return async (req: express.Request, res: express.Response) => {
     const event = {
       httpMethod: req.method,
