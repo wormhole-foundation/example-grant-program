@@ -11,6 +11,7 @@ import {
   TokenDispenserEventSubscriber,
   FormattedTxnEventInfo,
   TxnInfo,
+  TxnEventInfo,
 } from './claim_sdk/eventSubscriber'
 import * as anchor from '@coral-xyz/anchor'
 import { envOrErr } from './claim_sdk'
@@ -26,6 +27,11 @@ const INFLUX_ORG = envOrErr('INFLUX_ORG')
 const INFLUX_BUCKET = envOrErr('INFLUX_BUCKET')
 const TIME_WINDOW_SECS = Number.parseInt(envOrErr('TIME_WINDOW_SECS'), 10)
 const CHUNK_SIZE = Number.parseInt(envOrErr('CHUNK_SIZE'), 10)
+const LAST_TXN_MEASUREMENT =
+  process.env.LAST_TXN_MEASUREMENT ?? 'latest_txn_seen'
+const TXN_MEASUREMENT = process.env.TXN_MEASUREMENT ?? 'txn_event'
+const FAILED_TXN_MEASUREMENT =
+  process.env.FAILED_TXN_MEASUREMENT ?? 'failed_txn_event'
 // based off airdrop allocation commit 16d0c19f3951427f04cc015d38805f356fcb88b1
 const MAX_AMOUNT_PER_ECOSYSTEM = new Map<string, BN>([
   ['discord', new BN('87000000000')],
@@ -137,7 +143,7 @@ async function main() {
   )
 
   console.log('Last signature processed:', latestSignature)
-  const latestTxPoint = new Point('latest_txn_seen')
+  const latestTxPoint = new Point(LAST_TXN_MEASUREMENT)
     .tag('network', CLUSTER)
     .stringField('signature', latestSignature)
 
@@ -161,8 +167,8 @@ async function getLatestTxSignature(
 ): Promise<string | undefined> {
   const query = `from(bucket: "${bucket}")
     |> range(start: -1d)
-    |> filter(fn: (r) => r._measurement == "latest_txn_seen")
-    |> filter(fn: (r) => r.network == "${network}")
+    |> filter(fn: (r) => r._measurement == "${LAST_TXN_MEASUREMENT}")
+    |> filter(fn: (r) => r.network == "${network}" and r._field == "signature")
     |> sort(columns: ["_time"], desc: true)
     |> first()
     |> limit(n:1)`
@@ -182,15 +188,16 @@ function createTxnEventPoints(formattedTxnEvents: FormattedTxnEventInfo[]) {
     const { ecosystem, address, amount } = formattedEvent.claimInfo!
     let eventCategory = 'normal'
     let amountValue = parseInt(amount, 10)
-
-    if (MAX_AMOUNT_PER_ECOSYSTEM.get(ecosystem)!.lt(new BN(amount))) {
+    const maxAmount = MAX_AMOUNT_PER_ECOSYSTEM.get(ecosystem)
+    if (amount && maxAmount && maxAmount.lt(new BN(amount))) {
       eventCategory = 'max_transfer_exceeded'
     }
 
-    const point = new Point('txn_event')
+    const point = new Point(TXN_MEASUREMENT)
       .tag('ecosystem', ecosystem)
       .tag('network', CLUSTER)
       .tag('eventCategory', eventCategory)
+      .tag('address', address)
       .stringField('claimant', claimant)
       .stringField('address', address)
       .stringField('signature', signature)
@@ -249,7 +256,7 @@ function createDoubleClaimPoint(formattedTxnEvents: FormattedTxnEventInfo[]) {
 
 function createFailedTxnEventPoints(failedTxns: TxnInfo[]) {
   return failedTxns.map((errorLog) => {
-    const point = new Point('failed_txn_event')
+    const point = new Point(FAILED_TXN_MEASUREMENT)
       .tag('network', CLUSTER)
       .stringField('signature', errorLog.signature)
       .stringField('errorDetails', JSON.stringify(errorLog))
