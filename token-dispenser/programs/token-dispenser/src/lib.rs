@@ -1,9 +1,9 @@
 #![allow(clippy::result_large_err)]
-
 use {
     anchor_lang::{
         prelude::*,
         solana_program::{
+            pubkey,
             keccak::hashv,
             program::{
                 invoke,
@@ -66,7 +66,6 @@ use {
         },
         hashers::Hasher,
     },
-    std::str::FromStr,
 };
 
 #[cfg(test)]
@@ -75,23 +74,23 @@ mod tests;
 mod ecosystems;
 
 //butt ugly but straightforward
-const FORBIDDEN_SOL: &[&str] = &[
-    "5XiqTJQBTZKcGjcbCydZvf9NzhE2R3g7GDx1yKHxs8jd",
-    "74YpKKAScQky4YouDXMfnGnXFbUQcccp958B8R8eQrvV",
-    "Esmx2QjmDZMjJ15yBJ2nhqisjEt7Gqro4jSkofdoVsvY",
-    "ALDxR5NXJLruoRNQDk88AiF9FXyTN3iQ9E8NQB73zSoh",
-    "8ggviFegLUzsddm9ShyMy42TiDYyH9yDDS3gSGdejND7",
-    "4nBEtJKz99WJKqNYmdmpogayqcvXBQ2PxrkwgjYENhjt",
-    "G3udanrxk8stVe8Se2zXmJ3QwU8GSFJMn28mTfn8t1kq",
-    "AgJddDJLt17nHyXDCpyGELxwsZZQPqfUsuwzoiqVGJwD",
-    "CxegPrfn2ge5dNiQberUrQJkHCcimeR4VXkeawcFBBka",
-    "HuiYfmAceFkmhu3yP8t3a6VMYfw3VSX2Ymqqj9M2k9ib",
-    "B9UAHnGTS31u3vpaTM79eyQowMMjYP3uzn6XQucAYRv7",
-    "3SEn2DertMoxBEq1MY4Fg27LsQmkdFGQH4yzmEGfsS6e",
-    "6D7fgzpPZXtDB6Zqg3xRwfbohzerbytB2U5pFchnVuzw",
-    "76w4SBe2of2wWUsx2FjkkwD29rRznfvEkBa1upSbTAWH",
-    "61wJT43nWMUpDR92wC7pmo6xoJRh2s4kCYRBq4d5XQHZ",
-    "6sEk1enayZBGFyNvvJMTP7qs5S3uC7KLrQWaEk38hSHH",
+const FORBIDDEN_SOL: &[Pubkey] = &[
+    pubkey!("5XiqTJQBTZKcGjcbCydZvf9NzhE2R3g7GDx1yKHxs8jd"),
+    pubkey!("74YpKKAScQky4YouDXMfnGnXFbUQcccp958B8R8eQrvV"),
+    pubkey!("Esmx2QjmDZMjJ15yBJ2nhqisjEt7Gqro4jSkofdoVsvY"),
+    pubkey!("ALDxR5NXJLruoRNQDk88AiF9FXyTN3iQ9E8NQB73zSoh"),
+    pubkey!("8ggviFegLUzsddm9ShyMy42TiDYyH9yDDS3gSGdejND7"),
+    pubkey!("4nBEtJKz99WJKqNYmdmpogayqcvXBQ2PxrkwgjYENhjt"),
+    pubkey!("G3udanrxk8stVe8Se2zXmJ3QwU8GSFJMn28mTfn8t1kq"),
+    pubkey!("AgJddDJLt17nHyXDCpyGELxwsZZQPqfUsuwzoiqVGJwD"),
+    pubkey!("CxegPrfn2ge5dNiQberUrQJkHCcimeR4VXkeawcFBBka"),
+    pubkey!("HuiYfmAceFkmhu3yP8t3a6VMYfw3VSX2Ymqqj9M2k9ib"),
+    pubkey!("B9UAHnGTS31u3vpaTM79eyQowMMjYP3uzn6XQucAYRv7"),
+    pubkey!("3SEn2DertMoxBEq1MY4Fg27LsQmkdFGQH4yzmEGfsS6e"),
+    pubkey!("6D7fgzpPZXtDB6Zqg3xRwfbohzerbytB2U5pFchnVuzw"),
+    pubkey!("76w4SBe2of2wWUsx2FjkkwD29rRznfvEkBa1upSbTAWH"),
+    pubkey!("61wJT43nWMUpDR92wC7pmo6xoJRh2s4kCYRBq4d5XQHZ"),
+    pubkey!("6sEk1enayZBGFyNvvJMTP7qs5S3uC7KLrQWaEk38hSHH"),
 ];
 
 const FORBIDDEN_EVM: &[[u8; EvmPubkey::LEN]] = &[
@@ -160,7 +159,7 @@ pub mod token_dispenser {
                 require!(
                     !FORBIDDEN_SOL
                         .iter()
-                        .any(|&key| *claimant_key == Pubkey::from_str(key).unwrap()),
+                        .any(|&key| *claimant_key == key),
                     ErrorCode::Forbidden
                 );
             }
