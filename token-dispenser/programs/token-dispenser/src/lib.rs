@@ -73,6 +73,8 @@ mod tests;
 
 mod ecosystems;
 
+//placebo
+
 declare_id!("Wapq3Hpv2aSKjWrh4pM8eweh8jVJB7D1nLBw9ikjVYx");
 
 const CONFIG_SEED: &[u8] = b"config";
