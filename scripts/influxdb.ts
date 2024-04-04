@@ -15,7 +15,6 @@ import {
 import * as anchor from '@coral-xyz/anchor'
 import { envOrErr } from './claim_sdk'
 import { BN } from '@coral-xyz/anchor'
-import { inspect } from 'util'
 import { InfluxDB, Point, QueryApi } from '@influxdata/influxdb-client'
 
 const ENDPOINT = envOrErr('ENDPOINT')
@@ -27,7 +26,6 @@ const INFLUX_ORG = envOrErr('INFLUX_ORG')
 const INFLUX_BUCKET = envOrErr('INFLUX_BUCKET')
 const TIME_WINDOW_SECS = Number.parseInt(envOrErr('TIME_WINDOW_SECS'), 10)
 const CHUNK_SIZE = Number.parseInt(envOrErr('CHUNK_SIZE'), 10)
-const LOW_BALANCE_THRESHOLD = envOrErr('LOW_BALANCE_THRESHOLD')
 // based off airdrop allocation commit 16d0c19f3951427f04cc015d38805f356fcb88b1
 const MAX_AMOUNT_PER_ECOSYSTEM = new Map<string, BN>([
   ['discord', new BN('87000000000')],
@@ -118,15 +116,6 @@ async function main() {
     console.log('No double claims detected')
   }
 
-  const lowBalanceEventPoint = createLowBalanceEventPoint(formattedTxnEvents)
-
-  if (lowBalanceEventPoint) {
-    console.log('Detected low balance event')
-    writeApi.writePoint(lowBalanceEventPoint)
-  } else {
-    console.log('No low balance detected')
-  }
-
   const txnEventPoints = createTxnEventPoints(formattedTxnEvents)
   txnEventPoints.forEach((txnEventPoint) => {
     writeApi.writePoint(txnEventPoint)
@@ -199,11 +188,11 @@ function createTxnEventPoints(formattedTxnEvents: FormattedTxnEventInfo[]) {
     }
 
     const point = new Point('txn_event')
-      .tag('claimant', claimant!)
       .tag('ecosystem', ecosystem)
-      .tag('address', address)
       .tag('network', CLUSTER)
       .tag('eventCategory', eventCategory)
+      .stringField('claimant', claimant)
+      .stringField('address', address)
       .stringField('signature', signature)
       .intField('amount', amountValue)
       .stringField('eventDetails', JSON.stringify(formattedEvent))
@@ -246,9 +235,8 @@ function createDoubleClaimPoint(formattedTxnEvents: FormattedTxnEventInfo[]) {
 
       const point = new Point('double_claim_event')
         .tag('ecosystem', ecosystem)
-        .tag('address', address)
         .tag('network', CLUSTER)
-        .tag('service', 'token-dispenser-event-subscriber')
+        .stringField('address', address)
         .stringField('details', JSON.stringify(txnEventInfos))
         .timestamp(new Date(blockTime * 1000))
       doubleClaimPoints.push(point)
@@ -262,42 +250,12 @@ function createDoubleClaimPoint(formattedTxnEvents: FormattedTxnEventInfo[]) {
 function createFailedTxnEventPoints(failedTxns: TxnInfo[]) {
   return failedTxns.map((errorLog) => {
     const point = new Point('failed_txn_event')
-      .tag('signature', errorLog.signature)
       .tag('network', CLUSTER)
-      .tag('service', 'token-dispenser-event-subscriber')
+      .stringField('signature', errorLog.signature)
       .stringField('errorDetails', JSON.stringify(errorLog))
       .timestamp(new Date(errorLog.blockTime * 1000))
     return point
   })
-}
-
-function createLowBalanceEventPoint(
-  formattedTxnEvents: FormattedTxnEventInfo[]
-) {
-  if (formattedTxnEvents.length === 0) {
-    return undefined
-  }
-
-  const mostRecentEvent = formattedTxnEvents.sort((a, b) => b.slot - a.slot)[0]
-
-  if (
-    mostRecentEvent.remainingBalance &&
-    new BN(mostRecentEvent.remainingBalance).lt(new BN(LOW_BALANCE_THRESHOLD))
-  ) {
-    const point = new Point('low_balance_event')
-      .tag('signature', mostRecentEvent.signature)
-      .tag('network', CLUSTER)
-      .tag('service', 'token-dispenser-event-subscriber')
-      .intField(
-        'remainingBalance',
-        parseInt(mostRecentEvent.remainingBalance, 10)
-      )
-      .stringField('eventDetails', JSON.stringify(mostRecentEvent))
-      .timestamp(new Date(mostRecentEvent.blockTime * 1000).toISOString())
-    return point
-  }
-
-  return undefined
 }
 
 ;(async () => {
