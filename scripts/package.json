@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "airdrop:metrics": "ts-node ./influxdb.ts",
+    "airdrop:metrics:fix-tags": "ts-node ./influxdb.fixer.ts",
     "prettier": "prettier . --write",
     "docker:login": "aws ecr get-login-password --region us-east-2 --profile $AWS_PROFILE_PRODUCTION | docker login --username AWS --password-stdin $AWS_ACCOUNT_PRODUCTION.dkr.ecr.us-east-2.amazonaws.com",
     "docker:build": "docker build --platform=linux/amd64 --tag $(npm run --silent docker:prod-tag) . --file ./Dockerfile",

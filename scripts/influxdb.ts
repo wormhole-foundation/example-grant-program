@@ -11,7 +11,6 @@ import {
   TokenDispenserEventSubscriber,
   FormattedTxnEventInfo,
   TxnInfo,
-  TxnEventInfo,
 } from './claim_sdk/eventSubscriber'
 import * as anchor from '@coral-xyz/anchor'
 import { envOrErr } from './claim_sdk'
@@ -197,7 +196,6 @@ function createTxnEventPoints(formattedTxnEvents: FormattedTxnEventInfo[]) {
       .tag('ecosystem', ecosystem)
       .tag('network', CLUSTER)
       .tag('eventCategory', eventCategory)
-      .tag('address', address)
       .stringField('claimant', claimant)
       .stringField('address', address)
       .stringField('signature', signature)
