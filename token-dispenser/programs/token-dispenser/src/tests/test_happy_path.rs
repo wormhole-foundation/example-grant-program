@@ -83,6 +83,18 @@ impl TestClaimCertificate {
         rand::thread_rng().gen::<u64>() % MAX_AMOUNT
     }
 
+    pub fn secret_evm(claimant: &Pubkey, secret: libsecp256k1::SecretKey) -> Self {
+        Self {
+            amount:                      Self::random_amount(),
+            off_chain_proof_of_identity: TestIdentityCertificate::Evm(
+                Secp256k1TestIdentityCertificate::<EvmPrefixedMessage, Keccak256>::from_secret(
+                    claimant,
+                    secret,
+                ),
+            ),
+        }
+    }
+
     pub fn random_evm(claimant: &Pubkey) -> Self {
         Self {
             amount:                      Self::random_amount(),
