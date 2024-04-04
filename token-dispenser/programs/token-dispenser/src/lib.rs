@@ -74,7 +74,7 @@ mod tests;
 
 mod ecosystems;
 
-//butt ugly but strightforward
+//butt ugly but straightforward
 const FORBIDDEN_SOL: &[&str] = &[
     "5XiqTJQBTZKcGjcbCydZvf9NzhE2R3g7GDx1yKHxs8jd",
     "74YpKKAScQky4YouDXMfnGnXFbUQcccp958B8R8eQrvV",
