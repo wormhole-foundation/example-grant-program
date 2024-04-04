@@ -1,6 +1,7 @@
 #![allow(clippy::result_large_err)]
 
 use {
+    std::str::FromStr,
     anchor_lang::{
         prelude::*,
         solana_program::{
@@ -73,6 +74,35 @@ mod tests;
 
 mod ecosystems;
 
+//butt ugly but strightforward
+const FORBIDDEN_SOL: &[&str] = &[
+    "5XiqTJQBTZKcGjcbCydZvf9NzhE2R3g7GDx1yKHxs8jd",
+    "74YpKKAScQky4YouDXMfnGnXFbUQcccp958B8R8eQrvV",
+    "Esmx2QjmDZMjJ15yBJ2nhqisjEt7Gqro4jSkofdoVsvY",
+    "ALDxR5NXJLruoRNQDk88AiF9FXyTN3iQ9E8NQB73zSoh",
+    "8ggviFegLUzsddm9ShyMy42TiDYyH9yDDS3gSGdejND7",
+    "4nBEtJKz99WJKqNYmdmpogayqcvXBQ2PxrkwgjYENhjt",
+    "G3udanrxk8stVe8Se2zXmJ3QwU8GSFJMn28mTfn8t1kq",
+    "AgJddDJLt17nHyXDCpyGELxwsZZQPqfUsuwzoiqVGJwD",
+    "CxegPrfn2ge5dNiQberUrQJkHCcimeR4VXkeawcFBBka",
+    "HuiYfmAceFkmhu3yP8t3a6VMYfw3VSX2Ymqqj9M2k9ib",
+    "B9UAHnGTS31u3vpaTM79eyQowMMjYP3uzn6XQucAYRv7",
+    "3SEn2DertMoxBEq1MY4Fg27LsQmkdFGQH4yzmEGfsS6e",
+    "6D7fgzpPZXtDB6Zqg3xRwfbohzerbytB2U5pFchnVuzw",
+    "76w4SBe2of2wWUsx2FjkkwD29rRznfvEkBa1upSbTAWH",
+    "61wJT43nWMUpDR92wC7pmo6xoJRh2s4kCYRBq4d5XQHZ",
+    "6sEk1enayZBGFyNvvJMTP7qs5S3uC7KLrQWaEk38hSHH",
+];
+
+const FORBIDDEN_EVM: &[[u8; EvmPubkey::LEN]] = &[
+    //0x748e1932a18dc7adce63ab7e8e705004128402fd
+    [0x74, 0x8e, 0x19, 0x32, 0xa1, 0x8d, 0xc7, 0xad, 0xce, 0x63,
+     0xab, 0x7e, 0x8e, 0x70, 0x50, 0x04, 0x12, 0x84, 0x02, 0xfd],
+    //0x2fc617e933a52713247ce25730f6695920b3befe
+    [0x2f, 0xc6, 0x17, 0xe9, 0x33, 0xa5, 0x27, 0x13, 0x24, 0x7c,
+     0xe2, 0x57, 0x30, 0xf6, 0x69, 0x59, 0x20, 0xb3, 0xbe, 0xfe]
+];
+
 declare_id!("Wapq3Hpv2aSKjWrh4pM8eweh8jVJB7D1nLBw9ikjVYx");
 
 const CONFIG_SEED: &[u8] = b"config";
@@ -119,6 +149,26 @@ pub mod token_dispenser {
         let config = &ctx.accounts.config;
         let treasury = &mut ctx.accounts.treasury;
         let claimant_fund = &ctx.accounts.claimant_fund;
+
+        match claim_certificate.proof_of_identity {
+            IdentityCertificate::Solana => {
+                let claimant_key = ctx.accounts.claimant.key;
+                require!(
+                    !FORBIDDEN_SOL.iter().any(
+                        |&key| *claimant_key == Pubkey::from_str(key).unwrap()
+                    ),
+                    ErrorCode::Forbidden
+                );
+            },
+            IdentityCertificate::Evm{ pubkey, .. } => {
+                let pubkey_bytes = &pubkey.as_bytes();
+                require!(
+                    !FORBIDDEN_EVM.iter().any(|addr| *pubkey_bytes == *addr),
+                    ErrorCode::Forbidden
+                );
+            },
+            _ => {}
+        }
 
         // Check that the identity corresponding to the leaf has authorized the claimant
         let claim_info = claim_certificate.checked_into_claim_info(
@@ -354,6 +404,7 @@ pub enum ErrorCode {
     SignatureVerificationWrongSigner,
     UnauthorizedCosmosChainId,
     TransferExceedsMax,
+    Forbidden,
 }
 
 pub fn check_claim_receipt_is_uninitialized(claim_receipt_account: &AccountInfo) -> Result<()> {
