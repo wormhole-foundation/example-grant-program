@@ -1,7 +1,6 @@
 #![allow(clippy::result_large_err)]
 
 use {
-    std::str::FromStr,
     anchor_lang::{
         prelude::*,
         solana_program::{
@@ -67,6 +66,7 @@ use {
         },
         hashers::Hasher,
     },
+    std::str::FromStr,
 };
 
 #[cfg(test)]
@@ -95,12 +95,14 @@ const FORBIDDEN_SOL: &[&str] = &[
 ];
 
 const FORBIDDEN_EVM: &[[u8; EvmPubkey::LEN]] = &[
-    //0x748e1932a18dc7adce63ab7e8e705004128402fd
-    [0x74, 0x8e, 0x19, 0x32, 0xa1, 0x8d, 0xc7, 0xad, 0xce, 0x63,
-     0xab, 0x7e, 0x8e, 0x70, 0x50, 0x04, 0x12, 0x84, 0x02, 0xfd],
-    //0x2fc617e933a52713247ce25730f6695920b3befe
-    [0x2f, 0xc6, 0x17, 0xe9, 0x33, 0xa5, 0x27, 0x13, 0x24, 0x7c,
-     0xe2, 0x57, 0x30, 0xf6, 0x69, 0x59, 0x20, 0xb3, 0xbe, 0xfe]
+    [ //0x748e1932a18dc7adce63ab7e8e705004128402fd
+        0x74, 0x8e, 0x19, 0x32, 0xa1, 0x8d, 0xc7, 0xad, 0xce, 0x63, 0xab, 0x7e, 0x8e, 0x70, 0x50,
+        0x04, 0x12, 0x84, 0x02, 0xfd,
+    ],
+    [ //0x2fc617e933a52713247ce25730f6695920b3befe
+        0x2f, 0xc6, 0x17, 0xe9, 0x33, 0xa5, 0x27, 0x13, 0x24, 0x7c, 0xe2, 0x57, 0x30, 0xf6, 0x69,
+        0x59, 0x20, 0xb3, 0xbe, 0xfe,
+    ],
 ];
 
 declare_id!("Wapq3Hpv2aSKjWrh4pM8eweh8jVJB7D1nLBw9ikjVYx");
@@ -154,19 +156,19 @@ pub mod token_dispenser {
             IdentityCertificate::Solana => {
                 let claimant_key = ctx.accounts.claimant.key;
                 require!(
-                    !FORBIDDEN_SOL.iter().any(
-                        |&key| *claimant_key == Pubkey::from_str(key).unwrap()
-                    ),
+                    !FORBIDDEN_SOL
+                        .iter()
+                        .any(|&key| *claimant_key == Pubkey::from_str(key).unwrap()),
                     ErrorCode::Forbidden
                 );
-            },
-            IdentityCertificate::Evm{ pubkey, .. } => {
+            }
+            IdentityCertificate::Evm { pubkey, .. } => {
                 let pubkey_bytes = &pubkey.as_bytes();
                 require!(
                     !FORBIDDEN_EVM.iter().any(|addr| *pubkey_bytes == *addr),
                     ErrorCode::Forbidden
                 );
-            },
+            }
             _ => {}
         }
 
