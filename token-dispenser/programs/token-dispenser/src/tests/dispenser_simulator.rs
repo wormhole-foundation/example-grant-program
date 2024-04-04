@@ -90,7 +90,8 @@ pub struct DispenserSimulator {
 
 impl DispenserSimulator {
     pub async fn new() -> Self {
-        let program_test = ProgramTest::new("token_dispenser", crate::id(), None);
+        let mut program_test = ProgramTest::new("token_dispenser", crate::id(), None);
+        program_test.set_compute_max_units(400000);
         let (banks_client, genesis_keypair, recent_blockhash) = program_test.start().await;
         let mint_keypair = Keypair::new();
         let pyth_mint_authority = Keypair::new();
