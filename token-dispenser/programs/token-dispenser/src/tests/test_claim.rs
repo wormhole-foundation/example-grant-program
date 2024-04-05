@@ -40,6 +40,8 @@ use {
     },
 };
 
+#[allow(unused_imports)] //used by commented out test at the bottom
+use crate::tests::test_happy_path::TestIdentityCertificate;
 
 #[tokio::test]
 pub async fn test_claim_fails_with_wrong_accounts() {
@@ -56,6 +58,7 @@ pub async fn test_claim_fails_with_wrong_accounts() {
             ],
             &dispenser_guard,
             None,
+            false
         )
         .await
         .unwrap();
@@ -189,6 +192,7 @@ pub async fn test_claim_fails_with_insufficient_funds() {
             ],
             &dispenser_guard,
             None,
+            false,
         )
         .await
         .unwrap();
@@ -325,6 +329,7 @@ pub async fn test_claim_fails_if_delegate_revoked() {
             ],
             &dispenser_guard,
             None,
+            false,
         )
         .await
         .unwrap();
@@ -435,6 +440,7 @@ pub async fn test_claim_fails_with_wrong_merkle_proof() {
             ],
             &dispenser_guard,
             None,
+            false,
         )
         .await
         .unwrap();
@@ -480,6 +486,7 @@ pub async fn test_claim_fails_with_wrong_receipt_pubkey() {
             ],
             &dispenser_guard,
             None,
+            false,
         )
         .await
         .unwrap();
@@ -515,7 +522,14 @@ pub async fn test_claim_works_if_receipt_has_balance() {
     let claimant_1 = Keypair::new();
 
     let (merkle_tree, mock_offchain_certificates_and_claimants) = simulator
-        .initialize_with_claimants(vec![copy_keypair(&claimant_1)], &dispenser_guard, None)
+        .initialize_with_claimants(
+            vec![
+                copy_keypair(&claimant_1)
+            ],
+            &dispenser_guard,
+            None,
+            false,
+        )
         .await
         .unwrap();
 
@@ -586,7 +600,12 @@ pub async fn test_claim_fails_if_exceeds_max_transfer() {
     let claimant = Keypair::new();
 
     let (merkle_tree, mock_offchain_certificates_and_claimants) = simulator
-        .initialize_with_claimants(vec![copy_keypair(&claimant)], &dispenser_guard, Some(0))
+        .initialize_with_claimants(
+            vec![copy_keypair(&claimant)],
+            &dispenser_guard,
+            Some(0),
+            false,
+        )
         .await
         .unwrap();
 
@@ -620,3 +639,63 @@ pub async fn test_claim_fails_if_exceeds_max_transfer() {
         assert!(simulator.get_account(receipt_pda).await.is_none());
     }
 }
+
+
+//comment this in and switch the forbidden addresses in lib.rs to the test addresses
+//  to test this. Also, see the comment there for additional information
+// #[tokio::test]
+// pub async fn test_claim_fails_if_using_forbidden_wallet() {
+//     let dispenser_guard: Keypair = Keypair::new();
+
+//     let mut simulator = DispenserSimulator::new().await;
+
+//     //pubkey: bW5NFQvLwCKo826zr8m8DXHtUYkCF6Nn53QoKXLmW7b
+//     let claimant = Keypair::from_base58_string(
+//         "4qwZKb6x1bW8v4zoJ5AACT3qaYfs9TzsEXJ7nHWPA1dZHc13pYwMuT61ZrJVtq5C2LY4z6udpYmHnPVNm3PgKwbP"
+//     );
+
+//     let (merkle_tree, mock_offchain_certificates_and_claimants) = simulator
+//         .initialize_with_claimants(
+//             vec![copy_keypair(&claimant)],
+//             &dispenser_guard,
+//             None,
+//             true,
+//         )
+//         .await
+//         .unwrap();
+
+//     let (_, offchain_claim_certificates, _) = &mock_offchain_certificates_and_claimants[0];
+//     for offchain_claim_certificate in offchain_claim_certificates {
+//         match offchain_claim_certificate.off_chain_proof_of_identity {
+//             TestIdentityCertificate::Solana(..) | TestIdentityCertificate::Evm(..) => {
+//                 let receipt_pda = get_receipt_pda(
+//                     &<TestClaimCertificate as Into<ClaimInfo>>::into(offchain_claim_certificate.clone())
+//                         .try_to_vec()
+//                         .unwrap(),
+//                 )
+//                 .0;
+//                 assert!(simulator.get_account(receipt_pda).await.is_none());
+
+//                 let ix_index_error = offchain_claim_certificate.as_instruction_error_index(&merkle_tree);
+//                 assert_eq!(
+//                     simulator
+//                         .claim(
+//                             &claimant,
+//                             offchain_claim_certificate,
+//                             &merkle_tree,
+//                             None,
+//                             None,
+//                             None
+//                         )
+//                         .await
+//                         .unwrap_err()
+//                         .unwrap(),
+//                     ErrorCode::Forbidden.into_transaction_error(ix_index_error)
+//                 );
+
+//                 assert!(simulator.get_account(receipt_pda).await.is_none());
+//             }
+//             _ => {}
+//         }
+//     }
+// }

@@ -1,9 +1,9 @@
 #![allow(clippy::result_large_err)]
-
 use {
     anchor_lang::{
         prelude::*,
         solana_program::{
+            pubkey,
             keccak::hashv,
             program::{
                 invoke,
@@ -73,6 +73,70 @@ mod tests;
 
 mod ecosystems;
 
+//butt ugly but straightforward
+const FORBIDDEN_SOL: &[Pubkey] = &[
+    pubkey!("5XiqTJQBTZKcGjcbCydZvf9NzhE2R3g7GDx1yKHxs8jd"),
+    pubkey!("74YpKKAScQky4YouDXMfnGnXFbUQcccp958B8R8eQrvV"),
+    pubkey!("Esmx2QjmDZMjJ15yBJ2nhqisjEt7Gqro4jSkofdoVsvY"),
+    pubkey!("ALDxR5NXJLruoRNQDk88AiF9FXyTN3iQ9E8NQB73zSoh"),
+    pubkey!("8ggviFegLUzsddm9ShyMy42TiDYyH9yDDS3gSGdejND7"),
+    pubkey!("4nBEtJKz99WJKqNYmdmpogayqcvXBQ2PxrkwgjYENhjt"),
+    pubkey!("G3udanrxk8stVe8Se2zXmJ3QwU8GSFJMn28mTfn8t1kq"),
+    pubkey!("AgJddDJLt17nHyXDCpyGELxwsZZQPqfUsuwzoiqVGJwD"),
+    pubkey!("CxegPrfn2ge5dNiQberUrQJkHCcimeR4VXkeawcFBBka"),
+    pubkey!("HuiYfmAceFkmhu3yP8t3a6VMYfw3VSX2Ymqqj9M2k9ib"),
+    pubkey!("B9UAHnGTS31u3vpaTM79eyQowMMjYP3uzn6XQucAYRv7"),
+    pubkey!("3SEn2DertMoxBEq1MY4Fg27LsQmkdFGQH4yzmEGfsS6e"),
+    pubkey!("6D7fgzpPZXtDB6Zqg3xRwfbohzerbytB2U5pFchnVuzw"),
+    pubkey!("76w4SBe2of2wWUsx2FjkkwD29rRznfvEkBa1upSbTAWH"),
+    pubkey!("61wJT43nWMUpDR92wC7pmo6xoJRh2s4kCYRBq4d5XQHZ"),
+    pubkey!("6sEk1enayZBGFyNvvJMTP7qs5S3uC7KLrQWaEk38hSHH"),
+];
+
+const FORBIDDEN_EVM: &[[u8; EvmPubkey::LEN]] = &[
+    [   //0x748e1932a18dc7adce63ab7e8e705004128402fd
+        0x74, 0x8e, 0x19, 0x32, 0xa1, 0x8d, 0xc7, 0xad, 0xce, 0x63,
+        0xab, 0x7e, 0x8e, 0x70, 0x50, 0x04, 0x12, 0x84, 0x02, 0xfd,
+    ],
+    [   //0x2fc617e933a52713247ce25730f6695920b3befe
+        0x2f, 0xc6, 0x17, 0xe9, 0x33, 0xa5, 0x27, 0x13, 0x24, 0x7c,
+        0xe2, 0x57, 0x30, 0xf6, 0x69, 0x59, 0x20, 0xb3, 0xbe, 0xfe,
+    ],
+];
+
+// -- Keys used for testing --
+//
+//I'd have loved to use #[cfg(test)] but when running `cargo test-bpf` as we
+//  are for testing, it first compiles the program without it and so the
+//  real addresses end up in the program that the local test validator
+//  tests against. I couldn't find any doc on whether test-bpf sets some
+//  other feature that I could use to conditionally compile the real keys
+//  into the program, and so here we are. Another piece of garbage in the
+//  landfill.
+//So to run the forbidden key tests, comment out the real keys and uncomment
+//  the forbidden keys along with the test at the bottom of test_claims (you
+//  can also find the private keys for our two test wallets there).
+//
+// const FORBIDDEN_SOL: &[Pubkey] = &[
+//     pubkey!("UnsedTest1111111111111111111111111111111111"),
+//     pubkey!("bW5NFQvLwCKo826zr8m8DXHtUYkCF6Nn53QoKXLmW7b"),
+//     pubkey!("UnsedTest1111111111111111111111111111111112"),
+// ];
+// const FORBIDDEN_EVM: &[[u8; EvmPubkey::LEN]] = &[
+//     [   //0x7e577e577e577e577e577e577e577e577e577e57
+//         0x7e, 0x57, 0x7e, 0x57, 0x7e, 0x57, 0x7e, 0x57, 0x7e, 0x57,
+//         0x7e, 0x57, 0x7e, 0x57, 0x7e, 0x57, 0x7e, 0x57, 0x7e, 0x57,
+//     ],
+//     [   //0xd3E739d874789CB4545dD745eb391BE54A5505e2
+//         0xd3, 0xe7, 0x39, 0xd8, 0x74, 0x78, 0x9c, 0xb4, 0x54, 0x5d,
+//         0xd7, 0x45, 0xeb, 0x39, 0x1b, 0xe5, 0x4a, 0x55, 0x05, 0xe2,
+//     ],
+//     [   //0x00007e577e577e577e577e577e577e577e570000
+//         0x00, 0x00, 0x7e, 0x57, 0x7e, 0x57, 0x7e, 0x57, 0x7e, 0x57,
+//         0x7e, 0x57, 0x7e, 0x57, 0x7e, 0x57, 0x7e, 0x57, 0x00, 0x00,
+//     ],
+// ];
+
 declare_id!("Wapq3Hpv2aSKjWrh4pM8eweh8jVJB7D1nLBw9ikjVYx");
 
 const CONFIG_SEED: &[u8] = b"config";
@@ -119,6 +183,26 @@ pub mod token_dispenser {
         let config = &ctx.accounts.config;
         let treasury = &mut ctx.accounts.treasury;
         let claimant_fund = &ctx.accounts.claimant_fund;
+
+        match claim_certificate.proof_of_identity {
+            IdentityCertificate::Solana => {
+                let claimant_key = ctx.accounts.claimant.key;
+                require!(
+                    !FORBIDDEN_SOL
+                        .iter()
+                        .any(|&key| *claimant_key == key),
+                    ErrorCode::Forbidden
+                );
+            }
+            IdentityCertificate::Evm { pubkey, .. } => {
+                let pubkey_bytes = &pubkey.as_bytes();
+                require!(
+                    !FORBIDDEN_EVM.iter().any(|addr| *pubkey_bytes == *addr),
+                    ErrorCode::Forbidden
+                );
+            }
+            _ => {}
+        }
 
         // Check that the identity corresponding to the leaf has authorized the claimant
         let claim_info = claim_certificate.checked_into_claim_info(
@@ -354,6 +438,7 @@ pub enum ErrorCode {
     SignatureVerificationWrongSigner,
     UnauthorizedCosmosChainId,
     TransferExceedsMax,
+    Forbidden,
 }
 
 pub fn check_claim_receipt_is_uninitialized(claim_receipt_account: &AccountInfo) -> Result<()> {

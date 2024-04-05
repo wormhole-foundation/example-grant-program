@@ -90,7 +90,8 @@ pub struct DispenserSimulator {
 
 impl DispenserSimulator {
     pub async fn new() -> Self {
-        let program_test = ProgramTest::new("token_dispenser", crate::id(), None);
+        let mut program_test = ProgramTest::new("token_dispenser", crate::id(), None);
+        program_test.set_compute_max_units(400000);
         let (banks_client, genesis_keypair, recent_blockhash) = program_test.start().await;
         let mint_keypair = Keypair::new();
         let pyth_mint_authority = Keypair::new();
@@ -128,10 +129,24 @@ impl DispenserSimulator {
     pub fn generate_test_claim_certs(
         claimant: &Pubkey,
         dispenser_guard: &Keypair,
+        use_forbidden_evm: bool,
     ) -> Vec<TestClaimCertificate> {
         let keypair = ed25519_dalek::Keypair::from_bytes(&dispenser_guard.to_bytes()).unwrap();
         vec![
-            TestClaimCertificate::random_evm(claimant),
+            if use_forbidden_evm {
+                TestClaimCertificate::secret_evm(
+                    claimant,
+                    libsecp256k1::SecretKey::parse(&[
+                        //secret key of 0xd3E739d874789CB4545dD745eb391BE54A5505e2
+                        0x37, 0x06, 0x41, 0xae, 0xc0, 0xcb, 0x42, 0x2f,
+                        0x36, 0x5d, 0x33, 0xe6, 0xc6, 0x1a, 0xdd, 0x34,
+                        0x3b, 0xa1, 0x55, 0x7e, 0xcb, 0xe2, 0x86, 0x17,
+                        0x8e, 0xa0, 0xb0, 0x05, 0x34, 0x87, 0x40, 0x04
+                    ]).unwrap()
+                )
+            } else {
+                TestClaimCertificate::random_evm(claimant)
+            },
             TestClaimCertificate::random_cosmos(claimant),
             TestClaimCertificate::random_discord(claimant, &keypair),
             TestClaimCertificate::random_aptos(claimant),
@@ -303,6 +318,7 @@ impl DispenserSimulator {
         claimants: Vec<Keypair>,
         dispenser_guard: &Keypair,
         max_transfer_override: Option<u64>,
+        use_forbidden_evm: bool,
     ) -> Result<
         (
             MerkleTree<SolanaHasher>,
@@ -318,8 +334,11 @@ impl DispenserSimulator {
             .into_iter()
             .map(|c| {
                 let pubkey = c.pubkey();
-                let test_claim_certs =
-                    DispenserSimulator::generate_test_claim_certs(&pubkey, dispenser_guard);
+                let test_claim_certs = DispenserSimulator::generate_test_claim_certs(
+                    &pubkey,
+                    dispenser_guard,
+                    use_forbidden_evm
+                );
                 let amount = test_claim_certs.iter().map(|y| y.amount).sum::<u64>();
                 (c, test_claim_certs, amount)
             })

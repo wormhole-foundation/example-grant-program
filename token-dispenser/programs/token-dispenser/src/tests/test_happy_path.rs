@@ -83,6 +83,18 @@ impl TestClaimCertificate {
         rand::thread_rng().gen::<u64>() % MAX_AMOUNT
     }
 
+    pub fn secret_evm(claimant: &Pubkey, secret: libsecp256k1::SecretKey) -> Self {
+        Self {
+            amount:                      Self::random_amount(),
+            off_chain_proof_of_identity: TestIdentityCertificate::Evm(
+                Secp256k1TestIdentityCertificate::<EvmPrefixedMessage, Keccak256>::from_secret(
+                    claimant,
+                    secret,
+                ),
+            ),
+        }
+    }
+
     pub fn random_evm(claimant: &Pubkey) -> Self {
         Self {
             amount:                      Self::random_amount(),
@@ -248,6 +260,7 @@ pub async fn test_happy_path() {
     let mock_offchain_certificates = DispenserSimulator::generate_test_claim_certs(
         &simulator.genesis_keypair.pubkey(),
         &dispenser_guard,
+        false,
     );
 
     let merkle_items: Vec<ClaimInfo> = mock_offchain_certificates

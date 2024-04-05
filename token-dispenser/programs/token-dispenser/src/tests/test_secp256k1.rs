@@ -124,6 +124,17 @@ impl Secp256k1TestIdentityCertificate<EvmPrefixedMessage, Keccak256> {
             _hasher: PhantomData,
         }
     }
+
+    pub fn from_secret(claimant: &Pubkey, secret: libsecp256k1::SecretKey) -> Self {
+        let message = EvmPrefixedMessage::from(get_expected_payload(claimant).as_str());
+        let (signature, recovery_id) = libsecp256k1::sign(&Self::hash_message(&message), &secret);
+        Self {
+            message,
+            signature,
+            recovery_id,
+            _hasher: PhantomData,
+        }
+    }
 }
 
 #[tokio::test]

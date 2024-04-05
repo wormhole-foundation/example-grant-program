@@ -24,7 +24,7 @@ pub async fn test_initialize_fails_with_incorrect_accounts() {
     let claimant = simulator.genesis_keypair.pubkey();
 
     let mock_offchain_certificates =
-        DispenserSimulator::generate_test_claim_certs(&claimant, &dispenser_guard);
+        DispenserSimulator::generate_test_claim_certs(&claimant, &dispenser_guard, false);
 
     let merkle_items: Vec<ClaimInfo> = mock_offchain_certificates
         .iter()
