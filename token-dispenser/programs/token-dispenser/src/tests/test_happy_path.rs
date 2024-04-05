@@ -260,6 +260,7 @@ pub async fn test_happy_path() {
     let mock_offchain_certificates = DispenserSimulator::generate_test_claim_certs(
         &simulator.genesis_keypair.pubkey(),
         &dispenser_guard,
+        false,
     );
 
     let merkle_items: Vec<ClaimInfo> = mock_offchain_certificates
