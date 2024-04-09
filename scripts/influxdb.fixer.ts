@@ -21,9 +21,9 @@ const TAGS_TO_KEEP =
 const FIELDS =
   process.env.FIELDS ?? 'signature,amount,eventDetails,address,claimant'
 
-const START_HOURS_AGO = process.env.START_HOURS_AGO ?? '72' // 3 days
-const END_HOURS_AGO = process.env.END_HOURS_AGO ?? '0' // now
-const HOUR_WINDOW = process.env.HOUR_WINDOW ?? '1'
+const START = process.env.START ?? '2024-04-09T00:00:00.000Z'
+const END = process.env.END ?? '2024-04-09T23:59:59.000Z'
+const HOUR_WINDOW = parseInt(process.env.HOUR_WINDOW ?? '1')
 
 async function main() {
   console.log(
@@ -39,14 +39,13 @@ async function main() {
   const tagsToKeep = TAGS_TO_KEEP.split(',')
   const fields = FIELDS.split(',')
 
-  let startHoursAgo = Number.parseInt(START_HOURS_AGO)
-  const endHoursAgo = Number.parseInt(END_HOURS_AGO)
-  let currentEndHoursago = ''
+  let startTime = new Date(START)
+  const endTime = new Date(END)
+  let currentEndDateTime = new Date(startTime)
 
   try {
-    while (startHoursAgo > endHoursAgo) {
-      const currentStartHoursAgo = `-${startHoursAgo}h`
-      currentEndHoursago = `-${startHoursAgo - Number.parseInt(HOUR_WINDOW)}h`
+    while (startTime < endTime) {
+      currentEndDateTime.setHours(startTime.getHours() + HOUR_WINDOW)
 
       await mapAndWrite(
         INFLUX_BUCKET,
@@ -54,18 +53,19 @@ async function main() {
         NEW_MEASUREMENT_VERSION,
         tagsToKeep,
         fields,
-        currentStartHoursAgo,
-        currentEndHoursago,
+        startTime,
+        currentEndDateTime,
         readApi
       )
-      startHoursAgo -= Number.parseInt(HOUR_WINDOW)
+      startTime.setHours(startTime.getHours() + HOUR_WINDOW)
+      await new Promise((resolve) => setTimeout(resolve, 1500))
     }
   } catch (error) {
     console.error(`Error: ${error}`)
   }
 
   console.log(
-    `Done -> StartHoursAgo: ${startHoursAgo} - EndHoursAgo: ${currentEndHoursago}`
+    `Done -> StartHoursAgo: -${startTime} - EndHoursAgo: ${currentEndDateTime}`
   )
 }
 
@@ -75,12 +75,12 @@ async function mapAndWrite(
   newMeasurementVersion: string,
   tagsToKeep: string[],
   fields: string[],
-  start: string,
-  end: string,
+  start: Date,
+  end: Date,
   readApi: QueryApi
 ): Promise<void> {
   const stream = `from(bucket: "${bucket}")
-  |> range(start: ${start}, stop: ${end})
+  |> range(start: ${start.toISOString()}, stop: ${end.toISOString()})
   |> filter(fn: (r) => r._measurement == "${measurement}")
   |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")`
 
@@ -96,8 +96,8 @@ async function mapAndWrite(
     )`
 
   console.log(` Executing the following query: ${mapper}`)
-  const response = await readApi.queryRaw(mapper)
-  console.log(response)
+  await readApi.queryRaw(mapper)
+  console.log(`Done ${start} - ${end}`)
 }
 
 ;(async () => {
