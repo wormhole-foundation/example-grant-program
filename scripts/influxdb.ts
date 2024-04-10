@@ -182,7 +182,18 @@ async function getLatestTxSignature(
 }
 
 function createTxnEventPoints(formattedTxnEvents: FormattedTxnEventInfo[]) {
+  const timestamps: Record<string, boolean> = {}
+
   return formattedTxnEvents.map((formattedEvent) => {
+    let timestamp = formattedEvent.blockTime * 1000
+    if (timestamps[timestamp]) {
+      // see https://docs.influxdata.com/influxdb/v2/write-data/best-practices/duplicate-points/
+      while (timestamps[timestamp]) {
+        timestamp = timestamp + 1
+      }
+    }
+    timestamps[timestamp] = true
+
     const { signature, claimant } = formattedEvent
     const { ecosystem, address, amount } = formattedEvent.claimInfo!
     let eventCategory = 'normal'
@@ -201,7 +212,7 @@ function createTxnEventPoints(formattedTxnEvents: FormattedTxnEventInfo[]) {
       .stringField('signature', signature)
       .intField('amount', amountValue)
       .stringField('eventDetails', JSON.stringify(formattedEvent))
-      .timestamp(new Date(formattedEvent.blockTime * 1000))
+      .timestamp(new Date(timestamp))
 
     return point
   })
@@ -253,12 +264,22 @@ function createDoubleClaimPoint(formattedTxnEvents: FormattedTxnEventInfo[]) {
 }
 
 function createFailedTxnEventPoints(failedTxns: TxnInfo[]) {
+  const timestamps: Record<string, boolean> = {}
+
   return failedTxns.map((errorLog) => {
+    let timestamp = errorLog.blockTime * 1000
+    if (timestamps[timestamp]) {
+      // see https://docs.influxdata.com/influxdb/v2/write-data/best-practices/duplicate-points/
+      while (timestamps[timestamp]) {
+        timestamp = timestamp + 1
+      }
+    }
+    timestamps[timestamp] = true
     const point = new Point(FAILED_TXN_MEASUREMENT)
       .tag('network', CLUSTER)
       .stringField('signature', errorLog.signature)
       .stringField('errorDetails', JSON.stringify(errorLog))
-      .timestamp(new Date(errorLog.blockTime * 1000))
+      .timestamp(new Date(timestamp))
     return point
   })
 }
