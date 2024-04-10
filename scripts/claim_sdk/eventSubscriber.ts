@@ -275,7 +275,7 @@ function formatClaimInfo(
       address: claimInfo.identity.injective.address,
       amount: claimInfo.amount.toString(),
     }
-  } else if (claimInfo.identity.algorand?.pubkey) {
+  } else if (claimInfo.identity.algorand) {
     return {
       ecosystem: 'algorand',
       address: base32encode(claimInfo.identity.algorand.pubkey),
