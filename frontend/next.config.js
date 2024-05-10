@@ -31,9 +31,13 @@ module.exports = withBundleAnalyzer({
     }
     config.experiments = { asyncWebAssembly: true, layers: true }
 
-    const fileLoaderRule = config.module.rules.find(
-      (rule) => rule.test && rule.test.test('.svg')
-    )
+    const fileLoaderRule = config.module.rules.find((rule) => {
+      if (rule && Array.isArray(rule.test)) {
+        return rule.test.find((test) => test.test('.svg'))
+      } else if (rule && rule.test instanceof RegExp) {
+        return rule.test.test('.svg')
+      }
+    })
     fileLoaderRule.exclude = /\.inline\.svg$/
     config.module.rules.push({
       test: /\.inline\.svg$/,
