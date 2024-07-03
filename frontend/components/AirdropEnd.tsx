@@ -32,13 +32,18 @@ export const AirdropEnd = ({ setDisclaimerWasRead }: LayoutProps) => {
       </header>
       <div className="relative min-h-[calc(100vh-80px)] content-center px-4 pb-32 pt-40">
         <div className="text-center">
-          <h2 className="font-heading font-bold" style={{ fontSize: '1.5em'}}>
+          <h2 className="font-heading font-bold" style={{ fontSize: '1.5em' }}>
             The airdrop claim period has ended
           </h2>
           <p>
             To stay in touch with future Wormhole community initiatives head
             over to our{' '}
-            <a className="font-bold hover:underline hover:opacity-100" href="https://discord.gg/invite/wormholecrypto">Discord</a>{' '}
+            <a
+              className="font-bold hover:underline hover:opacity-100"
+              href="https://discord.gg/invite/wormholecrypto"
+            >
+              Discord
+            </a>{' '}
           </p>
         </div>
       </div>
