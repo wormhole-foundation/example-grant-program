@@ -13,6 +13,7 @@ import { EcosystemProviders } from '@components/Ecosystem'
 import '../styles/globals.css'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@components/Layout'
+import { AirdropEnd } from '@components/AirdropEnd'
 import { Disclaimer } from '@components/modal/Disclaimer'
 
 import { PathnameStore, resetOnVersionMismatch } from 'utils/store'
@@ -58,11 +59,13 @@ function useRedirect(isVersionChecked: boolean) {
   }, [params, pathname, isVersionChecked])
 }
 
+const end = new Date('2024-07-03T23:59:00.000Z')
+const now = new Date()
+
 const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
-  const [disclaimerWasRead, setDisclaimerWasRead] = useState(false)
-
-  const [isVersionChecked, setIsVersionChecked] = useState(false)
+  const [disclaimerWasRead, setDisclaimerWasRead] = useState(now > end)
+  const [isVersionChecked, setIsVersionChecked] = useState(now > end)
 
   // check if there is a version mismatch, if it is reload after reset
   // if no setIsVersionChecked to true, which will be used to render other things
@@ -74,7 +77,19 @@ const App: FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   // TODO Review this, we should check if the user
   // loads the page, we should redirect to welcome pages again
   // useRedirect(isVersionChecked)
-
+  if (now > end) {
+    return (
+      <>
+        <AirdropEnd setDisclaimerWasRead={setDisclaimerWasRead} />
+        <Disclaimer
+          showModal={!disclaimerWasRead}
+          onAgree={() => {
+            setDisclaimerWasRead(true)
+          }}
+        />
+      </>
+    )
+  }
   return (
     <>
       {isVersionChecked ? (
