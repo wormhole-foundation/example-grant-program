@@ -31,21 +31,20 @@ function useRedirect(isVersionChecked: boolean) {
 
   const router = useRouter()
 
-  // temp disable to get the nav working - TODO Review this before live
 
   // We will only redirect on the first load
-  // useLayoutEffect(() => {
-  //   if (!isVersionChecked) return
-  //   // These pathnames are being loaded when we have to oauth with Discord
-  //   // We shouldn't be redirecting the user from these pages
-  //   if (pathname === '/discord-login' || pathname === '/discord-logout') return
+  useLayoutEffect(() => {
+    if (!isVersionChecked) return
+     // These pathnames are being loaded when we have to oauth with Discord
+     // We shouldn't be redirecting the user from these pages
+     if (pathname === '/discord-login' || pathname === '/discord-logout') return
 
   //   //RULES:
   //   // 1. no last state -> redirect to welcome page
   //   // 2. there is a last state -> redirect to that page
-  //   if (lastStep === null) router.replace('/')
-  //   if (lastStep) router.replace(lastStep)
-  // }, [isVersionChecked, lastStep, router, pathname])
+     if (lastStep === null) router.replace('/')
+     if (lastStep) router.replace(lastStep)
+   }, [isVersionChecked, lastStep, router, pathname])
 
   useEffect(() => {
     if (!isVersionChecked) return
